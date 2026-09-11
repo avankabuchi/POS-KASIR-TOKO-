@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>TOKO BUNG EDI - POS & Sistem Kasir</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -29,7 +29,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap');
     body { font-family: 'Inter', sans-serif; }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9999px; }
 
     @media print {
@@ -57,151 +57,181 @@
     .font-mono-receipt { font-family: 'Courier Prime', Courier, monospace; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
-  <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 ease-in-out bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center space-x-2 text-xs font-semibold no-print">
-    <i data-lucide="check-circle" class="w-4 h-4"></i>
-    <span id="toast-msg">Notifikasi</span>
+  <!-- ==================== NOTIFIKASI TOAST ==================== -->
+  <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform translate-x-full transition-transform duration-300 ease-in-out bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center space-x-2 text-xs font-semibold no-print">
+    <i data-lucide="check-circle" class="w-4 h-4 shrink-0"></i>
+    <span id="toast-msg" class="truncate">Notifikasi</span>
   </div>
 
-  <div id="view-login" class="min-h-screen flex flex-col justify-center items-center px-4 bg-gray-50 no-print">
-    <div class="w-full max-w-md bg-white rounded-2xl border border-gray-100 shadow-xl p-8">
-      <div class="flex flex-col items-center text-center mb-8">
-        <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-emerald-200 mb-3">
-          <i data-lucide="store" class="w-8 h-8"></i>
+  <!-- ==================== HALAMAN LOGIN ==================== -->
+  <div id="view-login" class="min-h-screen flex flex-col justify-center items-center px-4 py-6 bg-gray-50 no-print">
+    <div class="w-full max-w-md bg-white rounded-2xl border border-gray-100 shadow-xl p-6 sm:p-8">
+      <div class="flex flex-col items-center text-center mb-6 sm:mb-8">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-emerald-200 mb-3">
+          <i data-lucide="store" class="w-7 h-7 sm:w-8 sm:h-8"></i>
         </div>
-        <h1 class="text-2xl font-bold tracking-tight text-gray-900">TOKO BUNG EDI</h1>
-        <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider font-semibold">Smart POS & BRI Link</p>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-gray-900">TOKO BUNG EDI</h1>
+        <p class="text-[11px] sm:text-xs text-gray-400 mt-1 uppercase tracking-wider font-semibold">Smart POS & BRI Link</p>
       </div>
 
-      <form id="form-login" class="space-y-4" onsubmit="handleLogin(event)">
+      <form id="form-login" class="space-y-3 sm:space-y-4" onsubmit="handleLogin(event)">
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1.5">Email</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
           <input type="email" id="login-email" required placeholder="admin@example.com"
-            class="w-full px-3.5 py-2.5 text-xs border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" />
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1.5">Password</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Password</label>
           <div class="relative">
             <input type="password" id="login-password" required placeholder="••••••••"
-              class="w-full px-3.5 py-2.5 text-xs border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" />
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600">
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" />
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
               <i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
 
         <button type="submit" id="btn-login"
-          class="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-medium text-xs rounded-xl transition duration-150 shadow-md shadow-emerald-600/20">
+          class="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm rounded-xl transition duration-150 shadow-md shadow-emerald-600/20">
           Masuk
         </button>
       </form>
 
-      <div class="mt-8 border border-gray-100 rounded-xl p-3 bg-gray-50/50">
-        <div class="flex items-center space-x-1.5 text-gray-400 text-xs font-medium mb-3">
+      <div class="mt-6 border border-gray-100 rounded-xl p-3 bg-gray-50/60">
+        <div class="flex items-center space-x-1.5 text-gray-400 text-xs font-medium mb-2.5">
           <i data-lucide="key" class="w-3.5 h-3.5"></i>
-          <span class="tracking-wide text-[11px]">AKUN DEMO</span>
+          <span class="tracking-wide text-[10px] sm:text-[11px] font-bold">AKUN DEMO CEPAT</span>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-center text-xs">
-          <button type="button" onclick="quickFill('admin')" class="border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100/60 text-emerald-800 p-2.5 rounded-lg transition text-left">
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button type="button" onclick="quickFill('admin')" class="border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100/60 text-emerald-800 p-2 sm:p-2.5 rounded-lg transition text-left">
             <span class="font-bold block text-emerald-700 text-xs">ADMIN</span>
-            <span class="text-[11px] text-gray-500">avan.kabuchi@gmail.com</span>
+            <span class="text-[10px] text-gray-500 truncate block">Owner Admin</span>
           </button>
-          <button type="button" onclick="quickFill('kasir')" class="border border-blue-200 bg-blue-50/50 hover:bg-blue-100/60 text-blue-800 p-2.5 rounded-lg transition text-left">
+          <button type="button" onclick="quickFill('kasir')" class="border border-blue-200 bg-blue-50/50 hover:bg-blue-100/60 text-blue-800 p-2 sm:p-2.5 rounded-lg transition text-left">
             <span class="font-bold block text-blue-700 text-xs">KASIR</span>
-            <span class="text-[11px] text-gray-500">kasir@tokobungedi.com</span>
+            <span class="text-[10px] text-gray-500 truncate block">Kasir Utama</span>
           </button>
         </div>
       </div>
     </div>
-    <div class="mt-8 text-xs text-gray-400 font-medium">
+    <div class="mt-6 text-xs text-gray-400 font-medium text-center">
       &copy; 2026 TOKO BUNG EDI. All rights reserved.
     </div>
   </div>
 
-  <div id="view-app" class="hidden min-h-screen flex bg-gray-100">
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-screen sticky top-0 no-print">
+  <!-- ==================== APP LAYOUT ==================== -->
+  <div id="view-app" class="hidden min-h-screen flex flex-col md:flex-row bg-gray-100 relative">
+
+    <!-- TOPBAR KHUSUS MOBILE (HANYA MUNCUL DI HP) -->
+    <header class="md:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm no-print">
+      <div class="flex items-center space-x-2.5">
+        <button onclick="toggleMobileSidebar()" class="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700 focus:outline-none">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div class="flex items-center space-x-2">
+          <div class="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
+            <i data-lucide="store" class="w-4 h-4"></i>
+          </div>
+          <span class="font-bold text-xs text-gray-900 tracking-tight">TOKO BUNG EDI</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-1.5">
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase" id="mobile-user-badge">ADMIN</span>
+      </div>
+    </header>
+
+    <!-- BACKDROP GELAP SAAT SIDEBAR MOBILE TERBUKA -->
+    <div id="sidebar-backdrop" onclick="closeMobileSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden no-print"></div>
+
+    <!-- SIDEBAR (DRAWER DI HP, STATIS DI DESKTOP) -->
+    <aside id="app-sidebar" class="fixed md:sticky top-0 left-0 bottom-0 w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-screen z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out no-print">
       <div>
-        <div class="p-5 border-b border-gray-100">
+        <div class="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow">
-              <i data-lucide="store" class="w-6 h-6"></i>
+            <div class="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow">
+              <i data-lucide="store" class="w-5 h-5"></i>
             </div>
             <div>
-              <h2 class="text-sm font-bold text-gray-900 leading-none">TOKO BUNG EDI</h2>
-              <span class="text-[10px] text-gray-400 uppercase tracking-wide font-medium">POS & BRI LINK EDI</span>
+              <h2 class="text-xs sm:text-sm font-bold text-gray-900 leading-none">TOKO BUNG EDI</h2>
+              <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase tracking-wide font-medium">POS & BRI LINK EDI</span>
             </div>
           </div>
+          <!-- Tombol Tutup Sidebar di HP -->
+          <button onclick="closeMobileSidebar()" class="md:hidden text-gray-400 hover:text-gray-600 p-1">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
         </div>
 
-        <div class="px-5 py-3.5 bg-gray-50/70 border-b border-gray-100 flex items-center space-x-3">
-          <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs" id="user-avatar">
+        <div class="px-4 py-3 bg-gray-50/70 border-b border-gray-100 flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs" id="user-avatar">
             OA
           </div>
           <div class="overflow-hidden">
             <h4 class="text-xs font-semibold text-gray-800 truncate" id="user-name">Owner Admin</h4>
-            <span class="inline-block px-1.5 py-0.5 text-[10px] font-bold rounded uppercase mt-0.5 tracking-wider" id="user-badge">ADMIN</span>
+            <span class="inline-block px-1.5 py-0.5 text-[9px] font-bold rounded uppercase mt-0.5 tracking-wider" id="user-badge">ADMIN</span>
           </div>
         </div>
 
-        <nav class="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-220px)] custom-scrollbar text-xs font-medium text-gray-600">
-          <button onclick="navigate('dashboard')" class="nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="dashboard">
+        <nav class="p-2.5 sm:p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-210px)] custom-scrollbar text-xs font-medium text-gray-600">
+          <button onclick="navigate('dashboard')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="dashboard">
             <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
             <span>Dashboard</span>
           </button>
-          <button onclick="navigate('kasir')" class="nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="kasir">
+          <button onclick="navigate('kasir')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="kasir">
             <i data-lucide="shopping-cart" class="w-4 h-4"></i>
             <span>Kasir</span>
           </button>
-          <button onclick="navigate('barang')" class="nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="barang">
+          <button onclick="navigate('barang')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="barang">
             <i data-lucide="package" class="w-4 h-4"></i>
             <span>Data Barang</span>
           </button>
-          <button onclick="navigate('stok')" class="admin-only nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="stok">
+          <button onclick="navigate('stok')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="stok">
             <i data-lucide="boxes" class="w-4 h-4"></i>
             <span>Stok</span>
           </button>
-          <button onclick="navigate('transaksi')" class="nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="transaksi">
+          <button onclick="navigate('transaksi')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="transaksi">
             <i data-lucide="receipt" class="w-4 h-4"></i>
             <span>Transaksi</span>
           </button>
-          <button onclick="navigate('retur')" class="nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="retur">
+          <button onclick="navigate('retur')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="retur">
             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
             <span>Retur</span>
           </button>
-          <button onclick="navigate('pemasukan')" class="admin-only nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="pemasukan">
+          <button onclick="navigate('pemasukan')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="pemasukan">
             <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
             <span>Pemasukan</span>
           </button>
-          <button onclick="navigate('pengeluaran')" class="admin-only nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="pengeluaran">
+          <button onclick="navigate('pengeluaran')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="pengeluaran">
             <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
             <span>Pengeluaran</span>
           </button>
-          <button onclick="navigate('brilink')" class="nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="brilink">
+          <button onclick="navigate('brilink')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="brilink">
             <i data-lucide="landmark" class="w-4 h-4"></i>
             <span>BRI Link</span>
           </button>
-          <button onclick="navigate('laporan')" class="admin-only nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="laporan">
+          <button onclick="navigate('laporan')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="laporan">
             <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
             <span>Laporan</span>
           </button>
-          <button onclick="navigate('aktivitas')" class="admin-only nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="aktivitas">
+          <button onclick="navigate('aktivitas')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="aktivitas">
             <i data-lucide="clock" class="w-4 h-4"></i>
             <span>Aktivitas</span>
           </button>
-          <button onclick="navigate('users')" class="admin-only nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="users">
+          <button onclick="navigate('users')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="users">
             <i data-lucide="users" class="w-4 h-4"></i>
             <span>Manajemen User</span>
           </button>
-          <button onclick="navigate('pengaturan')" class="nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="pengaturan">
+          <button onclick="navigate('pengaturan')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="pengaturan">
             <i data-lucide="settings" class="w-4 h-4"></i>
             <span>Pengaturan</span>
           </button>
         </nav>
       </div>
 
-      <div class="p-4 border-t border-gray-100">
+      <div class="p-3 border-t border-gray-100">
         <button onclick="handleLogout()" class="w-full flex items-center space-x-3 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-lg transition">
           <i data-lucide="log-out" class="w-4 h-4"></i>
           <span>Keluar</span>
@@ -209,48 +239,49 @@
       </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto p-8 custom-scrollbar no-print">
+    <!-- Main View Container -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scrollbar no-print pb-28 md:pb-8">
 
       <!-- 1. DASHBOARD -->
-      <section id="page-dashboard" class="page-content space-y-6">
+      <section id="page-dashboard" class="page-content space-y-4 sm:space-y-6">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p class="text-xs text-gray-500 mt-1" id="dash-subtitle">Ringkasan aktivitas tokomu hari ini</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p class="text-xs text-gray-500 mt-0.5" id="dash-subtitle">Ringkasan aktivitas tokomu hari ini</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENJUALAN HARI INI</span>
-              <h3 class="text-2xl font-extrabold text-gray-900 mt-1" id="dash-sales-today">Rp0</h3>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-sales-today">Rp0</h3>
               <p class="text-[11px] text-gray-400 mt-0.5" id="dash-tx-today">0 transaksi</p>
             </div>
-            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">$</div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">$</div>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA KOTOR HARI INI</span>
-              <h3 class="text-2xl font-extrabold text-gray-900 mt-1" id="dash-profit-today">Rp0</h3>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-profit-today">Rp0</h3>
               <p class="text-[11px] text-emerald-500 mt-0.5 font-medium">Margin terhitung</p>
             </div>
             <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <i data-lucide="trending-up" class="w-5 h-5"></i>
             </div>
           </div>
-          <div class="admin-only bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div class="admin-only bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN HARI INI</span>
-              <h3 class="text-2xl font-extrabold text-gray-900 mt-1" id="dash-expense-today">Rp0</h3>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-expense-today">Rp0</h3>
               <p class="text-[11px] text-gray-400 mt-0.5" id="dash-expense-count">0 pengeluaran</p>
             </div>
             <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
               <i data-lucide="credit-card" class="w-5 h-5"></i>
             </div>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">BRI LINK HARI INI</span>
-              <h3 class="text-2xl font-extrabold text-gray-900 mt-1" id="dash-brilink-today">Rp0</h3>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-brilink-today">Rp0</h3>
               <p class="text-[11px] text-gray-400 mt-0.5" id="dash-brilink-count">0 transaksi</p>
             </div>
             <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
@@ -259,20 +290,20 @@
           </div>
         </div>
 
-        <div class="admin-only grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+        <div class="admin-only grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOTAL BARANG AKTIF</span>
-              <h3 class="text-2xl font-extrabold text-gray-900 mt-1" id="dash-active-products">0</h3>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-active-products">0</h3>
             </div>
             <div class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center">
               <i data-lucide="repeat" class="w-5 h-5"></i>
             </div>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">STOK MENIPIS</span>
-              <h3 class="text-2xl font-extrabold text-amber-600 mt-1" id="dash-low-stock">0</h3>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-1" id="dash-low-stock">0</h3>
             </div>
             <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
               <i data-lucide="alert-triangle" class="w-5 h-5"></i>
@@ -280,37 +311,50 @@
           </div>
         </div>
 
-        <div class="admin-only grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-4">Penjualan 7 Hari Terakhir</h3>
-            <div class="h-64"><canvas id="chartPenjualan"></canvas></div>
+        <div class="admin-only grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div class="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-3">Penjualan 7 Hari Terakhir</h3>
+            <div class="h-56 sm:h-64"><canvas id="chartPenjualan"></canvas></div>
           </div>
-          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-4">Pengeluaran vs BRI Link (7 Hari)</h3>
-            <div class="h-64"><canvas id="chartPengeluaran"></canvas></div>
+          <div class="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-3">Pengeluaran vs BRI Link (7 Hari)</h3>
+            <div class="h-56 sm:h-64"><canvas id="chartPengeluaran"></canvas></div>
           </div>
         </div>
       </section>
 
-      <!-- 2. KASIR (FIXED CART WITH ECERAN/GROSIR TOGGLE) -->
+      <!-- 2. KASIR (RESPONSIVE POS LAYOUT) -->
       <section id="page-kasir" class="page-content hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-130px)]">
-          <div class="lg:col-span-2 flex flex-col space-y-4 h-full overflow-hidden">
-            <div class="flex items-center space-x-3 bg-white p-2.5 rounded-xl border border-gray-200 shrink-0 shadow-sm">
-              <i data-lucide="scan-barcode" class="w-5 h-5 text-emerald-600 ml-2"></i>
-              <input type="text" id="kasir-search" placeholder="Scan Barcode langsung atau cari nama barang..." oninput="renderKasirCatalog()" onkeydown="handleBarcodeScannerKey(event)"
-                class="w-full text-xs outline-none bg-transparent font-medium" autofocus />
-              <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-semibold border border-emerald-200 hidden sm:inline-block">Scanner Ready</span>
+        <div class="flex flex-col lg:grid lg:grid-cols-3 gap-4 sm:gap-6 lg:h-[calc(100vh-130px)]">
+          <!-- Catalog List (Left) -->
+          <div class="lg:col-span-2 flex flex-col space-y-3 h-full overflow-hidden">
+            <div class="flex items-center space-x-2.5 bg-white p-2.5 rounded-xl border border-gray-200 shrink-0 shadow-sm">
+              <i data-lucide="scan-barcode" class="w-5 h-5 text-emerald-600 ml-1 shrink-0"></i>
+              <input type="text" id="kasir-search" placeholder="Scan Barcode / Cari nama barang..." oninput="renderKasirCatalog()" onkeydown="handleBarcodeScannerKey(event)"
+                class="w-full text-xs sm:text-sm outline-none bg-transparent font-medium" autofocus />
             </div>
 
-            <div class="flex space-x-2 overflow-x-auto pb-1 text-xs font-medium shrink-0" id="kasir-cat-pills"></div>
+            <div class="flex space-x-2 overflow-x-auto pb-1 text-xs font-medium shrink-0 custom-scrollbar" id="kasir-cat-pills"></div>
 
-            <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto custom-scrollbar flex-1 pr-1"></div>
+            <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4 overflow-y-auto custom-scrollbar flex-1 pr-1 pb-16 lg:pb-0"></div>
           </div>
 
-          <!-- Checkout & Cart (Right) -->
-          <div class="bg-white rounded-2xl border border-gray-200 flex flex-col justify-between p-5 shadow-sm h-full overflow-hidden">
-            <div class="flex items-center justify-between pb-3 border-b border-gray-100 font-bold text-sm text-gray-800 shrink-0">
+          <!-- Checkout & Cart (Desktop: Panel Kanan; Mobile: Floating Drawer di bawah) -->
+          <div id="kasir-cart-drawer" class="fixed lg:static inset-x-0 bottom-0 z-40 lg:z-auto bg-white rounded-t-2xl lg:rounded-2xl border-t lg:border border-gray-200 p-4 sm:p-5 shadow-2xl lg:shadow-sm flex flex-col justify-between max-h-[85vh] lg:max-h-none lg:h-full transition-all duration-300">
+            <!-- Mobile Drawer Handle -->
+            <div class="lg:hidden flex items-center justify-between pb-2 border-b border-gray-100 cursor-pointer" onclick="toggleMobileCartDetails()">
+              <div class="flex items-center space-x-2 font-bold text-xs text-gray-800">
+                <i data-lucide="shopping-cart" class="w-4 h-4 text-emerald-600"></i>
+                <span>Keranjang (<span id="cart-count-mobile">0</span>)</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span id="total-val-mobile" class="font-extrabold text-sm text-emerald-700">Rp0</span>
+                <i data-lucide="chevron-up" id="drawer-arrow" class="w-4 h-4 text-gray-400 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Desktop Cart Header -->
+            <div class="hidden lg:flex items-center justify-between pb-3 border-b border-gray-100 font-bold text-sm text-gray-800 shrink-0">
               <div class="flex items-center space-x-2">
                 <i data-lucide="shopping-cart" class="w-4 h-4 text-emerald-600"></i>
                 <span>Keranjang (<span id="cart-count">0</span>)</span>
@@ -318,14 +362,16 @@
               <button onclick="clearCart()" class="text-[11px] text-red-500 hover:underline font-medium">Kosongkan</button>
             </div>
 
-            <div id="cart-items" class="py-3 space-y-2.5 overflow-y-auto custom-scrollbar flex-1 pr-1 text-xs my-2"></div>
+            <!-- List Item Keranjang -->
+            <div id="cart-items" class="hidden lg:block py-3 space-y-2.5 overflow-y-auto custom-scrollbar flex-1 pr-1 text-xs my-2 max-h-60 lg:max-h-none"></div>
 
-            <div class="border-t border-gray-100 pt-3 space-y-2.5 text-xs shrink-0 bg-white">
-              <div class="flex justify-between text-gray-500 font-medium">
+            <!-- Cart Footer & Tombol Bayar -->
+            <div class="border-t border-gray-100 pt-3 space-y-2 text-xs shrink-0 bg-white">
+              <div class="hidden lg:flex justify-between text-gray-500 font-medium">
                 <span>Subtotal</span>
                 <span id="subtotal-val" class="font-bold text-gray-800">Rp0</span>
               </div>
-              <div class="flex justify-between text-base font-extrabold text-gray-900 pt-1 border-t border-dashed">
+              <div class="hidden lg:flex justify-between text-base font-extrabold text-gray-900 pt-1 border-t border-dashed">
                 <span>TOTAL</span>
                 <span id="total-val" class="text-emerald-700">Rp0</span>
               </div>
@@ -338,52 +384,52 @@
         </div>
       </section>
 
-      <!-- 3. DATA BARANG (WITH HARGA ECERAN & HARGA GROSIR) -->
-      <section id="page-barang" class="page-content hidden space-y-5">
-        <div class="flex justify-between items-center">
+      <!-- 3. DATA BARANG -->
+      <section id="page-barang" class="page-content hidden space-y-4 sm:space-y-5">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Data Barang</h1>
-            <p class="text-xs text-gray-500 mt-1" id="barang-count-label">0 barang</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Data Barang</h1>
+            <p class="text-xs text-gray-500 mt-0.5" id="barang-count-label">0 barang</p>
           </div>
-          <div class="admin-only flex space-x-2">
+          <div class="admin-only flex flex-wrap gap-2">
             <input type="file" id="input-import-xlsx" accept=".xlsx, .xls" class="hidden" onchange="handleExcelImport(event)" />
-            <button onclick="document.getElementById('input-import-xlsx').click()" class="px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center space-x-1.5 hover:bg-gray-50 shadow-sm">
+            <button onclick="document.getElementById('input-import-xlsx').click()" class="flex-1 sm:flex-none px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-50 shadow-sm">
               <i data-lucide="upload" class="w-3.5 h-3.5"></i>
               <span>Import XLSX</span>
             </button>
-            <button onclick="exportBarangExcel()" class="px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center space-x-1.5 hover:bg-gray-50 shadow-sm">
+            <button onclick="exportBarangExcel()" class="flex-1 sm:flex-none px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-50 shadow-sm">
               <i data-lucide="download" class="w-3.5 h-3.5"></i>
               <span>Export XLSX</span>
             </button>
-            <button onclick="openModalBarang()" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1.5 hover:bg-emerald-700 shadow-sm">
+            <button onclick="openModalBarang()" class="w-full sm:w-auto px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
               <span>Barang Baru</span>
             </button>
           </div>
         </div>
 
-        <div id="bulk-delete-bar" class="hidden bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-center justify-between text-xs transition duration-200">
+        <div id="bulk-delete-bar" class="hidden bg-rose-50 border border-rose-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
           <div class="flex items-center space-x-2 text-rose-800 font-semibold">
-            <i data-lucide="check-square" class="w-4 h-4 text-rose-600"></i>
+            <i data-lucide="check-square" class="w-4 h-4 text-rose-600 shrink-0"></i>
             <span><span id="selected-product-count" class="font-bold">0</span> barang dipilih</span>
           </div>
           <div class="flex items-center space-x-2">
-            <button onclick="unselectAllProducts()" class="px-3 py-1.5 bg-white border border-rose-200 text-rose-700 font-medium rounded-lg hover:bg-rose-100">Batal Pilih</button>
-            <button onclick="bulkDeleteSelectedProducts()" class="px-3 py-1.5 bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 flex items-center space-x-1.5 shadow-sm">
+            <button onclick="unselectAllProducts()" class="flex-1 sm:flex-none px-3 py-1.5 bg-white border border-rose-200 text-rose-700 font-medium rounded-lg hover:bg-rose-100">Batal</button>
+            <button onclick="bulkDeleteSelectedProducts()" class="flex-1 sm:flex-none px-3 py-1.5 bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 flex items-center justify-center space-x-1 shadow-sm">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-              <span>Hapus Barang Terpilih</span>
+              <span>Hapus Terpilih</span>
             </button>
           </div>
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <div class="p-4 border-b border-gray-100 flex justify-between items-center gap-4">
-            <div class="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 w-72">
-              <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+          <div class="p-3 sm:p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
+            <div class="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 w-full sm:w-72">
+              <i data-lucide="search" class="w-4 h-4 text-gray-400 shrink-0"></i>
               <input type="text" id="filter-barang-search" oninput="renderProductsTable()" placeholder="Cari nama / kode / barcode..." class="text-xs bg-transparent outline-none w-full" />
             </div>
             <div class="flex items-center space-x-2 text-xs">
-              <select id="filter-barang-kategori" onchange="renderProductsTable()" class="border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 font-medium">
+              <select id="filter-barang-kategori" onchange="renderProductsTable()" class="flex-1 sm:flex-none border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 font-medium">
                 <option value="semua">Semua Kategori</option>
                 <option value="Minuman">Minuman</option>
                 <option value="Sembako">Sembako</option>
@@ -391,45 +437,48 @@
                 <option value="Rokok">Rokok</option>
                 <option value="Lainnya">Lainnya</option>
               </select>
-              <button onclick="toggleFilterMenipis()" id="btn-filter-menipis" class="border border-gray-200 rounded-lg px-3 py-1.5 bg-white font-medium text-gray-600 hover:bg-gray-50">Stok Menipis (&le; 5)</button>
+              <button onclick="toggleFilterMenipis()" id="btn-filter-menipis" class="flex-1 sm:flex-none border border-gray-200 rounded-lg px-3 py-1.5 bg-white font-medium text-gray-600 hover:bg-gray-50">Stok &le; 5</button>
             </div>
           </div>
 
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="admin-only px-4 py-3.5 w-10 text-center">
-                  <input type="checkbox" id="select-all-products" onchange="toggleSelectAllProducts(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
-                </th>
-                <th class="px-4 py-3.5">Kode</th>
-                <th class="px-4 py-3.5">Barcode</th>
-                <th class="px-5 py-3.5">Nama Barang</th>
-                <th class="px-4 py-3.5">Kategori</th>
-                <th class="admin-only px-4 py-3.5">H. Modal</th>
-                <th class="px-4 py-3.5">H. Eceran</th>
-                <th class="px-4 py-3.5 text-emerald-700 font-bold">H. Grosir</th>
-                <th class="px-4 py-3.5">Stok</th>
-                <th class="admin-only px-6 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-barang-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <!-- WRAPPER OVERFLOW HORIZONTAL AGAR TABEL TIDAK PECAH DI HP -->
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[700px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="admin-only px-4 py-3.5 w-10 text-center">
+                    <input type="checkbox" id="select-all-products" onchange="toggleSelectAllProducts(this)" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
+                  </th>
+                  <th class="px-4 py-3.5">Kode</th>
+                  <th class="px-4 py-3.5">Barcode</th>
+                  <th class="px-5 py-3.5">Nama Barang</th>
+                  <th class="px-4 py-3.5">Kategori</th>
+                  <th class="admin-only px-4 py-3.5">H. Modal</th>
+                  <th class="px-4 py-3.5">H. Eceran</th>
+                  <th class="px-4 py-3.5 text-emerald-700 font-bold">H. Grosir</th>
+                  <th class="px-4 py-3.5">Stok</th>
+                  <th class="admin-only px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-barang-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- 4. MANAJEMEN STOK -->
-      <section id="page-stok" class="page-content hidden space-y-5 admin-only">
-        <div class="flex justify-between items-center">
+      <section id="page-stok" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Manajemen Stok</h1>
-            <p class="text-xs text-gray-500 mt-1">Riwayat Pergerakan Stok</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Manajemen Stok</h1>
+            <p class="text-xs text-gray-500 mt-0.5">Riwayat Pergerakan Stok</p>
           </div>
           <div class="flex space-x-2">
-            <button onclick="openModalStok('tambah')" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1.5 hover:bg-emerald-700 shadow-sm">
+            <button onclick="openModalStok('tambah')" class="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
               <span>Tambah Stok</span>
             </button>
-            <button onclick="openModalStok('penyesuaian')" class="px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center space-x-1.5 hover:bg-gray-50 shadow-sm">
+            <button onclick="openModalStok('penyesuaian')" class="flex-1 sm:flex-none px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-50 shadow-sm">
               <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
               <span>Penyesuaian</span>
             </button>
@@ -437,81 +486,86 @@
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-6 py-3.5">Waktu</th>
-                <th class="px-6 py-3.5">Barang</th>
-                <th class="px-6 py-3.5">Tipe</th>
-                <th class="px-6 py-3.5">Qty</th>
-                <th class="px-6 py-3.5">Sebelum</th>
-                <th class="px-6 py-3.5">Setelah</th>
-                <th class="px-6 py-3.5">User</th>
-                <th class="px-6 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-stok-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">Waktu</th>
+                  <th class="px-4 sm:px-6 py-3.5">Barang</th>
+                  <th class="px-4 sm:px-6 py-3.5">Tipe</th>
+                  <th class="px-4 sm:px-6 py-3.5">Qty</th>
+                  <th class="px-4 sm:px-6 py-3.5">Sebelum</th>
+                  <th class="px-4 sm:px-6 py-3.5">Setelah</th>
+                  <th class="px-4 sm:px-6 py-3.5">User</th>
+                  <th class="px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-stok-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- 5. RIWAYAT TRANSAKSI -->
-      <section id="page-transaksi" class="page-content hidden space-y-5">
-        <div class="flex flex-wrap justify-between items-center gap-3">
-          <h1 class="text-2xl font-bold text-gray-900">Riwayat Transaksi</h1>
+      <section id="page-transaksi" class="page-content hidden space-y-4 sm:space-y-5">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Riwayat Transaksi</h1>
           <div class="flex flex-wrap items-center gap-2 text-xs">
-            <div class="flex items-center space-x-1 border border-gray-200 rounded-lg p-1 bg-white">
-              <input type="date" id="filter-tx-date" onchange="renderTransaksiTable()" class="px-2 py-1 bg-transparent text-gray-700 font-semibold outline-none" />
-              <button onclick="hapusLaporanTanggalTertentu(document.getElementById('filter-tx-date').value)" class="admin-only px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded flex items-center space-x-1" title="Hapus semua transaksi dan catatan pada tanggal ini">
+            <div class="flex items-center space-x-1 border border-gray-200 rounded-lg p-1 bg-white w-full sm:w-auto">
+              <input type="date" id="filter-tx-date" onchange="renderTransaksiTable()" class="px-2 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs flex-1 sm:flex-none" />
+              <button onclick="hapusLaporanTanggalTertentu(document.getElementById('filter-tx-date').value)" class="admin-only px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded flex items-center space-x-1">
                 <i data-lucide="calendar-x" class="w-3.5 h-3.5"></i>
-                <span>Hapus Data Tanggal Ini</span>
+                <span class="hidden sm:inline">Hapus Tanggal Ini</span>
+                <span class="sm:hidden">Hapus</span>
               </button>
             </div>
-            <button onclick="resetAllTransactions()" class="admin-only px-3 py-2 bg-red-50 text-red-600 border border-red-200 font-bold rounded-lg hover:bg-red-100 flex items-center space-x-1">
+            <button onclick="resetAllTransactions()" class="admin-only w-full sm:w-auto px-3 py-2 bg-red-50 text-red-600 border border-red-200 font-bold rounded-lg hover:bg-red-100 flex items-center justify-center space-x-1">
               <i data-lucide="trash" class="w-3.5 h-3.5"></i>
-              <span>Reset Semua Transaksi</span>
+              <span>Reset Semua</span>
             </button>
           </div>
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <div class="p-4 border-b border-gray-100 flex justify-between items-center">
-            <div class="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 w-72 text-xs">
-              <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+          <div class="p-3 sm:p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+            <div class="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 w-full sm:w-72 text-xs">
+              <i data-lucide="search" class="w-4 h-4 text-gray-400 shrink-0"></i>
               <input type="text" id="filter-tx-search" oninput="renderTransaksiTable()" placeholder="Cari No Transaksi / Kasir..." class="bg-transparent outline-none w-full" />
             </div>
-            <button onclick="document.getElementById('filter-tx-date').value = ''; renderTransaksiTable();" class="text-xs text-emerald-600 hover:underline font-semibold">Tampilkan Semua Tanggal</button>
+            <button onclick="document.getElementById('filter-tx-date').value = ''; renderTransaksiTable();" class="text-xs text-emerald-600 hover:underline font-semibold text-right sm:text-left">Semua Tanggal</button>
           </div>
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-6 py-3.5">No</th>
-                <th class="px-6 py-3.5">Waktu</th>
-                <th class="px-6 py-3.5">Kasir</th>
-                <th class="px-6 py-3.5">Metode</th>
-                <th class="px-6 py-3.5">Total</th>
-                <th class="px-6 py-3.5">Status</th>
-                <th class="px-6 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-transaksi-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">No</th>
+                  <th class="px-4 sm:px-6 py-3.5">Waktu</th>
+                  <th class="px-4 sm:px-6 py-3.5">Kasir</th>
+                  <th class="px-4 sm:px-6 py-3.5">Metode</th>
+                  <th class="px-4 sm:px-6 py-3.5">Total</th>
+                  <th class="px-4 sm:px-6 py-3.5">Status</th>
+                  <th class="px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-transaksi-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
-      <!-- 6. RETUR BARANG (SUDAH BERFUNGSI PENUH) -->
-      <section id="page-retur" class="page-content hidden space-y-5">
-        <div class="flex justify-between items-center">
+      <!-- 6. RETUR BARANG -->
+      <section id="page-retur" class="page-content hidden space-y-4 sm:space-y-5">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Retur Barang</h1>
-            <p class="text-xs text-gray-500 mt-1">Manajemen pengembalian barang dari pelanggan atau ke supplier</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Retur Barang</h1>
+            <p class="text-xs text-gray-500 mt-0.5">Manajemen pengembalian barang</p>
           </div>
           <div class="flex space-x-2">
-            <button onclick="openModalRetur('pelanggan')" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-emerald-700 shadow-sm">
+            <button onclick="openModalRetur('pelanggan')" class="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
               <span>Retur Pelanggan</span>
             </button>
-            <button onclick="openModalRetur('supplier')" class="admin-only px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-gray-50 shadow-sm">
+            <button onclick="openModalRetur('supplier')" class="admin-only flex-1 sm:flex-none px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-50 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
               <span>Retur Supplier</span>
             </button>
@@ -519,205 +573,211 @@
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <div class="flex space-x-4 border-b border-gray-100 px-6 py-3 text-xs font-semibold" id="retur-tab-container">
+          <div class="flex space-x-4 border-b border-gray-100 px-4 sm:px-6 py-3 text-xs font-semibold" id="retur-tab-container">
             <button onclick="switchReturTab('semua')" class="retur-tab text-emerald-700 border-b-2 border-emerald-600 pb-2">Semua</button>
             <button onclick="switchReturTab('pelanggan')" class="retur-tab text-gray-400 pb-2 hover:text-gray-700">Pelanggan</button>
             <button onclick="switchReturTab('supplier')" class="retur-tab text-gray-400 pb-2 hover:text-gray-700">Supplier</button>
           </div>
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-6 py-3.5">No</th>
-                <th class="px-6 py-3.5">Tipe</th>
-                <th class="px-6 py-3.5">Waktu</th>
-                <th class="px-6 py-3.5">Detail</th>
-                <th class="px-6 py-3.5">Nilai Refund/Klaim</th>
-                <th class="px-6 py-3.5">Oleh</th>
-                <th class="admin-only px-6 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-retur-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">No</th>
+                  <th class="px-4 sm:px-6 py-3.5">Tipe</th>
+                  <th class="px-4 sm:px-6 py-3.5">Waktu</th>
+                  <th class="px-4 sm:px-6 py-3.5">Detail</th>
+                  <th class="px-4 sm:px-6 py-3.5">Nilai Refund</th>
+                  <th class="px-4 sm:px-6 py-3.5">Oleh</th>
+                  <th class="admin-only px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-retur-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- 7. PEMASUKAN MANUAL -->
-      <section id="page-pemasukan" class="page-content hidden space-y-5 admin-only">
+      <section id="page-pemasukan" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
         <div class="flex justify-between items-center">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Pemasukan Manual</h1>
-            <p class="text-xs text-gray-500 mt-1" id="pemasukan-total-label">Total: Rp0</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Pemasukan Manual</h1>
+            <p class="text-xs text-gray-500 mt-0.5" id="pemasukan-total-label">Total: Rp0</p>
           </div>
           <button onclick="openModalKas('pemasukan')" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-emerald-700 shadow-sm">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>Tambah Pemasukan</span>
+            <span>Tambah</span>
           </button>
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-6 py-3.5">No</th>
-                <th class="px-6 py-3.5">Tanggal</th>
-                <th class="px-6 py-3.5">Kategori</th>
-                <th class="px-6 py-3.5">Metode</th>
-                <th class="px-6 py-3.5">Nominal</th>
-                <th class="px-6 py-3.5">Catatan</th>
-                <th class="px-6 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-pemasukan-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[500px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">No</th>
+                  <th class="px-4 sm:px-6 py-3.5">Tanggal</th>
+                  <th class="px-4 sm:px-6 py-3.5">Kategori</th>
+                  <th class="px-4 sm:px-6 py-3.5">Metode</th>
+                  <th class="px-4 sm:px-6 py-3.5">Nominal</th>
+                  <th class="px-4 sm:px-6 py-3.5">Catatan</th>
+                  <th class="px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-pemasukan-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- 8. PENGELUARAN TOKO -->
-      <section id="page-pengeluaran" class="page-content hidden space-y-5 admin-only">
+      <section id="page-pengeluaran" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
         <div class="flex justify-between items-center">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Pengeluaran Toko</h1>
-            <p class="text-xs text-gray-500 mt-1" id="pengeluaran-total-label">Total: Rp0</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Pengeluaran Toko</h1>
+            <p class="text-xs text-gray-500 mt-0.5" id="pengeluaran-total-label">Total: Rp0</p>
           </div>
           <button onclick="openModalKas('pengeluaran')" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-emerald-700 shadow-sm">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>Tambah Pengeluaran</span>
+            <span>Tambah</span>
           </button>
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-6 py-3.5">No</th>
-                <th class="px-6 py-3.5">Tanggal</th>
-                <th class="px-6 py-3.5">Kategori</th>
-                <th class="px-6 py-3.5">Metode</th>
-                <th class="px-6 py-3.5">Nominal</th>
-                <th class="px-6 py-3.5">Catatan</th>
-                <th class="px-6 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-pengeluaran-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[500px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">No</th>
+                  <th class="px-4 sm:px-6 py-3.5">Tanggal</th>
+                  <th class="px-4 sm:px-6 py-3.5">Kategori</th>
+                  <th class="px-4 sm:px-6 py-3.5">Metode</th>
+                  <th class="px-4 sm:px-6 py-3.5">Nominal</th>
+                  <th class="px-4 sm:px-6 py-3.5">Catatan</th>
+                  <th class="px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-pengeluaran-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- 9. BRI LINK -->
-      <section id="page-brilink" class="page-content hidden space-y-5">
+      <section id="page-brilink" class="page-content hidden space-y-4 sm:space-y-5">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">BRI Link</h1>
-          <p class="text-xs text-gray-500 mt-1">Manajemen transaksi & penghasilan agen BRI Link</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">BRI Link</h1>
+          <p class="text-xs text-gray-500 mt-0.5">Manajemen transaksi agen</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGHASILAN HARI INI</span>
-            <h3 class="text-2xl font-extrabold text-emerald-700 mt-1" id="brilink-profit-today">Rp0</h3>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-emerald-700 mt-1" id="brilink-profit-today">Rp0</h3>
             <p class="text-[11px] text-gray-400 mt-0.5" id="brilink-tx-today">0 transaksi</p>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOTAL VOLUME</span>
-            <h3 class="text-2xl font-extrabold text-gray-900 mt-1" id="brilink-volume-total">Rp0</h3>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="brilink-volume-total">Rp0</h3>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOTAL PENGHASILAN</span>
-            <h3 class="text-2xl font-extrabold text-blue-700 mt-1" id="brilink-profit-total">Rp0</h3>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-blue-700 mt-1" id="brilink-profit-total">Rp0</h3>
           </div>
         </div>
 
-        <div class="flex space-x-2">
-          <button onclick="openModalBriLink()" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1.5 shadow hover:bg-emerald-700">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>Transaksi Baru</span>
-          </button>
-        </div>
+        <button onclick="openModalBriLink()" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1.5 shadow hover:bg-emerald-700">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>Transaksi Baru</span>
+        </button>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <div class="border-b border-gray-100 px-6 py-3 flex space-x-4 text-xs font-semibold">
-            <span class="text-emerald-700 border-b-2 border-emerald-600 pb-2">Daftar Transaksi BRI Link</span>
+          <div class="border-b border-gray-100 px-4 sm:px-6 py-3 text-xs font-semibold text-emerald-700">
+            Daftar Transaksi BRI Link
           </div>
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-6 py-3.5">No</th>
-                <th class="px-6 py-3.5">Waktu</th>
-                <th class="px-6 py-3.5">Jenis</th>
-                <th class="px-6 py-3.5">Nominal</th>
-                <th class="px-6 py-3.5">Fee</th>
-                <th class="px-6 py-3.5">Profit</th>
-                <th class="px-6 py-3.5">User</th>
-                <th class="admin-only px-6 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-brilink-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">No</th>
+                  <th class="px-4 sm:px-6 py-3.5">Waktu</th>
+                  <th class="px-4 sm:px-6 py-3.5">Jenis</th>
+                  <th class="px-4 sm:px-6 py-3.5">Nominal</th>
+                  <th class="px-4 sm:px-6 py-3.5">Fee</th>
+                  <th class="px-4 sm:px-6 py-3.5">Profit</th>
+                  <th class="px-4 sm:px-6 py-3.5">User</th>
+                  <th class="admin-only px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-brilink-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- 10. LAPORAN BULANAN -->
-      <section id="page-laporan" class="page-content hidden space-y-5 admin-only">
-        <div class="flex flex-wrap justify-between items-center gap-3">
-          <h1 class="text-2xl font-bold text-gray-900">Laporan Bulanan</h1>
+      <section id="page-laporan" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Laporan Bulanan</h1>
           <div class="flex flex-wrap items-center gap-2 text-xs">
-            <div class="flex items-center space-x-1 border border-gray-200 rounded-lg p-1 bg-white">
-              <span class="text-gray-500 font-medium pl-1">Pilih Hari:</span>
-              <input type="date" id="laporan-delete-date" class="px-2 py-1 bg-transparent text-gray-700 font-semibold outline-none" />
-              <button onclick="hapusLaporanTanggalTertentu(document.getElementById('laporan-delete-date').value)" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded flex items-center space-x-1">
+            <div class="flex items-center space-x-1 border border-gray-200 rounded-lg p-1 bg-white w-full sm:w-auto">
+              <span class="text-gray-500 font-medium pl-1 text-[11px]">Hari:</span>
+              <input type="date" id="laporan-delete-date" class="px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs flex-1 sm:flex-none" />
+              <button onclick="hapusLaporanTanggalTertentu(document.getElementById('laporan-delete-date').value)" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded flex items-center space-x-1">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                <span>Hapus Laporan Tanggal Ini</span>
+                <span class="hidden sm:inline">Hapus Tanggal Ini</span>
+                <span class="sm:hidden">Hapus</span>
               </button>
             </div>
-            <button onclick="exportLaporanExcel()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-semibold flex items-center space-x-1 hover:bg-emerald-700">
+            <button onclick="exportLaporanExcel()" class="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-semibold flex items-center justify-center space-x-1 hover:bg-emerald-700">
               <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
-              <span>Excel (XLSX)</span>
+              <span>Excel</span>
             </button>
-            <button onclick="window.print()" class="px-3 py-1.5 bg-red-600 text-white rounded-lg font-semibold flex items-center space-x-1 hover:bg-red-700">
+            <button onclick="window.print()" class="flex-1 sm:flex-none px-3 py-1.5 bg-red-600 text-white rounded-lg font-semibold flex items-center justify-center space-x-1 hover:bg-red-700">
               <i data-lucide="printer" class="w-3.5 h-3.5"></i>
               <span>Cetak</span>
             </button>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOTAL PENJUALAN</span>
-            <h3 class="text-2xl font-extrabold text-emerald-600 mt-1" id="lap-penjualan">Rp0</h3>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENJUALAN</span>
+            <h3 class="text-lg sm:text-2xl font-extrabold text-emerald-600 mt-1" id="lap-penjualan">Rp0</h3>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA KOTOR</span>
-            <h3 class="text-2xl font-extrabold text-emerald-700 mt-1" id="lap-labakotor">Rp0</h3>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA KOTOR</span>
+            <h3 class="text-lg sm:text-2xl font-extrabold text-emerald-700 mt-1" id="lap-labakotor">Rp0</h3>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN</span>
-            <h3 class="text-2xl font-extrabold text-red-500 mt-1" id="lap-pengeluaran">Rp0</h3>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN</span>
+            <h3 class="text-lg sm:text-2xl font-extrabold text-red-500 mt-1" id="lap-pengeluaran">Rp0</h3>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA BERSIH</span>
-            <h3 class="text-2xl font-extrabold text-emerald-800 mt-1" id="lap-lababersih">Rp0</h3>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+            <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA BERSIH</span>
+            <h3 class="text-lg sm:text-2xl font-extrabold text-emerald-800 mt-1" id="lap-lababersih">Rp0</h3>
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-4">Penjualan & Laba Harian (30 Hari)</h3>
-          <div class="h-64"><canvas id="chartLaporan"></canvas></div>
+        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-3">Penjualan & Laba Harian</h3>
+          <div class="h-56 sm:h-64"><canvas id="chartLaporan"></canvas></div>
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <div class="px-6 py-3.5 border-b border-gray-100 font-bold text-xs text-gray-800 flex justify-between items-center">
-            <span>Detail Harian</span>
-            <span class="text-gray-400 font-normal text-[11px]">Hapus rekapan tanggal tertentu lewat tombol tempat sampah</span>
+          <div class="px-4 sm:px-6 py-3.5 border-b border-gray-100 font-bold text-xs text-gray-800">
+            Detail Harian
           </div>
-          <div class="max-h-80 overflow-y-auto custom-scrollbar">
-            <table class="w-full text-left text-xs">
+          <div class="max-h-72 overflow-y-auto custom-scrollbar overflow-x-auto">
+            <table class="w-full text-left text-xs min-w-[550px] sm:min-w-full">
               <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold sticky top-0">
                 <tr>
-                  <th class="px-6 py-3">Tanggal</th>
-                  <th class="px-6 py-3 text-right">Penjualan</th>
-                  <th class="px-6 py-3 text-right">Laba</th>
-                  <th class="px-6 py-3 text-right">Pengeluaran</th>
-                  <th class="px-6 py-3 text-right">BRI Link</th>
-                  <th class="px-6 py-3 text-right">Aksi</th>
+                  <th class="px-4 sm:px-6 py-3">Tanggal</th>
+                  <th class="px-4 sm:px-6 py-3 text-right">Penjualan</th>
+                  <th class="px-4 sm:px-6 py-3 text-right">Laba</th>
+                  <th class="px-4 sm:px-6 py-3 text-right">Pengeluaran</th>
+                  <th class="px-4 sm:px-6 py-3 text-right">BRI Link</th>
+                  <th class="px-4 sm:px-6 py-3 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody id="table-laporan-harian" class="divide-y divide-gray-100 text-gray-700"></tbody>
@@ -727,34 +787,36 @@
       </section>
 
       <!-- 11. RIWAYAT AKTIVITAS -->
-      <section id="page-aktivitas" class="page-content hidden space-y-5 admin-only">
-        <div class="flex justify-between items-center">
-          <h1 class="text-2xl font-bold text-gray-900">Riwayat Aktivitas</h1>
-          <div class="flex items-center space-x-2 bg-white px-3 py-2 rounded-xl border border-gray-200 w-72 text-xs">
-            <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+      <section id="page-aktivitas" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Riwayat Aktivitas</h1>
+          <div class="flex items-center space-x-2 bg-white px-3 py-2 rounded-xl border border-gray-200 w-full sm:w-72 text-xs">
+            <i data-lucide="search" class="w-4 h-4 text-gray-400 shrink-0"></i>
             <input type="text" id="filter-aktivitas-search" oninput="renderAktivitas()" placeholder="Cari aktivitas / user..." class="bg-transparent outline-none w-full" />
           </div>
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-6 py-3.5">Waktu</th>
-                <th class="px-6 py-3.5">User</th>
-                <th class="px-6 py-3.5">Aktivitas</th>
-                <th class="px-6 py-3.5">Detail</th>
-              </tr>
-            </thead>
-            <tbody id="table-aktivitas-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[500px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">Waktu</th>
+                  <th class="px-4 sm:px-6 py-3.5">User</th>
+                  <th class="px-4 sm:px-6 py-3.5">Aktivitas</th>
+                  <th class="px-4 sm:px-6 py-3.5">Detail</th>
+                </tr>
+              </thead>
+              <tbody id="table-aktivitas-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- 12. MANAJEMEN USER -->
-      <section id="page-users" class="page-content hidden space-y-5 admin-only">
+      <section id="page-users" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
         <div class="flex justify-between items-center">
-          <h1 class="text-2xl font-bold text-gray-900">Manajemen User</h1>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Manajemen User</h1>
           <button onclick="openModalUser()" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1.5 hover:bg-emerald-700 shadow-sm">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             <span>User Baru</span>
@@ -762,85 +824,78 @@
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-6 py-3.5">Nama</th>
-                <th class="px-6 py-3.5">Email</th>
-                <th class="px-6 py-3.5">Role</th>
-                <th class="px-6 py-3.5">Status</th>
-                <th class="px-6 py-3.5">Dibuat</th>
-                <th class="px-6 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-users-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-          </table>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[500px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">Nama</th>
+                  <th class="px-4 sm:px-6 py-3.5">Email</th>
+                  <th class="px-4 sm:px-6 py-3.5">Role</th>
+                  <th class="px-4 sm:px-6 py-3.5">Status</th>
+                  <th class="px-4 sm:px-6 py-3.5">Dibuat</th>
+                  <th class="px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-users-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- 13. PENGATURAN -->
-      <section id="page-pengaturan" class="page-content hidden space-y-5">
-        <h1 class="text-2xl font-bold text-gray-900">Pengaturan</h1>
+      <section id="page-pengaturan" class="page-content hidden space-y-4 sm:space-y-5">
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Pengaturan</h1>
 
-        <div class="bg-white rounded-2xl border border-gray-200 p-6 divide-y divide-gray-100 shadow-sm text-xs">
-          <div class="py-4 first:pt-0 flex items-start space-x-4">
-            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 divide-y divide-gray-100 shadow-sm text-xs">
+          <div class="py-3 first:pt-0 flex items-start space-x-3 sm:space-x-4">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
               <i data-lucide="store" class="w-5 h-5"></i>
             </div>
             <div>
-              <h4 class="font-bold text-gray-900 text-sm">Informasi Toko</h4>
-              <p class="text-gray-800 font-semibold mt-0.5 text-xs">TOKO BUNG EDI</p>
-              <p class="text-gray-500 text-[11px] mt-0.5">Jalan Turonggo karangturi</p>
-              <p class="text-emerald-700 font-medium text-[11px] mt-0.5">No HP / WhatsApp: 0851327958234</p>
+              <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Informasi Toko</h4>
+              <p class="text-gray-800 font-semibold mt-0.5">TOKO BUNG EDI</p>
+              <p class="text-gray-500 text-[11px]">Jalan Turonggo karangturi</p>
+              <p class="text-emerald-700 font-medium text-[11px]">No HP / WA: 0851327958234</p>
             </div>
           </div>
 
-          <div class="py-4 flex items-start space-x-4">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+          <div class="py-3 flex items-start space-x-3 sm:space-x-4">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
               <i data-lucide="user" class="w-5 h-5"></i>
             </div>
             <div>
-              <h4 class="font-bold text-gray-900 text-sm">Akun Anda</h4>
+              <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Akun Anda</h4>
               <p class="text-gray-700 font-medium mt-0.5" id="settings-user-info">Owner Admin · avan.kabuchi@gmail.com</p>
               <p class="text-gray-400 text-[11px]">Role: <span class="font-semibold uppercase text-emerald-700" id="settings-user-role">ADMIN</span></p>
             </div>
           </div>
 
-          <div class="py-4 flex items-start space-x-4">
-            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+          <div class="py-3 flex items-start space-x-3 sm:space-x-4">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
               <i data-lucide="clock" class="w-5 h-5"></i>
             </div>
             <div>
-              <h4 class="font-bold text-gray-900 text-sm">Timezone</h4>
+              <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Timezone</h4>
               <p class="text-gray-600 font-medium mt-0.5">Asia/Jakarta (WIB)</p>
             </div>
           </div>
 
-          <div class="py-4 flex items-start space-x-4">
-            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+          <div class="py-3 flex items-start space-x-3 sm:space-x-4">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
               <i data-lucide="circle-dollar-sign" class="w-5 h-5"></i>
             </div>
             <div>
-              <h4 class="font-bold text-gray-900 text-sm">Mata Uang</h4>
+              <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Mata Uang</h4>
               <p class="text-gray-600 font-medium mt-0.5">Rupiah (Rp)</p>
             </div>
           </div>
-        </div>
-
-        <div class="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 text-xs text-emerald-950 space-y-2">
-          <h4 class="font-bold text-emerald-900 flex items-center space-x-1.5">
-            <i data-lucide="badge-percent" class="w-4 h-4 text-emerald-600"></i>
-            <span>Harga Grosir vs Eceran</span>
-          </h4>
-          <ul class="list-disc list-inside space-y-1 text-emerald-800 text-[11px] leading-relaxed">
-            <li>Setiap barang memiliki Harga Eceran dan Harga Grosir (Grosir lebih murah untuk pembeli dalam jumlah besar).</li>
-            <li>Di layar kasir, klik tombol <strong>[Eceran]</strong> atau <strong>[Grosir]</strong> per barang untuk mengubah harga jual seketika.</li>
-          </ul>
         </div>
       </section>
 
     </main>
   </div>
+
+  <!-- ==================== SEMUA MODAL POPUP (RESPONSIVE FULLWIDTH DI HP) ==================== -->
 
   <!-- MODAL CETAK LABEL BARCODE -->
   <div id="modal-barcode-print" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-4">
@@ -848,7 +903,7 @@
       <h3 class="font-bold text-sm text-gray-900 border-b pb-2">Label Barcode Barang</h3>
       <div id="printable-barcode-area" class="py-3 flex flex-col items-center justify-center bg-white p-2 border rounded-xl">
         <h4 id="barcode-label-nama" class="font-bold text-xs text-gray-900">Nama Barang</h4>
-        <svg id="barcode-svg" class="my-1"></svg>
+        <svg id="barcode-svg" class="my-1 max-w-full"></svg>
         <div class="text-[11px] text-gray-600 font-medium">
           Ecer: <span id="barcode-label-price" class="font-bold text-gray-900">Rp0</span> | 
           Grosir: <span id="barcode-label-grosir" class="font-bold text-emerald-700">Rp0</span>
@@ -866,7 +921,7 @@
 
   <!-- STRUK KASIR OTOMATIS -->
   <div id="modal-receipt" class="fixed inset-0 z-50 bg-black/60 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div id="thermal-receipt" class="bg-white p-4 font-mono-receipt text-xs text-black border border-gray-200 rounded-lg shadow-inner leading-relaxed">
         <div class="text-center pb-2 border-b border-dashed border-gray-400">
           <h2 class="font-bold text-sm tracking-wide">TOKO BUNG EDI</h2>
@@ -900,9 +955,9 @@
     </div>
   </div>
 
-  <!-- MODAL RETUR (BERFUNGSI LENGKAP) -->
-  <div id="modal-retur" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+  <!-- MODAL RETUR BARANG -->
+  <div id="modal-retur" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-bold text-sm text-gray-900" id="modal-retur-title">Retur Barang</h3>
         <button onclick="closeModal('modal-retur')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -911,8 +966,8 @@
         <div>
           <label class="block font-semibold text-gray-700 mb-1">Tipe Retur</label>
           <select id="retur-type" onchange="updateReturTypeUI()" class="w-full border rounded-xl p-2.5 outline-none bg-white font-semibold">
-            <option value="pelanggan">Retur Pelanggan (Stok Bertambah / Refund)</option>
-            <option value="supplier">Retur Supplier (Stok Berkurang / Rusak)</option>
+            <option value="pelanggan">Retur Pelanggan (Stok Bertambah)</option>
+            <option value="supplier">Retur Supplier (Stok Berkurang)</option>
           </select>
         </div>
         <div>
@@ -921,11 +976,11 @@
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-gray-700 mb-1">Jumlah Qty</label>
+            <label class="block font-semibold text-gray-700 mb-1">Qty Retur</label>
             <input type="number" id="retur-qty" min="1" required class="w-full border rounded-xl p-2.5 outline-none font-bold" value="1" oninput="updateReturPricePreview()" />
           </div>
           <div>
-            <label class="block font-semibold text-gray-700 mb-1">Tipe Harga</label>
+            <label class="block font-semibold text-gray-700 mb-1">Patokan Harga</label>
             <select id="retur-price-type" onchange="updateReturPricePreview()" class="w-full border rounded-xl p-2.5 outline-none bg-white">
               <option value="eceran">Eceran</option>
               <option value="grosir">Grosir</option>
@@ -933,8 +988,8 @@
           </div>
         </div>
         <div>
-          <label class="block font-semibold text-gray-700 mb-1">Alasan / Keterangan Retur</label>
-          <input type="text" id="retur-alasan" required class="w-full border rounded-xl p-2.5 outline-none" placeholder="Kemasan bocor / basi / expired" />
+          <label class="block font-semibold text-gray-700 mb-1">Keterangan / Alasan</label>
+          <input type="text" id="retur-alasan" required class="w-full border rounded-xl p-2.5 outline-none" placeholder="Bocor / basi / rusak" />
         </div>
         <div class="p-2.5 bg-gray-50 rounded-xl border flex justify-between font-medium">
           <span class="text-gray-500">Nilai Retur:</span>
@@ -942,22 +997,22 @@
         </div>
         <div class="flex justify-end space-x-2 pt-3 border-t">
           <button type="button" onclick="closeModal('modal-retur')" class="px-4 py-2 border rounded-xl text-gray-600 hover:bg-gray-50">Batal</button>
-          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Simpan Retur</button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Simpan</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL TAMBAH/EDIT BARANG DENGAN HARGA ECERAN & GROSIR -->
-  <div id="modal-barang" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+  <!-- MODAL TAMBAH/EDIT BARANG -->
+  <div id="modal-barang" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-bold text-sm text-gray-900" id="modal-barang-title">Tambah Barang Baru</h3>
         <button onclick="closeModal('modal-barang')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form id="form-barang" onsubmit="saveProduct(event)" class="space-y-3 text-xs">
         <input type="hidden" id="barang-id" />
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-gray-700 mb-1">Kode Barang</label>
             <input type="text" id="barang-kode" required class="w-full border rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-emerald-500" placeholder="P003" />
@@ -966,7 +1021,7 @@
             <label class="block font-semibold text-gray-700 mb-1">Barcode Scanner</label>
             <div class="flex space-x-1">
               <input type="text" id="barang-barcode" required class="w-full border rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-emerald-500" placeholder="899..." />
-              <button type="button" onclick="generateRandomBarcode()" class="px-2 bg-gray-100 hover:bg-gray-200 border rounded-xl font-bold text-[10px]" title="Acak Barcode">Acak</button>
+              <button type="button" onclick="generateRandomBarcode()" class="px-2 bg-gray-100 hover:bg-gray-200 border rounded-xl font-bold text-[10px]">Acak</button>
             </div>
           </div>
         </div>
@@ -984,8 +1039,7 @@
             <option value="Lainnya">Lainnya</option>
           </select>
         </div>
-        <!-- 3 INPUT HARGA: MODAL, ECERAN, GROSIR -->
-        <div class="grid grid-cols-3 gap-2.5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           <div>
             <label class="block font-semibold text-gray-700 mb-1">Harga Modal</label>
             <input type="number" id="barang-modal" required class="w-full border rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-emerald-500" placeholder="2000" />
@@ -999,22 +1053,21 @@
             <input type="number" id="barang-grosir" required class="w-full border border-emerald-300 bg-emerald-50/40 rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-emerald-500 font-semibold" placeholder="2600" />
           </div>
         </div>
-        <p class="text-[10px] text-gray-400 italic leading-tight">*Harga grosir wajib lebih murah dari harga eceran untuk pembelian partai besar.</p>
         <div>
           <label class="block font-semibold text-gray-700 mb-1">Stok Awal</label>
           <input type="number" id="barang-stok" required class="w-full border rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-emerald-500" placeholder="50" />
         </div>
         <div class="flex justify-end space-x-2 pt-3 border-t">
           <button type="button" onclick="closeModal('modal-barang')" class="px-4 py-2 border rounded-xl text-gray-600 hover:bg-gray-50">Batal</button>
-          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Simpan Barang</button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Simpan</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal Checkout Kasir -->
-  <div id="modal-checkout" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+  <!-- MODAL CHECKOUT KASIR -->
+  <div id="modal-checkout" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-bold text-sm text-gray-900">Pembayaran Kasir</h3>
         <button onclick="closeModal('modal-checkout')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1048,9 +1101,9 @@
     </div>
   </div>
 
-  <!-- Modal Kelola Stok -->
-  <div id="modal-stok" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+  <!-- MODAL KELOLA STOK -->
+  <div id="modal-stok" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-bold text-sm text-gray-900" id="modal-stok-title">Kelola Stok</h3>
         <button onclick="closeModal('modal-stok')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1062,12 +1115,12 @@
           <select id="stok-barang-id" class="w-full border rounded-xl p-2.5 outline-none bg-white" required></select>
         </div>
         <div>
-          <label class="block font-semibold text-gray-700 mb-1" id="stok-qty-label">Jumlah Tambahan Stok</label>
+          <label class="block font-semibold text-gray-700 mb-1" id="stok-qty-label">Jumlah</label>
           <input type="number" id="stok-qty" min="1" required class="w-full border rounded-xl p-2.5 outline-none" placeholder="10" />
         </div>
         <div>
           <label class="block font-semibold text-gray-700 mb-1">Catatan</label>
-          <input type="text" id="stok-catatan" class="w-full border rounded-xl p-2.5 outline-none" placeholder="Misal: Kulakan dari agen" />
+          <input type="text" id="stok-catatan" class="w-full border rounded-xl p-2.5 outline-none" placeholder="Kulakan agen / penyesuaian" />
         </div>
         <div class="flex justify-end space-x-2 pt-3 border-t">
           <button type="button" onclick="closeModal('modal-stok')" class="px-4 py-2 border rounded-xl text-gray-600 hover:bg-gray-50">Batal</button>
@@ -1077,9 +1130,9 @@
     </div>
   </div>
 
-  <!-- Modal Edit Transaksi -->
-  <div id="modal-edit-tx" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+  <!-- MODAL EDIT TRANSAKSI -->
+  <div id="modal-edit-tx" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-bold text-sm text-gray-900">Edit Transaksi</h3>
         <button onclick="closeModal('modal-edit-tx')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1091,7 +1144,7 @@
           <input type="text" id="edit-tx-no" disabled class="w-full border rounded-xl p-2.5 bg-gray-50 text-gray-500 font-bold" />
         </div>
         <div>
-          <label class="block font-semibold text-gray-700 mb-1">Metode Pembayaran</label>
+          <label class="block font-semibold text-gray-700 mb-1">Metode</label>
           <select id="edit-tx-method" class="w-full border rounded-xl p-2.5 outline-none bg-white font-medium">
             <option value="CASH">CASH</option>
             <option value="QRIS">QRIS</option>
@@ -1099,7 +1152,7 @@
           </select>
         </div>
         <div>
-          <label class="block font-semibold text-gray-700 mb-1">Status Transaksi</label>
+          <label class="block font-semibold text-gray-700 mb-1">Status</label>
           <select id="edit-tx-status" class="w-full border rounded-xl p-2.5 outline-none bg-white font-medium">
             <option value="SUKSES">SUKSES</option>
             <option value="PENDING">PENDING</option>
@@ -1108,15 +1161,15 @@
         </div>
         <div class="flex justify-end space-x-2 pt-3 border-t">
           <button type="button" onclick="closeModal('modal-edit-tx')" class="px-4 py-2 border rounded-xl text-gray-600 hover:bg-gray-50">Batal</button>
-          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Simpan Perubahan</button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Simpan</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal Pemasukan/Pengeluaran Kas -->
-  <div id="modal-kas" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+  <!-- MODAL PEMASUKAN/PENGELUARAN KAS -->
+  <div id="modal-kas" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-bold text-sm text-gray-900" id="modal-kas-title">Tambah Kas</h3>
         <button onclick="closeModal('modal-kas')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1150,9 +1203,9 @@
     </div>
   </div>
 
-  <!-- Modal Transaksi BRI Link -->
-  <div id="modal-brilink" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+  <!-- MODAL BRI LINK -->
+  <div id="modal-brilink" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-bold text-sm text-gray-900">Transaksi BRI Link</h3>
         <button onclick="closeModal('modal-brilink')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1169,12 +1222,12 @@
           </select>
         </div>
         <div>
-          <label class="block font-semibold text-gray-700 mb-1">Nominal Transaksi (Rp)</label>
+          <label class="block font-semibold text-gray-700 mb-1">Nominal (Rp)</label>
           <input type="number" id="bri-nominal" required class="w-full border rounded-xl p-2.5 outline-none" placeholder="100000" />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-gray-700 mb-1">Admin Fee (Rp)</label>
+            <label class="block font-semibold text-gray-700 mb-1">Fee (Rp)</label>
             <input type="number" id="bri-fee" required class="w-full border rounded-xl p-2.5 outline-none" placeholder="5000" />
           </div>
           <div>
@@ -1184,15 +1237,15 @@
         </div>
         <div class="flex justify-end space-x-2 pt-3 border-t">
           <button type="button" onclick="closeModal('modal-brilink')" class="px-4 py-2 border rounded-xl text-gray-600 hover:bg-gray-50">Batal</button>
-          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Simpan Transaksi</button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Simpan</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal Tambah User Baru -->
-  <div id="modal-user" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+  <!-- MODAL USER BARU -->
+  <div id="modal-user" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="font-bold text-sm text-gray-900">Tambah Pengguna Baru</h3>
         <button onclick="closeModal('modal-user')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1215,12 +1268,13 @@
         </div>
         <div class="flex justify-end space-x-2 pt-3 border-t">
           <button type="button" onclick="closeModal('modal-user')" class="px-4 py-2 border rounded-xl text-gray-600 hover:bg-gray-50">Batal</button>
-          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Daftarkan User</button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold">Daftarkan</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- JAVASCRIPT APPLICATION CODE -->
   <script>
     function loadState(key, fallback) {
       const saved = localStorage.getItem('tokobungedi_' + key);
@@ -1230,7 +1284,7 @@
       localStorage.setItem('tokobungedi_' + key, JSON.stringify(val));
     }
 
-    // Default Products dengan Harga Modal, Harga Eceran, dan Harga Grosir
+    // Default Products
     let products = loadState('products', [
       { id: 1, kode: 'P002', barcode: '8992775311029', nama: 'Aqua 600ml', kategori: 'Minuman', hModal: 2000, hJual: 3000, hGrosir: 2500, stok: 30 },
       { id: 2, kode: 'P001', barcode: '8998866200225', nama: 'Indomie Goreng', kategori: 'Sembako', hModal: 2500, hJual: 3500, hGrosir: 3100, stok: 49 }
@@ -1266,18 +1320,41 @@
     let filterMenipisOnly = false;
     let activeReturTab = 'semua';
     let selectedProductIds = new Set();
+    let isMobileCartOpen = false;
+
+    // Mobile Drawer & Sidebar Controls
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('app-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function closeMobileSidebar() {
+      const sidebar = document.getElementById('app-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    function toggleMobileCartDetails() {
+      const items = document.getElementById('cart-items');
+      const arrow = document.getElementById('drawer-arrow');
+      isMobileCartOpen = !isMobileCartOpen;
+      if (isMobileCartOpen) {
+        items.classList.remove('hidden');
+        arrow.classList.add('rotate-180');
+      } else {
+        items.classList.add('hidden');
+        arrow.classList.remove('rotate-180');
+      }
+    }
 
     function addLog(action, detail, tag = 'bg-emerald-50 text-emerald-600') {
       const now = new Date();
       const options = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
       const timeStr = now.toLocaleDateString('id-ID', options) + ' WIB';
-      const newEntry = {
-        waktu: timeStr,
-        user: currentUser ? currentUser.name : 'Sistem',
-        action: action,
-        detail: detail,
-        tag: tag
-      };
+      const newEntry = { waktu: timeStr, user: currentUser ? currentUser.name : 'Sistem', action, detail, tag };
       aktivitasLogs.unshift(newEntry);
       saveState('aktivitasLogs', aktivitasLogs);
       renderAktivitas();
@@ -1337,16 +1414,24 @@
       document.getElementById('view-login').classList.remove('hidden');
       currentUser = null;
       cart = [];
+      closeMobileSidebar();
     }
 
     function setupUserInterface() {
       const isAdmin = currentUser.role === 'admin';
       document.getElementById('user-name').innerText = currentUser.name;
+      
       const b = document.getElementById('user-badge');
       b.innerText = currentUser.badge;
-      b.className = `inline-block px-1.5 py-0.5 text-[10px] font-bold rounded uppercase mt-0.5 tracking-wider ${currentUser.badgeColor}`;
-      document.getElementById('user-avatar').innerText = isAdmin ? 'OA' : 'KU';
+      b.className = `inline-block px-1.5 py-0.5 text-[9px] font-bold rounded uppercase mt-0.5 tracking-wider ${currentUser.badgeColor}`;
 
+      const mb = document.getElementById('mobile-user-badge');
+      if (mb) {
+        mb.innerText = currentUser.badge;
+        mb.className = `text-[10px] font-bold px-2 py-0.5 rounded uppercase ${currentUser.badgeColor}`;
+      }
+
+      document.getElementById('user-avatar').innerText = isAdmin ? 'OA' : 'KU';
       document.getElementById('settings-user-info').innerText = `${currentUser.name} · ${currentUser.email}`;
       document.getElementById('settings-user-role').innerText = currentUser.role;
 
@@ -1387,23 +1472,24 @@
 
       document.querySelectorAll('.nav-item').forEach(btn => {
         if (btn.dataset.page === pageId) {
-          btn.className = 'nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 bg-emerald-50 text-emerald-700 font-bold';
+          btn.className = 'nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 bg-emerald-50 text-emerald-700 font-bold';
         } else {
-          btn.className = 'nav-item flex items-center w-full px-3 py-2.5 rounded-lg transition space-x-3 hover:bg-gray-100 text-gray-600 font-medium';
+          btn.className = 'nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100 text-gray-600 font-medium';
         }
       });
       lucide.createIcons();
+      closeMobileSidebar();
 
       if (pageId === 'kasir') {
         setTimeout(() => {
           const scanInput = document.getElementById('kasir-search');
-          if (scanInput) scanInput.focus();
+          if (scanInput && window.innerWidth > 768) scanInput.focus();
         }, 100);
       }
     }
 
     // ==========================================
-    // BARCODE SCANNER DETECTOR
+    // BARCODE SCANNER
     // ==========================================
     function handleBarcodeScannerKey(e) {
       if (e.key === 'Enter') {
@@ -1412,7 +1498,6 @@
         if (!query) return;
 
         const matched = products.find(p => p.barcode === query || p.kode.toLowerCase() === query.toLowerCase());
-
         if (matched) {
           addToCart(matched.id);
           e.target.value = '';
@@ -1450,7 +1535,7 @@
     }
 
     // ==========================================
-    // FITUR RETUR BARANG LENGKAP & BERFUNGSI
+    // RETUR BARANG
     // ==========================================
     function openModalRetur(defaultType = 'pelanggan') {
       const typeSelect = document.getElementById('retur-type');
@@ -1471,7 +1556,7 @@
       const t = document.getElementById('retur-type').value;
       document.getElementById('modal-retur-title').innerText = t === 'pelanggan'
         ? 'Retur Pelanggan (Masuk Stok / Refund)'
-        : 'Retur Supplier (Keluar Stok / Barang Rusak)';
+        : 'Retur Supplier (Keluar Stok / Rusak)';
     }
 
     function updateReturPricePreview() {
@@ -1499,29 +1584,20 @@
       const alasan = document.getElementById('retur-alasan').value.trim();
 
       const prod = products.find(p => p.id === prodId);
-      if (!prod) {
-        alert('Barang tidak valid!');
-        return;
-      }
-
-      if (qty <= 0) {
-        alert('Jumlah qty harus lebih dari 0!');
-        return;
-      }
+      if (!prod || qty <= 0) return;
 
       const unitPrice = priceType === 'grosir' ? (prod.hGrosir || prod.hJual) : prod.hJual;
       const totalNilai = unitPrice * qty;
       const sebelum = prod.stok;
 
-      // Update stok fisik barang
       if (type === 'pelanggan') {
-        prod.stok += qty; // Barang kembali masuk ke toko
+        prod.stok += qty;
       } else {
         if (prod.stok < qty) {
-          alert(`Stok toko tidak mencukupi untuk retur ke supplier! Stok saat ini: ${prod.stok}`);
+          alert(`Stok tidak cukup untuk retur ke supplier! Stok: ${prod.stok}`);
           return;
         }
-        prod.stok -= qty; // Barang keluar dari toko dikembalikan ke distributor
+        prod.stok -= qty;
       }
 
       const now = new Date();
@@ -1529,7 +1605,6 @@
       const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
       const returNum = 'RET-' + dateKey.replace(/-/g, '') + '-' + String(returs.length + 1).padStart(4, '0');
 
-      // 1. Simpan ke database Retur
       returs.unshift({
         id: returNum,
         type: type,
@@ -1539,12 +1614,11 @@
         barangNama: prod.nama,
         qty: qty,
         priceType: priceType,
-        detail: `${prod.nama} (${qty}x @Rp${unitPrice.toLocaleString('id-ID')} [${priceType}]) - ${alasan}`,
+        detail: `${prod.nama} (${qty}x @Rp${unitPrice.toLocaleString('id-ID')}) - ${alasan}`,
         nilai: totalNilai,
         user: currentUser.name
       });
 
-      // 2. Catat juga di Mutasi Stok
       stokLogs.unshift({
         id: Date.now() + Math.random(),
         dateKey: dateKey,
@@ -1561,7 +1635,7 @@
       saveState('returs', returs);
       saveState('stokLogs', stokLogs);
 
-      addLog('RETURN', `Retur ${type}: ${prod.nama} (${qty}x)`, type === 'pelanggan' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600');
+      addLog('RETURN', `Retur ${type}: ${prod.nama} (${qty}x)`);
 
       closeModal('modal-retur');
       renderReturTable();
@@ -1570,7 +1644,7 @@
       renderKasirCatalog();
       renderDashboard();
 
-      showToast(`Retur ${type} sukses disimpan. Stok diperbarui!`);
+      showToast(`Retur ${type} sukses dicatat!`);
     }
 
     function switchReturTab(tab) {
@@ -1586,7 +1660,7 @@
     }
 
     function deleteRetur(id) {
-      if (!confirm('Hapus baris data retur ini?')) return;
+      if (!confirm('Hapus data retur ini?')) return;
       returs = returs.filter(r => r.id !== id);
       saveState('returs', returs);
       renderReturTable();
@@ -1599,19 +1673,19 @@
       const isAdmin = currentUser && currentUser.role === 'admin';
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-gray-400">Belum ada data retur tersimpan</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada data retur tersimpan</td></tr>`;
         return;
       }
 
       tbody.innerHTML = filtered.map(r => `
         <tr class="hover:bg-gray-50/60 transition">
-          <td class="px-6 py-4 font-semibold text-gray-900">${r.id}</td>
-          <td class="px-6 py-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.type === 'pelanggan' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'} uppercase">${r.type}</span></td>
-          <td class="px-6 py-4 text-gray-500">${r.waktu}</td>
-          <td class="px-6 py-4 font-medium text-gray-800">${r.detail}</td>
-          <td class="px-6 py-4 font-bold text-gray-900">Rp${r.nilai.toLocaleString('id-ID')}</td>
-          <td class="px-6 py-4 text-gray-500">${r.user}</td>
-          <td class="px-6 py-4 text-right">
+          <td class="px-4 sm:px-6 py-3 font-semibold text-gray-900">${r.id}</td>
+          <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.type === 'pelanggan' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'} uppercase">${r.type}</span></td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${r.waktu}</td>
+          <td class="px-4 sm:px-6 py-3 font-medium text-gray-800">${r.detail}</td>
+          <td class="px-4 sm:px-6 py-3 font-bold text-gray-900">Rp${r.nilai.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500">${r.user}</td>
+          <td class="px-4 sm:px-6 py-3 text-right">
             ${isAdmin ? `<button onclick="deleteRetur('${r.id}')" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
           </td>
         </tr>
@@ -1620,7 +1694,7 @@
     }
 
     // ==========================================
-    // DATA BARANG DENGAN VALIDASI HARGA GROSIR
+    // DATA BARANG & BULK DELETE
     // ==========================================
     function saveProduct(e) {
       e.preventDefault();
@@ -1630,12 +1704,12 @@
       const nama = document.getElementById('barang-nama').value.trim();
       const kategori = document.getElementById('barang-kategori').value;
       const hModal = parseInt(document.getElementById('barang-modal').value) || 0;
-      const hJual = parseInt(document.getElementById('barang-jual').value) || 0; // Harga Eceran
-      const hGrosir = parseInt(document.getElementById('barang-grosir').value) || 0; // Harga Grosir
+      const hJual = parseInt(document.getElementById('barang-jual').value) || 0;
+      const hGrosir = parseInt(document.getElementById('barang-grosir').value) || 0;
       const stok = parseInt(document.getElementById('barang-stok').value) || 0;
 
       if (hGrosir >= hJual) {
-        alert('Perhatian: Harga Grosir harus lebih murah dari Harga Eceran!');
+        alert('Harga Grosir harus lebih murah dari Harga Eceran!');
         return;
       }
 
@@ -1735,13 +1809,12 @@
     function bulkDeleteSelectedProducts() {
       const total = selectedProductIds.size;
       if (total === 0) return;
-
       if (!confirm(`Hapus massal ${total} barang terpilih?`)) return;
 
       products = products.filter(p => !selectedProductIds.has(p.id));
       saveState('products', products);
 
-      addLog('BULK_DELETE_PRODUCT', `Menghapus massal ${total} barang sekaligus`, 'bg-red-50 text-red-600');
+      addLog('BULK_DELETE_PRODUCT', `Hapus massal ${total} barang`);
 
       selectedProductIds.clear();
       const master = document.getElementById('select-all-products');
@@ -1752,18 +1825,17 @@
       renderKasirCategoryPills();
       renderKasirCatalog();
       renderDashboard();
-      showToast(`Sukses menghapus ${total} barang sekaligus!`);
+      showToast(`Sukses menghapus ${total} barang!`);
     }
 
     function deleteProduct(id) {
       const prod = products.find(p => p.id === id);
-      if (!prod) return;
-      if (!confirm(`Hapus barang "${prod.nama}" (${prod.kode})?`)) return;
+      if (!prod || !confirm(`Hapus barang "${prod.nama}" (${prod.kode})?`)) return;
 
       products = products.filter(p => p.id !== id);
       selectedProductIds.delete(id);
       saveState('products', products);
-      addLog('DELETE_PRODUCT', `Hapus barang ${prod.nama}`, 'bg-red-50 text-red-600');
+      addLog('DELETE_PRODUCT', `Hapus barang ${prod.nama}`);
 
       updateBulkDeleteUI();
       renderProductsTable();
@@ -1797,7 +1869,7 @@
       document.getElementById('barang-count-label').innerText = `${products.length} barang`;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-gray-400">Tidak ada barang ditemukan</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="px-4 py-8 text-center text-gray-400">Tidak ada barang ditemukan</td></tr>`;
         return;
       }
 
@@ -1807,24 +1879,24 @@
         return `
           <tr class="hover:bg-gray-50/60 transition ${isChecked ? 'bg-emerald-50/40' : ''}">
             ${isAdmin ? `
-              <td class="px-4 py-4 text-center">
+              <td class="px-4 py-3 text-center">
                 <input type="checkbox" onchange="toggleSelectProduct(${p.id}, this)" ${isChecked ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
               </td>
             ` : ''}
-            <td class="px-4 py-4 font-semibold text-gray-900">${p.kode}</td>
-            <td class="px-4 py-4 font-mono text-gray-500 text-[11px]">${p.barcode || '-'}</td>
-            <td class="px-5 py-4 font-medium text-gray-900">${p.nama}</td>
-            <td class="px-4 py-4 text-gray-500">${p.kategori}</td>
-            <td class="admin-only px-4 py-4 ${isAdmin ? 'font-medium' : 'text-gray-300'}">
+            <td class="px-4 py-3 font-semibold text-gray-900">${p.kode}</td>
+            <td class="px-4 py-3 font-mono text-gray-500 text-[11px]">${p.barcode || '-'}</td>
+            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">${p.nama}</td>
+            <td class="px-4 py-3 text-gray-500">${p.kategori}</td>
+            <td class="admin-only px-4 py-3 ${isAdmin ? 'font-medium' : 'text-gray-300'}">
               ${isAdmin ? 'Rp' + p.hModal.toLocaleString('id-ID') : '•••'}
             </td>
-            <td class="px-4 py-4 font-semibold text-gray-900">Rp${p.hJual.toLocaleString('id-ID')}</td>
-            <td class="px-4 py-4 font-bold text-emerald-700">Rp${grosirPrice.toLocaleString('id-ID')}</td>
-            <td class="px-4 py-4">
+            <td class="px-4 py-3 font-semibold text-gray-900">Rp${p.hJual.toLocaleString('id-ID')}</td>
+            <td class="px-4 py-3 font-bold text-emerald-700">Rp${grosirPrice.toLocaleString('id-ID')}</td>
+            <td class="px-4 py-3">
               <span class="font-bold ${p.stok <= 5 ? 'text-amber-600 bg-amber-50 px-2 py-0.5 rounded' : 'text-gray-800'}">${p.stok}</span>
             </td>
             ${isAdmin ? `
-              <td class="px-6 py-4 text-right space-x-1">
+              <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">
                 <button onclick="showBarcodeModal(${p.id})" title="Cetak Barcode" class="p-1 text-gray-400 hover:text-indigo-600"><i data-lucide="barcode" class="w-4 h-4"></i></button>
                 <button onclick="openModalBarang(${p.id})" title="Edit Barang" class="p-1 text-gray-400 hover:text-emerald-600"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                 <button onclick="deleteProduct(${p.id})" title="Hapus Barang" class="p-1 text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -1846,14 +1918,10 @@
         try {
           const data = new Uint8Array(evt.target.result);
           const workbook = XLSX.read(data, { type: 'array' });
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
           const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
-          if (jsonData.length === 0) {
-            alert('File Excel kosong!');
-            return;
-          }
+          if (jsonData.length === 0) return;
 
           let addedCount = 0;
           jsonData.forEach((row, i) => {
@@ -1871,17 +1939,7 @@
             if (existingIdx !== -1) {
               products[existingIdx] = { ...products[existingIdx], barcode: barcode.toString(), nama, kategori, hModal, hJual, hGrosir, stok };
             } else {
-              products.push({
-                id: Date.now() + Math.random(),
-                kode: kode.toString(),
-                barcode: barcode.toString(),
-                nama: nama.toString(),
-                kategori: kategori.toString(),
-                hModal,
-                hJual,
-                hGrosir,
-                stok
-              });
+              products.push({ id: Date.now() + Math.random(), kode: kode.toString(), barcode: barcode.toString(), nama: nama.toString(), kategori: kategori.toString(), hModal, hJual, hGrosir, stok });
             }
             addedCount++;
           });
@@ -1912,7 +1970,6 @@
         'Harga Grosir': p.hGrosir || Math.round(p.hJual * 0.9),
         'Stok': p.stok
       }));
-
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'DataBarang');
@@ -1921,13 +1978,13 @@
     }
 
     // ==========================================
-    // KASIR & SAKELAR ECERAN/GROSIR PER BARANG
+    // KASIR & KERANJANG BELANJA
     // ==========================================
     function renderKasirCategoryPills() {
       const container = document.getElementById('kasir-cat-pills');
       const cats = ['semua', ...new Set(products.map(p => p.kategori))];
       container.innerHTML = cats.map(c => `
-        <button onclick="filterKasirCat('${c}')" class="kasir-pill px-4 py-1.5 rounded-full capitalize font-semibold transition ${kasirCategory === c ? 'bg-emerald-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}">${c}</button>
+        <button onclick="filterKasirCat('${c}')" class="kasir-pill px-3 py-1 rounded-full capitalize font-semibold transition whitespace-nowrap text-xs ${kasirCategory === c ? 'bg-emerald-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}">${c}</button>
       `).join('');
     }
 
@@ -1948,32 +2005,32 @@
       });
 
       if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-3 text-center py-16 text-gray-400 text-xs">Barang tidak ditemukan</div>`;
+        grid.innerHTML = `<div class="col-span-3 text-center py-12 text-gray-400 text-xs">Barang tidak ditemukan</div>`;
         return;
       }
 
       grid.innerHTML = filtered.map(p => {
         const grosir = p.hGrosir || Math.round(p.hJual * 0.9);
         return `
-          <div onclick="addToCart(${p.id})" class="bg-white border border-gray-200 hover:border-emerald-500 rounded-xl p-4 cursor-pointer hover:shadow-md transition flex flex-col justify-between select-none">
+          <div onclick="addToCart(${p.id})" class="bg-white border border-gray-200 hover:border-emerald-500 rounded-xl p-3 cursor-pointer hover:shadow-md transition flex flex-col justify-between select-none">
             <div>
               <h4 class="font-bold text-xs text-gray-900 line-clamp-1">${p.nama}</h4>
               <div class="flex items-center space-x-1.5 mt-0.5">
                 <span class="text-[10px] text-gray-400 font-semibold">${p.kode}</span>
-                <span class="text-[9px] text-gray-400 font-mono">${p.barcode ? '· ' + p.barcode : ''}</span>
+                <span class="text-[9px] text-gray-400 font-mono truncate">${p.barcode ? '· ' + p.barcode : ''}</span>
               </div>
             </div>
-            <div class="mt-3 space-y-1">
-              <div class="flex justify-between items-center text-xs">
-                <span class="text-[11px] text-gray-500 font-medium">Eceran:</span>
+            <div class="mt-2.5 space-y-1">
+              <div class="flex justify-between items-center text-[11px]">
+                <span class="text-gray-500">Ecer:</span>
                 <span class="font-bold text-gray-900">Rp${p.hJual.toLocaleString('id-ID')}</span>
               </div>
-              <div class="flex justify-between items-center text-xs border-t border-dashed pt-1">
-                <span class="text-[11px] text-emerald-700 font-semibold">Grosir:</span>
+              <div class="flex justify-between items-center text-[11px] border-t border-dashed pt-0.5">
+                <span class="text-emerald-700 font-semibold">Grosir:</span>
                 <span class="font-extrabold text-emerald-700">Rp${grosir.toLocaleString('id-ID')}</span>
               </div>
-              <div class="mt-2 text-right">
-                <span class="text-[10px] ${p.stok <= 5 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'} px-1.5 py-0.5 rounded font-bold">Stok: ${p.stok}</span>
+              <div class="mt-1 text-right">
+                <span class="text-[9px] ${p.stok <= 5 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'} px-1.5 py-0.5 rounded font-bold">Stok: ${p.stok}</span>
               </div>
             </div>
           </div>
@@ -1996,14 +2053,13 @@
         cart.push({
           ...prod,
           qty: 1,
-          priceMode: 'eceran', // Default mode harga eceran
+          priceMode: 'eceran',
           currentPrice: prod.hJual
         });
       }
       updateCartView();
     }
 
-    // Sakelar Mengubah Mode Harga: Eceran <-> Grosir
     function togglePriceMode(productId, mode) {
       const item = cart.find(c => c.id === productId);
       if (!item) return;
@@ -2029,39 +2085,44 @@
     function updateCartView() {
       const container = document.getElementById('cart-items');
       const countEl = document.getElementById('cart-count');
+      const countMobileEl = document.getElementById('cart-count-mobile');
       const subtotalEl = document.getElementById('subtotal-val');
       const totalEl = document.getElementById('total-val');
+      const totalMobileEl = document.getElementById('total-val-mobile');
 
       const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
       const totalPrice = cart.reduce((sum, item) => sum + (item.qty * item.currentPrice), 0);
 
       countEl.innerText = totalItems;
-      subtotalEl.innerText = 'Rp' + totalPrice.toLocaleString('id-ID');
-      totalEl.innerText = 'Rp' + totalPrice.toLocaleString('id-ID');
+      if (countMobileEl) countMobileEl.innerText = totalItems;
+
+      const formattedTotal = 'Rp' + totalPrice.toLocaleString('id-ID');
+      subtotalEl.innerText = formattedTotal;
+      totalEl.innerText = formattedTotal;
+      if (totalMobileEl) totalMobileEl.innerText = formattedTotal;
 
       if (cart.length === 0) {
-        container.innerHTML = `<p class="text-center text-gray-400 py-12">Belum ada barang di keranjang</p>`;
+        container.innerHTML = `<p class="text-center text-gray-400 py-6">Belum ada barang di keranjang</p>`;
         return;
       }
 
       container.innerHTML = cart.map(item => `
-        <div class="border-b border-gray-100 pb-2.5 space-y-1.5">
+        <div class="border-b border-gray-100 pb-2 space-y-1">
           <div class="flex items-center justify-between">
             <div class="overflow-hidden pr-2">
-              <h5 class="font-bold text-gray-800 text-xs truncate max-w-[140px]">${item.nama}</h5>
+              <h5 class="font-bold text-gray-800 text-xs truncate max-w-[130px]">${item.nama}</h5>
               <span class="text-[10px] font-semibold text-emerald-700">Rp${item.currentPrice.toLocaleString('id-ID')}</span>
             </div>
-            <div class="flex items-center space-x-1.5 shrink-0">
+            <div class="flex items-center space-x-1 shrink-0">
               <button onclick="updateCartQty(${item.id}, -1)" class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center text-gray-600 font-bold hover:bg-gray-200">-</button>
               <span class="text-xs font-semibold w-4 text-center">${item.qty}</span>
               <button onclick="updateCartQty(${item.id}, 1)" class="w-6 h-6 rounded bg-gray-100 flex items-center justify-center text-gray-600 font-bold hover:bg-gray-200">+</button>
             </div>
           </div>
-          <!-- Toggle Mode Harga Eceran / Grosir -->
           <div class="flex items-center justify-between text-[10px]">
-            <span class="text-gray-400">Pilih Harga:</span>
+            <span class="text-gray-400">Harga:</span>
             <div class="inline-flex rounded-lg border border-gray-200 p-0.5 bg-gray-50">
-              <button onclick="togglePriceMode(${item.id}, 'eceran')" class="px-2 py-0.5 rounded font-semibold transition ${item.priceMode === 'eceran' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}">Eceran</button>
+              <button onclick="togglePriceMode(${item.id}, 'eceran')" class="px-2 py-0.5 rounded font-semibold transition ${item.priceMode === 'eceran' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}">Ecer</button>
               <button onclick="togglePriceMode(${item.id}, 'grosir')" class="px-2 py-0.5 rounded font-bold transition ${item.priceMode === 'grosir' ? 'bg-emerald-600 text-white shadow-sm' : 'text-emerald-700'}">Grosir</button>
             </div>
           </div>
@@ -2188,7 +2249,7 @@
     }
 
     // ==========================================
-    // RIWAYAT TRANSAKSI: HAPUS & EDIT
+    // RIWAYAT TRANSAKSI
     // ==========================================
     function renderTransaksiTable() {
       const tbody = document.getElementById('table-transaksi-body');
@@ -2209,21 +2270,21 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-6 text-center text-gray-400">Belum ada data transaksi ditemukan</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada data transaksi ditemukan</td></tr>`;
         return;
       }
 
       tbody.innerHTML = filtered.map(t => `
         <tr class="hover:bg-gray-50/60 transition">
-          <td class="px-6 py-4 font-semibold text-gray-900">${t.id}</td>
-          <td class="px-6 py-4 text-gray-500">${t.waktu}</td>
-          <td class="px-6 py-4">${t.kasir}</td>
-          <td class="px-6 py-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700">${t.metode}</span></td>
-          <td class="px-6 py-4 font-bold text-gray-900">Rp${t.total.toLocaleString('id-ID')}</td>
-          <td class="px-6 py-4">
+          <td class="px-4 sm:px-6 py-3 font-semibold text-gray-900">${t.id}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${t.waktu}</td>
+          <td class="px-4 sm:px-6 py-3">${t.kasir}</td>
+          <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700">${t.metode}</span></td>
+          <td class="px-4 sm:px-6 py-3 font-bold text-gray-900">Rp${t.total.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3">
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.status === 'SUKSES' ? 'bg-emerald-50 text-emerald-600' : t.status === 'PENDING' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-600'}">${t.status}</span>
           </td>
-          <td class="px-6 py-4 text-right space-x-1.5">
+          <td class="px-4 sm:px-6 py-3 text-right space-x-1 whitespace-nowrap">
             <button onclick='printReceipt(${JSON.stringify(t)})' title="Cetak Ulang Struk" class="text-gray-400 hover:text-emerald-600 p-1"><i data-lucide="printer" class="w-4 h-4"></i></button>
             ${isAdmin ? `
               <button onclick="openModalEditTx('${t.id}')" title="Edit Transaksi" class="text-gray-400 hover:text-blue-600 p-1"><i data-lucide="pencil" class="w-4 h-4"></i></button>
@@ -2256,7 +2317,7 @@
         transactions[idx].metode = method;
         transactions[idx].status = status;
         saveState('transactions', transactions);
-        addLog('UPDATE_TX', `Edit transaksi ${id} (${status})`);
+        addLog('UPDATE_TX', `Edit transaksi ${id}`);
         closeModal('modal-edit-tx');
         renderTransaksiTable();
         renderDashboard();
@@ -2267,11 +2328,7 @@
 
     function deleteSingleTransaction(id) {
       const tx = transactions.find(t => t.id === id);
-      if (!tx) return;
-
-      if (!confirm(`Hapus transaksi "${id}"?\nStok barang yang terjual akan otomatis dikembalikan ke sistem.`)) {
-        return;
-      }
+      if (!tx || !confirm(`Hapus transaksi "${id}"? Stok barang akan dikembalikan.`)) return;
 
       if (tx.items && Array.isArray(tx.items)) {
         tx.items.forEach(item => {
@@ -2283,32 +2340,61 @@
       transactions = transactions.filter(t => t.id !== id);
       saveState('products', products);
       saveState('transactions', transactions);
-      addLog('DELETE_TX', `Hapus transaksi ${id}`, 'bg-red-50 text-red-600');
+      addLog('DELETE_TX', `Hapus transaksi ${id}`);
 
       renderProductsTable();
       renderKasirCatalog();
       renderTransaksiTable();
       renderDashboard();
       renderLaporan();
-      showToast(`Transaksi ${id} dihapus & stok telah dipulihkan`);
+      showToast(`Transaksi ${id} dihapus & stok dipulihkan`);
     }
 
     function resetAllTransactions() {
-      if (!confirm('Apakah Anda yakin ingin MENGHAPUS SEMUA DATA TRANSAKSI?')) return;
-      const check = prompt('Ketik "RESET" dengan huruf kapital untuk konfirmasi:');
-      if (check !== 'RESET') {
-        alert('Reset dibatalkan');
-        return;
-      }
+      if (!confirm('Hapus semua data transaksi?')) return;
+      const check = prompt('Ketik "RESET" untuk konfirmasi:');
+      if (check !== 'RESET') return;
 
       transactions = [];
       saveState('transactions', transactions);
-      addLog('RESET_TX', 'Semua riwayat transaksi di-reset', 'bg-red-50 text-red-600');
+      addLog('RESET_TX', 'Semua riwayat transaksi di-reset');
 
       renderTransaksiTable();
       renderDashboard();
       renderLaporan();
-      showToast('Semua transaksi berhasil di-reset!');
+      showToast('Semua transaksi di-reset!');
+    }
+
+    function hapusLaporanTanggalTertentu(targetDate) {
+      if (!targetDate || !confirm(`Hapus seluruh data penjualan, pengeluaran & BRI link pada ${targetDate}?`)) return;
+
+      const formatTargetDate = targetDate;
+      const dateParts = targetDate.split('-');
+      const dObj = new Date(dateParts[0], parseInt(dateParts[1]) - 1, dateParts[2]);
+      const localDateStr = dObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+      const simpleDateStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
+      transactions = transactions.filter(t => !((t.dateKey === formatTargetDate) || (t.waktu && t.waktu.includes(localDateStr))));
+      stokLogs = stokLogs.filter(s => !((s.dateKey === formatTargetDate) || (s.waktu && s.waktu.includes(localDateStr))));
+      pemasukans = pemasukans.filter(p => !(p.tanggal === simpleDateStr || p.tanggal === localDateStr || p.dateKey === formatTargetDate));
+      pengeluarans = pengeluarans.filter(p => !(p.tanggal === simpleDateStr || p.tanggal === localDateStr || p.dateKey === formatTargetDate));
+      brilinks = brilinks.filter(b => !((b.dateKey === formatTargetDate) || (b.waktu && b.waktu.includes(localDateStr))));
+
+      saveState('transactions', transactions);
+      saveState('stokLogs', stokLogs);
+      saveState('pemasukans', pemasukans);
+      saveState('pengeluarans', pengeluarans);
+      saveState('brilinks', brilinks);
+
+      addLog('DELETE_DAILY_REPORT', `Hapus rekapan tanggal ${targetDate}`);
+
+      renderTransaksiTable();
+      renderStokTable();
+      renderKasTable();
+      renderBriLinkTable();
+      renderDashboard();
+      renderLaporan();
+      showToast(`Data pada tanggal ${targetDate} berhasil dibersihkan!`);
     }
 
     // ==========================================
@@ -2338,9 +2424,8 @@
       let tipe = 'RESTOCK';
       let delta = qtyInput;
 
-      if (mode === 'tambah') {
-        prod.stok += qtyInput;
-      } else {
+      if (mode === 'tambah') prod.stok += qtyInput;
+      else {
         tipe = 'ADJUSTMENT';
         delta = qtyInput - sebelum;
         prod.stok = qtyInput;
@@ -2375,7 +2460,7 @@
     }
 
     function deleteStokLog(id) {
-      if (!confirm('Hapus baris catatan stok ini?')) return;
+      if (!confirm('Hapus catatan stok ini?')) return;
       stokLogs = stokLogs.filter(s => s.id !== id);
       saveState('stokLogs', stokLogs);
       renderStokTable();
@@ -2386,21 +2471,21 @@
       const tbody = document.getElementById('table-stok-body');
       const isAdmin = currentUser && currentUser.role === 'admin';
       if (stokLogs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-6 text-center text-gray-400">Belum ada riwayat pergerakan stok</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Belum ada riwayat stok</td></tr>`;
         return;
       }
       tbody.innerHTML = stokLogs.map(l => `
         <tr class="hover:bg-gray-50/60 transition">
-          <td class="px-6 py-4 text-gray-500">${l.waktu}</td>
-          <td class="px-6 py-4 font-semibold text-gray-900">${l.barang}</td>
-          <td class="px-6 py-4">
+          <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${l.waktu}</td>
+          <td class="px-4 sm:px-6 py-3 font-semibold text-gray-900 whitespace-nowrap">${l.barang}</td>
+          <td class="px-4 sm:px-6 py-3">
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${l.tipe === 'SALE' ? 'bg-blue-50 text-blue-600' : l.tipe === 'RESTOCK' ? 'bg-emerald-50 text-emerald-600' : l.tipe.startsWith('RETURN') ? 'bg-purple-50 text-purple-600' : 'bg-amber-50 text-amber-600'}">${l.tipe}</span>
           </td>
-          <td class="px-6 py-4 font-bold ${l.qty < 0 ? 'text-red-600' : 'text-emerald-600'}">${l.qty > 0 ? '+' : ''}${l.qty}</td>
-          <td class="px-6 py-4 text-gray-500">${l.sebelum}</td>
-          <td class="px-6 py-4 font-bold text-gray-900">${l.setelah}</td>
-          <td class="px-6 py-4 text-gray-500">${l.user}</td>
-          <td class="px-6 py-4 text-right">
+          <td class="px-4 sm:px-6 py-3 font-bold ${l.qty < 0 ? 'text-red-600' : 'text-emerald-600'}">${l.qty > 0 ? '+' : ''}${l.qty}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500">${l.sebelum}</td>
+          <td class="px-4 sm:px-6 py-3 font-bold text-gray-900">${l.setelah}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500">${l.user}</td>
+          <td class="px-4 sm:px-6 py-3 text-right">
             ${isAdmin ? `<button onclick="deleteStokLog(${l.id})" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
           </td>
         </tr>
@@ -2413,7 +2498,7 @@
     // ==========================================
     function openModalKas(type) {
       document.getElementById('kas-type').value = type;
-      document.getElementById('modal-kas-title').innerText = type === 'pemasukan' ? 'Tambah Pemasukan Kas' : 'Tambah Pengeluaran Kas';
+      document.getElementById('modal-kas-title').innerText = type === 'pemasukan' ? 'Tambah Pemasukan' : 'Tambah Pengeluaran';
       openModal('modal-kas');
     }
 
@@ -2429,16 +2514,16 @@
       const dateKey = now.toISOString().slice(0, 10);
       const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 
-      const entry = { id: Date.now(), dateKey: dateKey, tanggal: timeStr, kategori, metode, nominal, catatan };
+      const entry = { id: Date.now(), dateKey, tanggal: timeStr, kategori, metode, nominal, catatan };
 
       if (type === 'pemasukan') {
         pemasukans.unshift(entry);
         saveState('pemasukans', pemasukans);
-        addLog('CASH_IN', `Pemasukan kas Rp${nominal.toLocaleString('id-ID')} (${kategori})`);
+        addLog('CASH_IN', `Pemasukan kas Rp${nominal.toLocaleString('id-ID')}`);
       } else {
         pengeluarans.unshift(entry);
         saveState('pengeluarans', pengeluarans);
-        addLog('CASH_OUT', `Pengeluaran kas Rp${nominal.toLocaleString('id-ID')} (${kategori})`, 'bg-red-50 text-red-600');
+        addLog('CASH_OUT', `Pengeluaran kas Rp${nominal.toLocaleString('id-ID')}`);
       }
 
       closeModal('modal-kas');
@@ -2449,18 +2534,15 @@
     }
 
     function deleteKas(type, id) {
-      if (!confirm(`Hapus data ${type} ini?`)) return;
-      if (type === 'pemasukan') {
-        pemasukans = pemasukans.filter(p => p.id !== id);
-        saveState('pemasukans', pemasukans);
-      } else {
-        pengeluarans = pengeluarans.filter(p => p.id !== id);
-        saveState('pengeluarans', pengeluarans);
-      }
+      if (!confirm(`Hapus data kas ini?`)) return;
+      if (type === 'pemasukan') pemasukans = pemasukans.filter(p => p.id !== id);
+      else pengeluarans = pengeluarans.filter(p => p.id !== id);
+      saveState('pemasukans', pemasukans);
+      saveState('pengeluarans', pengeluarans);
       renderKasTable();
       renderDashboard();
       renderLaporan();
-      showToast(`Data ${type} dihapus`);
+      showToast('Data kas dihapus');
     }
 
     function renderKasTable() {
@@ -2469,16 +2551,16 @@
       document.getElementById('pemasukan-total-label').innerText = `Total: Rp${totalMasuk.toLocaleString('id-ID')}`;
 
       tbodyMasuk.innerHTML = pemasukans.length === 0
-        ? `<tr><td colspan="7" class="px-6 py-6 text-center text-gray-400">Belum ada pemasukan</td></tr>`
+        ? `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada pemasukan</td></tr>`
         : pemasukans.map((p, idx) => `
           <tr class="hover:bg-gray-50/60 transition">
-            <td class="px-6 py-3.5">${idx + 1}</td>
-            <td class="px-6 py-3.5 text-gray-500">${p.tanggal}</td>
-            <td class="px-6 py-3.5 font-semibold text-gray-800">${p.kategori}</td>
-            <td class="px-6 py-3.5">${p.metode}</td>
-            <td class="px-6 py-3.5 font-bold text-emerald-600">Rp${p.nominal.toLocaleString('id-ID')}</td>
-            <td class="px-6 py-3.5 text-gray-500">${p.catatan || '-'}</td>
-            <td class="px-6 py-3.5 text-right">
+            <td class="px-4 sm:px-6 py-3">${idx + 1}</td>
+            <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${p.tanggal}</td>
+            <td class="px-4 sm:px-6 py-3 font-semibold text-gray-800">${p.kategori}</td>
+            <td class="px-4 sm:px-6 py-3">${p.metode}</td>
+            <td class="px-4 sm:px-6 py-3 font-bold text-emerald-600">Rp${p.nominal.toLocaleString('id-ID')}</td>
+            <td class="px-4 sm:px-6 py-3 text-gray-500">${p.catatan || '-'}</td>
+            <td class="px-4 sm:px-6 py-3 text-right">
               <button onclick="deleteKas('pemasukan', ${p.id})" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </td>
           </tr>
@@ -2489,16 +2571,16 @@
       document.getElementById('pengeluaran-total-label').innerText = `Total: Rp${totalKeluar.toLocaleString('id-ID')}`;
 
       tbodyKeluar.innerHTML = pengeluarans.length === 0
-        ? `<tr><td colspan="7" class="px-6 py-6 text-center text-gray-400">Belum ada pengeluaran</td></tr>`
+        ? `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada pengeluaran</td></tr>`
         : pengeluarans.map((p, idx) => `
           <tr class="hover:bg-gray-50/60 transition">
-            <td class="px-6 py-3.5">${idx + 1}</td>
-            <td class="px-6 py-3.5 text-gray-500">${p.tanggal}</td>
-            <td class="px-6 py-3.5 font-semibold text-gray-800">${p.kategori}</td>
-            <td class="px-6 py-3.5">${p.metode}</td>
-            <td class="px-6 py-3.5 font-bold text-red-600">Rp${p.nominal.toLocaleString('id-ID')}</td>
-            <td class="px-6 py-3.5 text-gray-500">${p.catatan || '-'}</td>
-            <td class="px-6 py-3.5 text-right">
+            <td class="px-4 sm:px-6 py-3">${idx + 1}</td>
+            <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${p.tanggal}</td>
+            <td class="px-4 sm:px-6 py-3 font-semibold text-gray-800">${p.kategori}</td>
+            <td class="px-4 sm:px-6 py-3">${p.metode}</td>
+            <td class="px-4 sm:px-6 py-3 font-bold text-red-600">Rp${p.nominal.toLocaleString('id-ID')}</td>
+            <td class="px-4 sm:px-6 py-3 text-gray-500">${p.catatan || '-'}</td>
+            <td class="px-4 sm:px-6 py-3 text-right">
               <button onclick="deleteKas('pengeluaran', ${p.id})" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </td>
           </tr>
@@ -2520,9 +2602,9 @@
       const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
       const briId = 'BRI-' + dateKey.replace(/-/g, '') + '-' + String(brilinks.length + 1).padStart(4, '0');
 
-      brilinks.unshift({ id: briId, dateKey: dateKey, waktu: timeStr, jenis, nominal, fee, profit, user: currentUser.name });
+      brilinks.unshift({ id: briId, dateKey, waktu: timeStr, jenis, nominal, fee, profit, user: currentUser.name });
       saveState('brilinks', brilinks);
-      addLog('BRI_LINK_TXN', `BRI Link ${briId} profit Rp${profit.toLocaleString('id-ID')}`, 'bg-teal-50 text-teal-600');
+      addLog('BRI_LINK_TXN', `BRI Link ${briId}`);
 
       closeModal('modal-brilink');
       renderBriLinkTable();
@@ -2553,20 +2635,20 @@
       document.getElementById('brilink-tx-today').innerText = `${brilinks.length} transaksi`;
 
       if (brilinks.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-6 text-center text-gray-400">Belum ada transaksi BRI Link</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Belum ada transaksi BRI Link</td></tr>`;
         return;
       }
 
       tbody.innerHTML = brilinks.map(b => `
         <tr class="hover:bg-gray-50/60 transition">
-          <td class="px-6 py-4 font-semibold text-gray-900">${b.id}</td>
-          <td class="px-6 py-4 text-gray-500">${b.waktu}</td>
-          <td class="px-6 py-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-600">${b.jenis}</span></td>
-          <td class="px-6 py-4 font-medium text-gray-900">Rp${b.nominal.toLocaleString('id-ID')}</td>
-          <td class="px-6 py-4 text-gray-500">Rp${b.fee.toLocaleString('id-ID')}</td>
-          <td class="px-6 py-4 font-bold text-emerald-600">Rp${b.profit.toLocaleString('id-ID')}</td>
-          <td class="px-6 py-4 text-gray-500">${b.user}</td>
-          <td class="px-6 py-4 text-right">
+          <td class="px-4 sm:px-6 py-3 font-semibold text-gray-900">${b.id}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${b.waktu}</td>
+          <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-600">${b.jenis}</span></td>
+          <td class="px-4 sm:px-6 py-3 font-medium text-gray-900">Rp${b.nominal.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500">Rp${b.fee.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 font-bold text-emerald-600">Rp${b.profit.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500">${b.user}</td>
+          <td class="px-4 sm:px-6 py-3 text-right">
             ${isAdmin ? `<button onclick="deleteBriLink('${b.id}')" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
           </td>
         </tr>
@@ -2612,12 +2694,12 @@
       const tbody = document.getElementById('table-users-body');
       tbody.innerHTML = appUsers.map(u => `
         <tr class="hover:bg-gray-50/60 transition">
-          <td class="px-6 py-4 font-bold text-gray-900">${u.nama}</td>
-          <td class="px-6 py-4 text-gray-500">${u.email}</td>
-          <td class="px-6 py-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'ADMIN' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}">${u.role}</span></td>
-          <td class="px-6 py-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600">${u.status}</span></td>
-          <td class="px-6 py-4 text-gray-500">${u.dibuat}</td>
-          <td class="px-6 py-4 text-right">
+          <td class="px-4 sm:px-6 py-3 font-bold text-gray-900">${u.nama}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500">${u.email}</td>
+          <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'ADMIN' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}">${u.role}</span></td>
+          <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600">${u.status}</span></td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${u.dibuat}</td>
+          <td class="px-4 sm:px-6 py-3 text-right">
             <button onclick="deleteUser(${u.id})" class="text-gray-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
           </td>
         </tr>
@@ -2632,10 +2714,10 @@
 
       tbody.innerHTML = filtered.map(log => `
         <tr class="hover:bg-gray-50/60 transition">
-          <td class="px-6 py-3.5 text-gray-500">${log.waktu}</td>
-          <td class="px-6 py-3.5 font-semibold text-gray-900">${log.user}</td>
-          <td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${log.tag}">${log.action}</span></td>
-          <td class="px-6 py-3.5 text-gray-600">${log.detail}</td>
+          <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${log.waktu}</td>
+          <td class="px-4 sm:px-6 py-3 font-semibold text-gray-900">${log.user}</td>
+          <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${log.tag}">${log.action}</span></td>
+          <td class="px-4 sm:px-6 py-3 text-gray-600">${log.detail}</td>
         </tr>
       `).join('');
     }
@@ -2758,13 +2840,13 @@
 
         rows += `
           <tr class="${isToday ? 'bg-emerald-50/40 font-bold' : ''} hover:bg-gray-50/60 transition">
-            <td class="px-6 py-3 font-medium">${dStr}</td>
-            <td class="px-6 py-3 text-right">Rp${sVal.toLocaleString('id-ID')}</td>
-            <td class="px-6 py-3 text-right text-emerald-700">Rp${lVal.toLocaleString('id-ID')}</td>
-            <td class="px-6 py-3 text-right text-red-600">Rp${eVal.toLocaleString('id-ID')}</td>
-            <td class="px-6 py-3 text-right text-blue-600">Rp${bVal.toLocaleString('id-ID')}</td>
-            <td class="px-6 py-3 text-right">
-              <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" title="Hapus seluruh rekapan pada ${dStr}" class="text-gray-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            <td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td>
+            <td class="px-4 sm:px-6 py-3 text-right">Rp${sVal.toLocaleString('id-ID')}</td>
+            <td class="px-4 sm:px-6 py-3 text-right text-emerald-700">Rp${lVal.toLocaleString('id-ID')}</td>
+            <td class="px-4 sm:px-6 py-3 text-right text-red-600">Rp${eVal.toLocaleString('id-ID')}</td>
+            <td class="px-4 sm:px-6 py-3 text-right text-blue-600">Rp${bVal.toLocaleString('id-ID')}</td>
+            <td class="px-4 sm:px-6 py-3 text-right">
+              <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" title="Hapus rekapan ${dStr}" class="text-gray-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </td>
           </tr>
         `;
@@ -2820,16 +2902,15 @@
         const dayStr = String(day).padStart(2, '0');
         const isoDate = `2026-09-${dayStr}`;
         const simpleDate = `${dayStr}/09/2026`;
-        const dStr = `${dayStr} Sep 2026`;
 
-        const dayTx = validTx.filter(t => (t.dateKey === isoDate) || (t.waktu && t.waktu.includes(dStr)));
+        const dayTx = validTx.filter(t => (t.dateKey === isoDate));
         const sVal = dayTx.reduce((acc, t) => acc + t.total, 0);
         const lVal = dayTx.reduce((acc, t) => acc + (t.profit || 0), 0);
 
-        const dayExp = pengeluarans.filter(p => (p.dateKey === isoDate) || (p.tanggal === simpleDate || p.tanggal === dStr));
+        const dayExp = pengeluarans.filter(p => (p.dateKey === isoDate));
         const eVal = dayExp.reduce((acc, p) => acc + p.nominal, 0);
 
-        const dayBri = brilinks.filter(b => (b.dateKey === isoDate) || (b.waktu && b.waktu.includes(dStr)));
+        const dayBri = brilinks.filter(b => (b.dateKey === isoDate));
         const bVal = dayBri.reduce((acc, b) => acc + b.profit, 0);
 
         rows.push({
@@ -2845,7 +2926,7 @@
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Laporan_Keuangan');
       XLSX.writeFile(workbook, 'Laporan_Keuangan_Sep2026.xlsx');
-      showToast('Laporan bulanan diexport ke format XLSX');
+      showToast('Laporan diexport ke format XLSX');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
