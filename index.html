@@ -274,7 +274,7 @@
             <div>
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN HARI INI</span>
               <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-expense-today">Rp0</h3>
-              <p class="text-[11px] text-gray-400 mt-0.5" id="dash-expense-count">0 pengeluaran</p>
+              <p class="text-[11px] text-gray-400 mt-0.5" id="dash-expense-count">Toko: Rp0 | BRI: Rp0</p>
             </div>
             <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
               <i data-lucide="credit-card" class="w-5 h-5"></i>
@@ -427,7 +427,6 @@
           </div>
         </div>
 
-        <!-- Sub Tabs: Barang & Stok -->
         <div class="flex border-b border-gray-200 space-x-4 text-xs font-bold">
           <button id="tab-sub-barang" onclick="switchBarangSubTab('katalog')" class="pb-2 text-emerald-600 border-b-2 border-emerald-600 flex items-center space-x-1.5">
             <i data-lucide="package" class="w-4 h-4"></i>
@@ -498,7 +497,7 @@
           </div>
         </div>
 
-        <!-- Bagian 2: Riwayat Mutasi Stok (HANYA MUNCUL DI SUB-TAB MUTASI) -->
+        <!-- Bagian 2: Riwayat Mutasi Stok -->
         <div id="subview-mutasi-stok" class="space-y-3" style="display: none;">
           <div class="flex justify-between items-center bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
             <div class="flex items-center space-x-2">
@@ -700,26 +699,59 @@
         </div>
       </section>
 
-      <!-- 8. PENGELUARAN TOKO -->
+      <!-- 8. PENGELUARAN TERPADU (PENGELUARAN TOKO & PENGELUARAN BRI LINK) -->
       <section id="page-pengeluaran" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Arus Pengeluaran Toko</h1>
-            <p class="text-xs text-gray-500 mt-0.5" id="pengeluaran-total-label">Total: Rp0 (Terintegrasi ke Laporan Bulanan)</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Pengeluaran Toko & BRI Link</h1>
+            <p class="text-xs text-gray-500 mt-0.5" id="pengeluaran-total-label">Total: Rp0 (Toko: Rp0 | BRI Link: Rp0)</p>
           </div>
-          <button onclick="openModalKas('pengeluaran')" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-emerald-700 shadow-sm">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>Tambah Pengeluaran</span>
-          </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openModalKasSpecific('pengeluaran', 'toko')" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-emerald-700 shadow-sm">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>+ Pengeluaran Toko</span>
+            </button>
+            <button onclick="openModalKasSpecific('pengeluaran', 'brilink')" class="px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-blue-700 shadow-sm">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>+ Pengeluaran BRI Link</span>
+            </button>
+          </div>
         </div>
 
+        <!-- Metric Cards Khusus Pengeluaran -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOTAL SEMUA PENGELUARAN</span>
+            <h4 class="text-lg sm:text-xl font-extrabold text-red-600 mt-1" id="card-exp-total">Rp0</h4>
+            <p class="text-[11px] text-gray-400 mt-0.5" id="card-exp-count">0 transaksi</p>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">PENGELUARAN TOKO</span>
+            <h4 class="text-lg sm:text-xl font-extrabold text-emerald-700 mt-1" id="card-exp-toko">Rp0</h4>
+            <p class="text-[11px] text-gray-400 mt-0.5">Operasional, Kulakan, Listrik</p>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">PENGELUARAN BRI LINK</span>
+            <h4 class="text-lg sm:text-xl font-extrabold text-blue-700 mt-1" id="card-exp-brilink">Rp0</h4>
+            <p class="text-[11px] text-gray-400 mt-0.5">Biaya Admin, Kertas Struk, Operasional Agen</p>
+          </div>
+        </div>
+
+        <!-- Filter Sub-Tab Pengeluaran -->
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+          <div class="flex space-x-4 border-b border-gray-100 px-4 sm:px-6 py-3 text-xs font-semibold" id="pengeluaran-tab-container">
+            <button onclick="switchPengeluaranTab('semua')" id="tab-exp-semua" class="exp-tab text-emerald-700 border-b-2 border-emerald-600 pb-2 font-bold">Semua Pengeluaran</button>
+            <button onclick="switchPengeluaranTab('toko')" id="tab-exp-toko" class="exp-tab text-gray-400 pb-2 hover:text-gray-700">Pengeluaran Toko</button>
+            <button onclick="switchPengeluaranTab('brilink')" id="tab-exp-brilink" class="exp-tab text-gray-400 pb-2 hover:text-gray-700">Pengeluaran BRI Link</button>
+          </div>
+
           <div class="overflow-x-auto custom-scrollbar">
-            <table class="w-full text-left text-xs min-w-[500px] sm:min-w-full">
+            <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
               <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-4 sm:px-6 py-3.5">No</th>
-                  <th class="px-4 sm:px-6 py-3.5">Tanggal</th>
+                  <th class="px-4 sm:px-6 py-3.5">Waktu / Tanggal</th>
+                  <th class="px-4 sm:px-6 py-3.5">Tipe</th>
                   <th class="px-4 sm:px-6 py-3.5">Kategori</th>
                   <th class="px-4 sm:px-6 py-3.5">Metode</th>
                   <th class="px-4 sm:px-6 py-3.5">Nominal</th>
@@ -863,7 +895,7 @@
                     <th class="px-4 sm:px-6 py-3">Tanggal</th>
                     <th class="px-4 sm:px-6 py-3 text-right">Penjualan Toko</th>
                     <th class="px-4 sm:px-6 py-3 text-right">Laba Kotor</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Pengeluaran</th>
+                    <th class="px-4 sm:px-6 py-3 text-right">Pengeluaran Toko</th>
                     <th class="px-4 sm:px-6 py-3 text-right">Laba Bersih</th>
                     <th class="px-4 sm:px-6 py-3 text-right">Aksi</th>
                   </tr>
@@ -886,12 +918,12 @@
               <h3 class="text-lg sm:text-2xl font-extrabold text-teal-600 mt-1" id="lap-bri-fee">Rp0</h3>
             </div>
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
-              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">KEUNTUNGAN BERSIH AGEN</span>
-              <h3 class="text-lg sm:text-2xl font-extrabold text-emerald-600 mt-1" id="lap-bri-profit">Rp0</h3>
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN BRI LINK</span>
+              <h3 class="text-lg sm:text-2xl font-extrabold text-red-500 mt-1" id="lap-bri-exp">Rp0</h3>
             </div>
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
-              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">JUMLAH TRANSAKSI</span>
-              <h3 class="text-lg sm:text-2xl font-extrabold text-gray-900 mt-1" id="lap-bri-count">0</h3>
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA BERSIH AGEN</span>
+              <h3 class="text-lg sm:text-2xl font-extrabold text-emerald-600 mt-1" id="lap-bri-profit">Rp0</h3>
             </div>
           </div>
 
@@ -903,17 +935,17 @@
           <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm" id="printable-laporan-brilink">
             <div class="px-4 sm:px-6 py-3.5 border-b border-gray-100 font-bold text-xs text-gray-800 flex justify-between items-center">
               <span>Detail Pembukuan BRI Link Harian</span>
-              <span class="text-gray-400 text-[11px] font-normal">September 2026</span>
+              <span class="text-gray-400 text-[11px] font-normal" id="label-bulan-laporan-bri">Bulan Berjalan</span>
             </div>
             <div class="max-h-72 overflow-y-auto custom-scrollbar overflow-x-auto">
               <table class="w-full text-left text-xs min-w-[550px] sm:min-w-full">
                 <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold sticky top-0">
                   <tr>
                     <th class="px-4 sm:px-6 py-3">Tanggal</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Volume Perputaran</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Total Fee Admin</th>
-                    <th class="px-4 sm:px-6 py-3 text-right text-emerald-700">Laba Bersih Agen</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Jumlah Tx</th>
+                    <th class="px-4 sm:px-6 py-3 text-right">Volume</th>
+                    <th class="px-4 sm:px-6 py-3 text-right">Fee Kotor</th>
+                    <th class="px-4 sm:px-6 py-3 text-right text-red-500">Pengeluaran</th>
+                    <th class="px-4 sm:px-6 py-3 text-right text-emerald-700">Laba Bersih</th>
                     <th class="px-4 sm:px-6 py-3 text-right">Aksi</th>
                   </tr>
                 </thead>
@@ -1314,19 +1346,41 @@
     </div>
   </div>
 
-  <!-- MODAL KAS -->
+  <!-- MODAL KAS (PEMASUKAN / PENGELUARAN DENGAN SUB-TIPE TOKO & BRILINK) -->
   <div id="modal-kas" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3 text-xs">
-      <div class="flex justify-between items-center border-b pb-2"><h3 class="font-bold text-sm" id="modal-kas-title">Pencatatan Kas Manual</h3><button onclick="closeModal('modal-kas')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm" id="modal-kas-title">Pencatatan Kas</h3>
+        <button onclick="closeModal('modal-kas')"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
       <form id="form-kas" onsubmit="saveKas(event)" class="space-y-3">
         <input type="hidden" id="kas-type" value="pemasukan" />
+        
+        <!-- Pilihan Target Pengeluaran: Toko vs BRI Link -->
+        <div id="kas-target-container" class="space-y-1">
+          <label class="block text-[10px] text-gray-500 font-bold uppercase">Jenis Pengeluaran</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="border rounded-xl p-2.5 flex items-center space-x-2 cursor-pointer hover:bg-emerald-50/50 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50">
+              <input type="radio" name="kas-target" id="target-toko" value="toko" checked class="text-emerald-600 focus:ring-emerald-500" />
+              <span class="font-bold text-gray-800 text-xs">Pengeluaran Toko</span>
+            </label>
+            <label class="border rounded-xl p-2.5 flex items-center space-x-2 cursor-pointer hover:bg-blue-50/50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+              <input type="radio" name="kas-target" id="target-brilink" value="brilink" class="text-blue-600 focus:ring-blue-500" />
+              <span class="font-bold text-gray-800 text-xs">Pengeluaran BRI Link</span>
+            </label>
+          </div>
+        </div>
+
         <div>
           <label class="block text-[10px] text-gray-500 mb-0.5">Kategori</label>
-          <input type="text" id="kas-kategori" placeholder="Contoh: Modal Tambahan, Listrik, Gaji" class="w-full border rounded-xl p-2.5 font-semibold" required />
+          <input type="text" id="kas-kategori" placeholder="Contoh: Kulakan Sembako / Pulsa Struk / Biaya Admin" class="w-full border rounded-xl p-2.5 font-semibold" required />
         </div>
         <div>
           <label class="block text-[10px] text-gray-500 mb-0.5">Metode</label>
-          <select id="kas-metode" class="w-full border rounded-xl p-2.5 font-medium"><option value="CASH">CASH (Tunai)</option><option value="TRANSFER">TRANSFER</option></select>
+          <select id="kas-metode" class="w-full border rounded-xl p-2.5 font-medium">
+            <option value="CASH">CASH (Tunai)</option>
+            <option value="TRANSFER">TRANSFER</option>
+          </select>
         </div>
         <div>
           <label class="block text-[10px] text-gray-500 mb-0.5">Nominal (Rp)</label>
@@ -1336,7 +1390,10 @@
           <label class="block text-[10px] text-gray-500 mb-0.5">Catatan Tambahan</label>
           <input type="text" id="kas-catatan" placeholder="Keterangan..." class="w-full border rounded-xl p-2.5" />
         </div>
-        <div class="flex justify-end space-x-2 pt-2 border-t"><button type="button" onclick="closeModal('modal-kas')" class="px-4 py-2 border rounded-xl">Batal</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold">Simpan ke Laporan</button></div>
+        <div class="flex justify-end space-x-2 pt-2 border-t">
+          <button type="button" onclick="closeModal('modal-kas')" class="px-4 py-2 border rounded-xl">Batal</button>
+          <button type="submit" id="btn-submit-kas" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold">Simpan ke Laporan</button>
+        </div>
       </form>
     </div>
   </div>
@@ -1444,6 +1501,7 @@
     let activeReturTab = 'semua';
     let activeLaporanTab = 'toko';
     let activeBarangSubTab = 'katalog';
+    let activePengeluaranTab = 'semua';
     let selectedProductIds = new Set();
     let isMobileCartOpen = false;
     let lastActiveTxForReceipt = null;
@@ -1665,9 +1723,7 @@
       }
     }
 
-    // ==========================================
-    // PERBAIKAN LOGIKA SUB-TAB DATA BARANG & MUTASI
-    // ==========================================
+    // PENGATURAN SUB TAB DATA BARANG & MUTASI
     function switchBarangSubTab(tab) {
       activeBarangSubTab = tab;
       const vKatalog = document.getElementById('subview-katalog-barang');
@@ -1767,14 +1823,12 @@
       if (document.getElementById('filter-tx-date')) document.getElementById('filter-tx-date').value = today;
       if (document.getElementById('laporan-delete-date')) document.getElementById('laporan-delete-date').value = today;
 
-      // Filter hak akses admin-only secara aman tanpa merusak display subview mutasi
       document.querySelectorAll('.admin-only').forEach(el => {
         if (el.id === 'subview-mutasi-stok') return;
         if (isAdmin) el.classList.remove('hidden');
         else el.classList.add('hidden');
       });
 
-      // Pastikan subtab katalog aktif dan mutasi stok tertutup rapat
       switchBarangSubTab('katalog');
 
       renderDashboard();
@@ -1793,7 +1847,6 @@
       renderLaporan();
     }
 
-    // Sisanya fungsi operasional standar
     function showReceiptModal(tx) {
       lastActiveTxForReceipt = tx;
       document.getElementById('rcpt-no').innerText = tx.id;
@@ -2169,10 +2222,48 @@
       select.innerHTML = opts;
     }
 
+    // ==========================================
+    // LOGIKA PENGELUARAN TOKO & BRILINK DIPERBARUI
+    // ==========================================
     function openModalKas(type) {
       document.getElementById('kas-type').value = type;
-      document.getElementById('modal-kas-title').innerText = type === 'pemasukan' ? 'Catat Pemasukan Manual' : 'Catat Pengeluaran Toko';
+      const targetContainer = document.getElementById('kas-target-container');
+      const submitBtn = document.getElementById('btn-submit-kas');
+
+      if (type === 'pemasukan') {
+        document.getElementById('modal-kas-title').innerText = 'Catat Pemasukan Manual';
+        targetContainer.classList.add('hidden');
+        submitBtn.className = 'px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold';
+      } else {
+        document.getElementById('modal-kas-title').innerText = 'Catat Pengeluaran';
+        targetContainer.classList.remove('hidden');
+        document.getElementById('target-toko').checked = true;
+        submitBtn.className = 'px-4 py-2 bg-red-600 text-white rounded-xl font-bold';
+      }
       openModal('modal-kas');
+    }
+
+    function openModalKasSpecific(type, target) {
+      openModalKas(type);
+      if (type === 'pengeluaran') {
+        if (target === 'brilink') {
+          document.getElementById('target-brilink').checked = true;
+          document.getElementById('kas-kategori').placeholder = 'Contoh: Biaya Admin Bank / Pulsa Struk / Sewa EDC';
+        } else {
+          document.getElementById('target-toko').checked = true;
+          document.getElementById('kas-kategori').placeholder = 'Contoh: Kulakan Sembako / Listrik / Gaji';
+        }
+      }
+    }
+
+    function switchPengeluaranTab(tab) {
+      activePengeluaranTab = tab;
+      document.querySelectorAll('.exp-tab').forEach(btn => {
+        btn.className = 'exp-tab text-gray-400 pb-2 hover:text-gray-700 font-semibold';
+      });
+      const activeBtn = document.getElementById(`tab-exp-${tab}`);
+      if (activeBtn) activeBtn.className = 'exp-tab text-emerald-700 border-b-2 border-emerald-600 pb-2 font-bold';
+      renderKasTable();
     }
 
     async function saveKas(e) {
@@ -2185,25 +2276,37 @@
 
       const now = new Date();
       const dateKey = now.toISOString().slice(0, 10);
-      const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-
-      const entry = { id: String(Date.now()), dateKey, tanggal: timeStr, kategori, metode, nominal, catatan, source: 'manual' };
+      const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
 
       if (type === 'pemasukan') {
+        const entry = { id: 'IN-' + Date.now(), dateKey, tanggal: timeStr, kategori, metode, nominal, catatan, source: 'manual' };
         if (!isFirebaseReady) pemasukans.unshift(entry);
         else await syncToCloud("pemasukans", entry.id, entry);
         addLog('CASH_IN', `Pemasukan manual Rp${nominal.toLocaleString('id-ID')}`);
       } else {
+        const targetRadio = document.querySelector('input[name="kas-target"]:checked');
+        const expenseType = targetRadio ? targetRadio.value : 'toko'; // 'toko' atau 'brilink'
+        const entry = {
+          id: (expenseType === 'brilink' ? 'EXP-BRI-' : 'EXP-TOK-') + Date.now(),
+          expenseType: expenseType, // 'toko' atau 'brilink'
+          dateKey,
+          tanggal: timeStr,
+          kategori,
+          metode,
+          nominal,
+          catatan,
+          source: 'manual'
+        };
         if (!isFirebaseReady) pengeluarans.unshift(entry);
         else await syncToCloud("pengeluarans", entry.id, entry);
-        addLog('CASH_OUT', `Pengeluaran toko Rp${nominal.toLocaleString('id-ID')}`);
+        addLog('CASH_OUT', `Pengeluaran [${expenseType.toUpperCase()}] ${kategori} Rp${nominal.toLocaleString('id-ID')}`);
       }
 
       renderKasTable();
       renderDashboard();
       renderLaporan();
       closeModal('modal-kas');
-      showToast('Data kas tersimpan & terintegrasi!');
+      showToast('Data berhasil disimpan & terintegrasi ke pembukuan!');
     }
 
     async function deleteKas(type, id) {
@@ -2253,49 +2356,80 @@
     }
 
     function renderKasTable() {
+      // Pemasukan Table
       const tbodyMasuk = document.getElementById('table-pemasukan-body');
-      const allMasuk = getIntegratedPemasukanList();
-      const totalMasuk = allMasuk.reduce((s, i) => s + (i.nominal || 0), 0);
-      document.getElementById('pemasukan-total-label').innerText = `Total Aliran Kas Masuk: Rp${totalMasuk.toLocaleString('id-ID')}`;
+      if (tbodyMasuk) {
+        const allMasuk = getIntegratedPemasukanList();
+        const totalMasuk = allMasuk.reduce((s, i) => s + (i.nominal || 0), 0);
+        document.getElementById('pemasukan-total-label').innerText = `Total Aliran Kas Masuk: Rp${totalMasuk.toLocaleString('id-ID')}`;
 
-      tbodyMasuk.innerHTML = allMasuk.length === 0
-        ? `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada pemasukan</td></tr>`
-        : allMasuk.slice(0, 50).map((p, idx) => `
-          <tr class="hover:bg-gray-50/60 transition">
-            <td class="px-4 sm:px-6 py-3 font-semibold">${idx + 1}</td>
-            <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${p.tanggal}</td>
-            <td class="px-4 sm:px-6 py-3 font-bold text-gray-800 flex items-center gap-1.5">
-              ${p.isSystem ? '<span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-extrabold">AUTO</span>' : ''}
-              <span>${p.kategori}</span>
-            </td>
-            <td class="px-4 sm:px-6 py-3">${p.metode}</td>
-            <td class="px-4 sm:px-6 py-3 font-bold text-emerald-600">Rp${(p.nominal || 0).toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-gray-500">${p.catatan || '-'}</td>
-            <td class="px-4 sm:px-6 py-3 text-right">
-              ${!p.isSystem ? `<button onclick="deleteKas('pemasukan', '${p.id}')" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '<span class="text-gray-400 text-[10px]">Sistem</span>'}
-            </td>
-          </tr>
-        `).join('');
+        tbodyMasuk.innerHTML = allMasuk.length === 0
+          ? `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada pemasukan</td></tr>`
+          : allMasuk.slice(0, 50).map((p, idx) => `
+            <tr class="hover:bg-gray-50/60 transition">
+              <td class="px-4 sm:px-6 py-3 font-semibold">${idx + 1}</td>
+              <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${p.tanggal}</td>
+              <td class="px-4 sm:px-6 py-3 font-bold text-gray-800 flex items-center gap-1.5">
+                ${p.isSystem ? '<span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-extrabold">AUTO</span>' : ''}
+                <span>${p.kategori}</span>
+              </td>
+              <td class="px-4 sm:px-6 py-3">${p.metode}</td>
+              <td class="px-4 sm:px-6 py-3 font-bold text-emerald-600">Rp${(p.nominal || 0).toLocaleString('id-ID')}</td>
+              <td class="px-4 sm:px-6 py-3 text-gray-500">${p.catatan || '-'}</td>
+              <td class="px-4 sm:px-6 py-3 text-right">
+                ${!p.isSystem ? `<button onclick="deleteKas('pemasukan', '${p.id}')" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '<span class="text-gray-400 text-[10px]">Sistem</span>'}
+              </td>
+            </tr>
+          `).join('');
+      }
 
+      // Pengeluaran Table & Metric Cards
       const tbodyKeluar = document.getElementById('table-pengeluaran-body');
-      const totalKeluar = pengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
-      document.getElementById('pengeluaran-total-label').innerText = `Total Pengeluaran Toko: Rp${totalKeluar.toLocaleString('id-ID')}`;
+      if (tbodyKeluar) {
+        const totalSemuaKeluar = pengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
+        const expToko = pengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko');
+        const expBri = pengeluarans.filter(p => p.expenseType === 'brilink');
 
-      tbodyKeluar.innerHTML = pengeluarans.length === 0
-        ? `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada pengeluaran toko</td></tr>`
-        : pengeluarans.map((p, idx) => `
-          <tr class="hover:bg-gray-50/60 transition">
-            <td class="px-4 sm:px-6 py-3 font-semibold">${idx + 1}</td>
-            <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${p.tanggal}</td>
-            <td class="px-4 sm:px-6 py-3 font-bold text-gray-800">${p.kategori}</td>
-            <td class="px-4 sm:px-6 py-3">${p.metode}</td>
-            <td class="px-4 sm:px-6 py-3 font-bold text-red-600">Rp${(p.nominal || 0).toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-gray-500">${p.catatan || '-'}</td>
-            <td class="px-4 sm:px-6 py-3 text-right">
-              <button onclick="deleteKas('pengeluaran', '${p.id}')" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-            </td>
-          </tr>
-        `).join('');
+        const totalToko = expToko.reduce((s, i) => s + (i.nominal || 0), 0);
+        const totalBri = expBri.reduce((s, i) => s + (i.nominal || 0), 0);
+
+        document.getElementById('pengeluaran-total-label').innerText = `Total: Rp${totalSemuaKeluar.toLocaleString('id-ID')} (Toko: Rp${totalToko.toLocaleString('id-ID')} | BRI Link: Rp${totalBri.toLocaleString('id-ID')})`;
+        document.getElementById('card-exp-total').innerText = 'Rp' + totalSemuaKeluar.toLocaleString('id-ID');
+        document.getElementById('card-exp-count').innerText = `${pengeluarans.length} pengeluaran total`;
+        document.getElementById('card-exp-toko').innerText = 'Rp' + totalToko.toLocaleString('id-ID');
+        document.getElementById('card-exp-brilink').innerText = 'Rp' + totalBri.toLocaleString('id-ID');
+
+        let filteredKeluar = pengeluarans;
+        if (activePengeluaranTab === 'toko') {
+          filteredKeluar = expToko;
+        } else if (activePengeluaranTab === 'brilink') {
+          filteredKeluar = expBri;
+        }
+
+        tbodyKeluar.innerHTML = filteredKeluar.length === 0
+          ? `<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Tidak ada catatan pengeluaran (${activePengeluaranTab})</td></tr>`
+          : filteredKeluar.map((p, idx) => {
+            const isBri = p.expenseType === 'brilink';
+            return `
+              <tr class="hover:bg-gray-50/60 transition">
+                <td class="px-4 sm:px-6 py-3 font-semibold">${idx + 1}</td>
+                <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${p.tanggal}</td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isBri ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'}">
+                    ${isBri ? 'BRI LINK' : 'TOKO'}
+                  </span>
+                </td>
+                <td class="px-4 sm:px-6 py-3 font-bold text-gray-800">${p.kategori}</td>
+                <td class="px-4 sm:px-6 py-3">${p.metode}</td>
+                <td class="px-4 sm:px-6 py-3 font-bold text-red-600">Rp${(p.nominal || 0).toLocaleString('id-ID')}</td>
+                <td class="px-4 sm:px-6 py-3 text-gray-500">${p.catatan || '-'}</td>
+                <td class="px-4 sm:px-6 py-3 text-right">
+                  <button onclick="deleteKas('pengeluaran', '${p.id}')" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+      }
       lucide.createIcons();
     }
 
@@ -2349,6 +2483,7 @@
         prod.stok += qty;
         const expEntry = {
           id: 'EXP-RET-' + Date.now(),
+          expenseType: 'toko',
           dateKey: new Date().toISOString().slice(0, 10),
           tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
           kategori: 'Refund Retur Pelanggan',
@@ -2565,22 +2700,27 @@
       
       const totalSales = validTx.reduce((s, i) => s + (i.total || 0), 0);
       const grossProfit = validTx.reduce((s, i) => s + (i.profit || 0), 0);
-      const totalExp = pengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
-      const netProfit = grossProfit - totalExp;
+      
+      // Pembagian Pengeluaran Khusus Toko & BRI Link
+      const totalExpToko = pengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (i.nominal || 0), 0);
+      const totalExpBri = pengeluarans.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (i.nominal || 0), 0);
+
+      const netProfitToko = grossProfit - totalExpToko;
 
       document.getElementById('lap-penjualan').innerText = 'Rp' + totalSales.toLocaleString('id-ID');
       document.getElementById('lap-labakotor').innerText = 'Rp' + grossProfit.toLocaleString('id-ID');
-      document.getElementById('lap-pengeluaran').innerText = 'Rp' + totalExp.toLocaleString('id-ID');
-      document.getElementById('lap-lababersih').innerText = 'Rp' + netProfit.toLocaleString('id-ID');
+      document.getElementById('lap-pengeluaran').innerText = 'Rp' + totalExpToko.toLocaleString('id-ID');
+      document.getElementById('lap-lababersih').innerText = 'Rp' + netProfitToko.toLocaleString('id-ID');
 
       const briVol = brilinks.reduce((s, i) => s + (i.nominal || 0), 0);
       const briFee = brilinks.reduce((s, i) => s + (i.fee || 0), 0);
-      const briProfit = brilinks.reduce((s, i) => s + (i.profit || 0), 0);
+      const briGrossProfit = brilinks.reduce((s, i) => s + (i.profit || 0), 0);
+      const briNetProfit = briGrossProfit - totalExpBri;
 
       document.getElementById('lap-bri-volume').innerText = 'Rp' + briVol.toLocaleString('id-ID');
       document.getElementById('lap-bri-fee').innerText = 'Rp' + briFee.toLocaleString('id-ID');
-      document.getElementById('lap-bri-profit').innerText = 'Rp' + briProfit.toLocaleString('id-ID');
-      document.getElementById('lap-bri-count').innerText = `${brilinks.length} transaksi`;
+      document.getElementById('lap-bri-exp').innerText = 'Rp' + totalExpBri.toLocaleString('id-ID');
+      document.getElementById('lap-bri-profit').innerText = 'Rp' + briNetProfit.toLocaleString('id-ID');
 
       const tbodyToko = document.getElementById('table-laporan-harian');
       let rowsToko = '';
@@ -2606,9 +2746,11 @@
         const sVal = dayTx.reduce((acc, t) => acc + (t.total || 0), 0);
         const lVal = dayTx.reduce((acc, t) => acc + (t.profit || 0), 0);
 
-        const dayExp = pengeluarans.filter(p => p.dateKey === isoDate);
-        const eVal = dayExp.reduce((acc, p) => acc + (p.nominal || 0), 0);
-        const netVal = lVal - eVal;
+        // Pengeluaran per hari toko vs brilink
+        const dayExpToko = pengeluarans.filter(p => p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko')).reduce((acc, p) => acc + (p.nominal || 0), 0);
+        const dayExpBri = pengeluarans.filter(p => p.dateKey === isoDate && p.expenseType === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
+
+        const netVal = lVal - dayExpToko;
 
         sData[day - 1] = sVal;
         lData[day - 1] = lVal;
@@ -2618,7 +2760,7 @@
             <td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td>
             <td class="px-4 sm:px-6 py-3 text-right">Rp${sVal.toLocaleString('id-ID')}</td>
             <td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${lVal.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right text-red-600">Rp${eVal.toLocaleString('id-ID')}</td>
+            <td class="px-4 sm:px-6 py-3 text-right text-red-600">Rp${dayExpToko.toLocaleString('id-ID')}</td>
             <td class="px-4 sm:px-6 py-3 text-right font-extrabold ${netVal >= 0 ? 'text-emerald-700' : 'text-rose-600'}">Rp${netVal.toLocaleString('id-ID')}</td>
             <td class="px-4 sm:px-6 py-3 text-right">
               <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus seluruh data tanggal ini"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -2629,16 +2771,17 @@
         const dayBri = brilinks.filter(b => b.dateKey === isoDate);
         const bVol = dayBri.reduce((acc, b) => acc + (b.nominal || 0), 0);
         const bFee = dayBri.reduce((acc, b) => acc + (b.fee || 0), 0);
-        const bProfit = dayBri.reduce((acc, b) => acc + (b.profit || 0), 0);
-        briProfitData[day - 1] = bProfit;
+        const bProfitGross = dayBri.reduce((acc, b) => acc + (b.profit || 0), 0);
+        const bNetProfit = bProfitGross - dayExpBri;
+        briProfitData[day - 1] = bNetProfit;
 
         rowsBri += `
           <tr class="hover:bg-gray-50/60 transition">
             <td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td>
             <td class="px-4 sm:px-6 py-3 text-right">Rp${bVol.toLocaleString('id-ID')}</td>
             <td class="px-4 sm:px-6 py-3 text-right text-teal-600 font-medium">Rp${bFee.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${bProfit.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right font-semibold">${dayBri.length} tx</td>
+            <td class="px-4 sm:px-6 py-3 text-right text-red-500 font-medium">Rp${dayExpBri.toLocaleString('id-ID')}</td>
+            <td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${bNetProfit.toLocaleString('id-ID')}</td>
             <td class="px-4 sm:px-6 py-3 text-right">
               <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus laporan tanggal ini"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </td>
@@ -2672,7 +2815,7 @@
           data: {
             labels: daysArr,
             datasets: [
-              { label: 'Laba Bersih BRI Link (Rp)', data: briProfitData, backgroundColor: '#3b82f6', borderRadius: 4 }
+              { label: 'Laba Bersih Agen (Rp)', data: briProfitData, backgroundColor: '#3b82f6', borderRadius: 4 }
             ]
           },
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
@@ -2781,13 +2924,15 @@
       const totalSales = validTx.reduce((s, i) => s + (i.total || 0), 0);
       const totalProfit = validTx.reduce((s, i) => s + (i.profit || 0), 0);
       const totalExpenses = pengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
+      const expToko = pengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (i.nominal || 0), 0);
+      const expBri = pengeluarans.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (i.nominal || 0), 0);
       const totalBriLink = brilinks.reduce((s, i) => s + (i.profit || 0), 0);
 
       document.getElementById('dash-sales-today').innerText = 'Rp' + totalSales.toLocaleString('id-ID');
       document.getElementById('dash-tx-today').innerText = `${validTx.length} transaksi`;
       document.getElementById('dash-profit-today').innerText = 'Rp' + totalProfit.toLocaleString('id-ID');
       document.getElementById('dash-expense-today').innerText = 'Rp' + totalExpenses.toLocaleString('id-ID');
-      document.getElementById('dash-expense-count').innerText = `${pengeluarans.length} pengeluaran`;
+      document.getElementById('dash-expense-count').innerText = `Toko: Rp${expToko.toLocaleString('id-ID')} | BRI: Rp${expBri.toLocaleString('id-ID')}`;
       document.getElementById('dash-brilink-today').innerText = 'Rp' + totalBriLink.toLocaleString('id-ID');
       document.getElementById('dash-brilink-count').innerText = `${brilinks.length} transaksi`;
 
@@ -3460,14 +3605,14 @@
         const sVal = dayTx.reduce((acc, t) => acc + (t.total || 0), 0);
         const lVal = dayTx.reduce((acc, t) => acc + (t.profit || 0), 0);
 
-        const dayExp = pengeluarans.filter(p => p.dateKey === isoDate);
+        const dayExp = pengeluarans.filter(p => p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko'));
         const eVal = dayExp.reduce((acc, p) => acc + (p.nominal || 0), 0);
 
         rows.push({
           'Tanggal': simpleDate,
           'Penjualan Toko': sVal,
           'Laba Kotor': lVal,
-          'Pengeluaran': eVal,
+          'Pengeluaran Toko': eVal,
           'Laba Bersih': (lVal - eVal)
         });
       }
@@ -3490,12 +3635,14 @@
         const bVol = dayBri.reduce((acc, b) => acc + (b.nominal || 0), 0);
         const bFee = dayBri.reduce((acc, b) => acc + (b.fee || 0), 0);
         const bProfit = dayBri.reduce((acc, b) => acc + (b.profit || 0), 0);
+        const bExp = pengeluarans.filter(p => p.dateKey === isoDate && p.expenseType === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
 
         rows.push({
           'Tanggal': simpleDate,
           'Volume Perputaran': bVol,
           'Fee Admin': bFee,
-          'Keuntungan Agen': bProfit,
+          'Pengeluaran BRI Link': bExp,
+          'Laba Bersih Agen': (bProfit - bExp),
           'Jumlah Tx': dayBri.length
         });
       }
