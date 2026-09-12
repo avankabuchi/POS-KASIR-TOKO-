@@ -39,14 +39,25 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9999px; }
 
     @media print {
+      @page {
+        size: 78mm auto;
+        margin: 0;
+      }
+      html, body {
+        width: 78mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+      }
       body * { visibility: hidden !important; }
       .print-area, .print-area * { visibility: visible !important; }
       .print-area {
         position: absolute !important;
         left: 0 !important;
         top: 0 !important;
-        width: 100% !important;
-        margin: 0 !important;
+        width: 76mm !important;
+        max-width: 76mm !important;
+        margin: 0 auto !important;
         padding: 4px !important;
         box-shadow: none !important;
         border: none !important;
@@ -54,6 +65,31 @@
       .no-print { display: none !important; }
     }
     .font-mono-receipt { font-family: 'Courier Prime', Courier, monospace; }
+
+    /* Template Struk Solid Khusus Render PDF (Anti Tabrakan Grid/Flex) */
+    .receipt-pdf-render {
+      width: 280px !important;
+      max-width: 280px !important;
+      padding: 10px !important;
+      background-color: #ffffff !important;
+      color: #000000 !important;
+      font-family: 'Courier Prime', Courier, monospace !important;
+      font-size: 11px !important;
+      line-height: 1.25 !important;
+      box-sizing: border-box !important;
+    }
+    .receipt-pdf-render table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+    }
+    .receipt-pdf-render td {
+      padding: 1.5px 0 !important;
+      vertical-align: top !important;
+    }
+    .receipt-line {
+      border-bottom: 1px dashed #444444 !important;
+      margin: 6px 0 !important;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
@@ -699,7 +735,7 @@
         </div>
       </section>
 
-      <!-- 8. PENGELUARAN TERPADU (PENGELUARAN TOKO & PENGELUARAN BRI LINK) -->
+      <!-- 8. PENGELUARAN TERPADU -->
       <section id="page-pengeluaran" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
@@ -718,7 +754,6 @@
           </div>
         </div>
 
-        <!-- Metric Cards Khusus Pengeluaran -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOTAL SEMUA PENGELUARAN</span>
@@ -737,7 +772,6 @@
           </div>
         </div>
 
-        <!-- Filter Sub-Tab Pengeluaran -->
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
           <div class="flex space-x-4 border-b border-gray-100 px-4 sm:px-6 py-3 text-xs font-semibold" id="pengeluaran-tab-container">
             <button onclick="switchPengeluaranTab('semua')" id="tab-exp-semua" class="exp-tab text-emerald-700 border-b-2 border-emerald-600 pb-2 font-bold">Semua Pengeluaran</button>
@@ -817,7 +851,7 @@
         </div>
       </section>
 
-      <!-- 10. LAPORAN BULANAN TERPADU -->
+      <!-- 10. LAPORAN TERPADU -->
       <section id="page-laporan" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
@@ -845,7 +879,6 @@
           </div>
         </div>
 
-        <!-- Tab Laporan -->
         <div class="flex border-b border-gray-200 space-x-4 text-xs font-bold">
           <button id="tab-btn-toko" onclick="switchLaporanTab('toko')" class="pb-2 text-emerald-600 border-b-2 border-emerald-600 flex items-center space-x-1.5">
             <i data-lucide="shopping-bag" class="w-4 h-4"></i>
@@ -857,7 +890,6 @@
           </button>
         </div>
 
-        <!-- Section Laporan Toko -->
         <div id="section-laporan-toko" class="space-y-4">
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
@@ -906,7 +938,6 @@
           </div>
         </div>
 
-        <!-- Section Laporan BRI Link -->
         <div id="section-laporan-brilink" class="space-y-4 hidden">
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
@@ -1045,7 +1076,7 @@
     </main>
   </div>
 
-  <!-- ==================== MODALS ==================== -->
+  <!-- ==================== MODAL STRUK ==================== -->
   <div id="modal-receipt" class="fixed inset-0 z-50 bg-black/60 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 max-h-[95vh] overflow-y-auto custom-scrollbar">
       <div class="flex justify-between items-center border-b pb-2">
@@ -1053,46 +1084,64 @@
         <button onclick="closeModal('modal-receipt')"><i data-lucide="x" class="w-5 h-5 text-gray-400"></i></button>
       </div>
 
-      <div id="thermal-receipt" class="bg-white p-4 font-mono-receipt text-[11px] border rounded-lg max-w-[80mm] mx-auto shadow-inner text-gray-800 leading-tight">
-        <div class="text-center pb-2 border-b border-dashed">
-          <h2 class="font-bold text-sm text-gray-900">TOKO BUNG EDI</h2>
-          <p class="text-[10px] text-gray-600">Jalan Turonggo karangturi</p>
+      <!-- Preview Struk di Layar -->
+      <div id="thermal-receipt" class="bg-white p-3 font-mono-receipt text-[11px] border rounded-lg w-[76mm] max-w-full mx-auto shadow-inner text-gray-900 leading-tight">
+        <div class="text-center pb-2 border-b border-dashed border-gray-400">
+          <h2 class="font-bold text-sm text-gray-900 tracking-wider">TOKO BUNG EDI</h2>
+          <p class="text-[10px] text-gray-600 mt-0.5">Jalan Turonggo karangturi</p>
           <p class="text-[10px] text-gray-600">WhatsApp: 0851327958234</p>
         </div>
-        <div class="py-2 text-[10px] space-y-0.5 border-b border-dashed">
-          <div class="flex justify-between"><span>No:</span><span id="rcpt-no"></span></div>
+        <div class="py-2 text-[10px] space-y-0.5 border-b border-dashed border-gray-400">
+          <div class="flex justify-between"><span>No:</span><span id="rcpt-no" class="font-bold"></span></div>
           <div class="flex justify-between"><span>Waktu:</span><span id="rcpt-date"></span></div>
           <div class="flex justify-between"><span>Kasir:</span><span id="rcpt-cashier"></span></div>
           <div class="flex justify-between"><span>Pelanggan:</span><span id="rcpt-customer" class="font-bold">Umum</span></div>
           <div class="flex justify-between"><span>Metode:</span><span id="rcpt-method">CASH</span></div>
         </div>
-        <div class="py-2 border-b border-dashed space-y-1" id="rcpt-items"></div>
-        <div class="py-2 space-y-1 font-bold border-b border-dashed">
-          <div class="flex justify-between text-xs font-extrabold"><span>TOTAL:</span><span id="rcpt-total"></span></div>
-          <div class="flex justify-between font-normal"><span>Bayar:</span><span id="rcpt-paid"></span></div>
-          <div class="flex justify-between font-normal"><span>Kembali:</span><span id="rcpt-change"></span></div>
+        <div class="py-2 border-b border-dashed border-gray-400 space-y-1" id="rcpt-items"></div>
+        <div class="py-2 space-y-1 font-bold border-b border-dashed border-gray-400">
+          <div class="flex justify-between text-xs font-extrabold text-gray-900"><span>TOTAL:</span><span id="rcpt-total"></span></div>
+          <div class="flex justify-between font-normal text-[11px]"><span>Bayar:</span><span id="rcpt-paid"></span></div>
+          <div class="flex justify-between font-normal text-[11px]"><span>Kembali:</span><span id="rcpt-change"></span></div>
         </div>
-        <div class="text-center pt-2 text-[10px] text-gray-500">
-          *** Terima Kasih Atas Kunjungan Anda ***
+        <div class="text-center pt-2.5 text-[10px] text-gray-600">
+          *** Terima Kasih Atas Kunjungan Anda ***<br/>
+          <span class="text-[9px] text-gray-400">Barang yang dibeli tidak dapat ditukar kecuali perjanjian</span>
         </div>
       </div>
 
       <div class="space-y-2 no-print">
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="downloadReceiptPDF()" class="py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-1 shadow">
+          <button onclick="downloadReceiptPDF()" class="py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 shadow">
             <i data-lucide="file-down" class="w-4 h-4"></i>
             <span>Unduh PDF</span>
           </button>
-          <button onclick="kirimStrukWhatsAppPDF()" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-1 shadow">
+          <button onclick="openPromptWaModal()" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 shadow">
             <i data-lucide="send" class="w-4 h-4"></i>
-            <span>Kirim WA (PDF)</span>
+            <span>Kirim WA</span>
           </button>
         </div>
-        <button onclick="printCustomArea('thermal-receipt')" class="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5">
+        <button onclick="printCustomArea('thermal-receipt')" class="w-full py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-2 shadow">
           <i data-lucide="printer" class="w-4 h-4"></i>
-          <span>Cetak Thermal</span>
+          <span>Cetak Thermal (Printer POS)</span>
         </button>
-        <button onclick="closeModal('modal-receipt')" class="w-full py-2 border border-gray-200 text-gray-600 rounded-xl text-xs font-semibold">Tutup</button>
+        <button onclick="closeModal('modal-receipt')" class="w-full py-2 border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-xl text-xs font-semibold">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INPUT NOMOR WA NON-MEMBER (Anti Terblokir Browser) -->
+  <div id="modal-prompt-wa" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xs w-full p-5 space-y-3 text-xs">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-900">Kirim Struk WhatsApp</h3>
+        <button onclick="closeModal('modal-prompt-wa')"><i data-lucide="x" class="w-4 h-4 text-gray-400"></i></button>
+      </div>
+      <p class="text-[11px] text-gray-500">Pelanggan bukan member. Masukkan nomor WhatsApp tujuan:</p>
+      <input type="tel" id="input-manual-wa" placeholder="08..." class="w-full border rounded-xl p-2.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
+      <div class="flex space-x-2 pt-2">
+        <button onclick="closeModal('modal-prompt-wa')" class="flex-1 py-2 border rounded-xl font-medium">Batal</button>
+        <button onclick="submitManualWaAndSend()" class="flex-1 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700">Kirim</button>
       </div>
     </div>
   </div>
@@ -1158,7 +1207,7 @@
         <button type="button" onclick="quickAddBayar(50000)" class="py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-[10px]">+50.000</button>
         <button type="button" onclick="quickAddBayar(100000)" class="py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg font-bold text-[10px]">+100.000</button>
       </div>
-      <button onclick="confirmCheckout()" class="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold shadow hover:bg-emerald-700 transition">Bayar & Buat Struk PDF</button>
+      <button onclick="confirmCheckout()" class="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold shadow hover:bg-emerald-700 transition">Bayar & Buka Struk</button>
     </div>
   </div>
 
@@ -1346,7 +1395,7 @@
     </div>
   </div>
 
-  <!-- MODAL KAS (PEMASUKAN / PENGELUARAN DENGAN SUB-TIPE TOKO & BRILINK) -->
+  <!-- MODAL KAS -->
   <div id="modal-kas" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3 text-xs">
       <div class="flex justify-between items-center border-b pb-2">
@@ -1355,8 +1404,6 @@
       </div>
       <form id="form-kas" onsubmit="saveKas(event)" class="space-y-3">
         <input type="hidden" id="kas-type" value="pemasukan" />
-        
-        <!-- Pilihan Target Pengeluaran: Toko vs BRI Link -->
         <div id="kas-target-container" class="space-y-1">
           <label class="block text-[10px] text-gray-500 font-bold uppercase">Jenis Pengeluaran</label>
           <div class="grid grid-cols-2 gap-2">
@@ -1723,7 +1770,6 @@
       }
     }
 
-    // PENGATURAN SUB TAB DATA BARANG & MUTASI
     function switchBarangSubTab(tab) {
       activeBarangSubTab = tab;
       const vKatalog = document.getElementById('subview-katalog-barang');
@@ -1863,9 +1909,9 @@
         const price = item.currentPrice || item.harga || item.hJual;
         const modeLabel = item.priceMode === 'grosir' ? '(G)' : '';
         return `
-          <div class="flex justify-between">
-            <span class="truncate max-w-[130px]">${item.nama} ${modeLabel}</span>
-            <span>${item.qty}x ${price.toLocaleString('id-ID')}</span>
+          <div class="flex justify-between items-start text-[10px]">
+            <span class="truncate max-w-[140px]">${item.nama} ${modeLabel}</span>
+            <span class="shrink-0 text-right">${item.qty} x Rp${price.toLocaleString('id-ID')}</span>
           </div>
         `;
       }).join('');
@@ -1874,40 +1920,172 @@
       lucide.createIcons();
     }
 
-    function downloadReceiptPDF() {
-      if (!lastActiveTxForReceipt) return;
-      const element = document.getElementById('thermal-receipt');
-      const opt = {
-        margin: [2, 2, 2, 2],
-        filename: `Struk-${lastActiveTxForReceipt.id}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: [80, 160], orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
-      showToast('Struk berhasil diunduh sebagai file PDF!');
+    // =========================================================================
+    // TEMPLATE STRUK KHUSUS PDF & LOGIKA CETAK FIT UKURAN (ANTI TERPOTONG / BERANTAKAN)
+    // =========================================================================
+    function generateCleanReceiptDom(tx) {
+      const container = document.createElement('div');
+      container.className = 'receipt-pdf-render';
+
+      let itemsRows = (tx.items || []).map(item => {
+        const price = item.currentPrice || item.harga || item.hJual;
+        const modeLabel = item.priceMode === 'grosir' ? ' (G)' : '';
+        const itemTotal = item.qty * price;
+        return `
+          <tr>
+            <td colspan="2" style="font-weight: bold; padding-top: 3px;">${item.nama}${modeLabel}</td>
+          </tr>
+          <tr>
+            <td style="color: #444;">${item.qty} x Rp${price.toLocaleString('id-ID')}</td>
+            <td style="text-align: right; font-weight: bold;">Rp${itemTotal.toLocaleString('id-ID')}</td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div style="text-align: center; margin-bottom: 8px;">
+          <div style="font-size: 14px; font-weight: bold; letter-spacing: 0.5px;">TOKO BUNG EDI</div>
+          <div style="font-size: 10px; color: #333;">Jalan Turonggo Karangturi</div>
+          <div style="font-size: 10px; color: #333;">WhatsApp: 0851327958234</div>
+        </div>
+        <div class="receipt-line"></div>
+        <table>
+          <tr><td style="width: 70px;">No</td><td>: <b>${tx.id}</b></td></tr>
+          <tr><td>Waktu</td><td>: ${tx.waktu}</td></tr>
+          <tr><td>Kasir</td><td>: ${tx.kasir}</td></tr>
+          <tr><td>Pelanggan</td><td>: <b>${tx.customerName || 'Umum'}</b></td></tr>
+          <tr><td>Metode</td><td>: ${tx.metode}</td></tr>
+        </table>
+        <div class="receipt-line"></div>
+        <table>
+          ${itemsRows}
+        </table>
+        <div class="receipt-line"></div>
+        <table>
+          <tr>
+            <td style="font-size: 13px; font-weight: bold;">TOTAL</td>
+            <td style="font-size: 13px; font-weight: bold; text-align: right;">Rp${tx.total.toLocaleString('id-ID')}</td>
+          </tr>
+          <tr>
+            <td>Bayar</td>
+            <td style="text-align: right;">Rp${(tx.bayar || tx.total).toLocaleString('id-ID')}</td>
+          </tr>
+          <tr>
+            <td>Kembalian</td>
+            <td style="text-align: right;">Rp${(tx.kembali || 0).toLocaleString('id-ID')}</td>
+          </tr>
+        </table>
+        <div class="receipt-line"></div>
+        <div style="text-align: center; margin-top: 8px; font-size: 10px; color: #555;">
+          *** Terima Kasih Atas Kunjungan Anda ***<br/>
+          <span style="font-size: 9px; color: #777;">Barang yang dibeli tidak dapat ditukar</span>
+        </div>
+      `;
+
+      return container;
     }
 
-    function kirimStrukWhatsAppPDF() {
+    function getReceiptPdfWorker() {
+      if (!lastActiveTxForReceipt) return null;
+
+      // Render DOM isolasi di background
+      const isolatedDom = generateCleanReceiptDom(lastActiveTxForReceipt);
+      isolatedDom.style.position = 'fixed';
+      isolatedDom.style.left = '-9999px';
+      isolatedDom.style.top = '0';
+      document.body.appendChild(isolatedDom);
+
+      const heightPx = isolatedDom.offsetHeight || 380;
+      // 1px = 0.264583 mm + padding 8mm
+      const heightMm = Math.max(70, Math.ceil((heightPx * 0.264583) + 8));
+
+      const opt = {
+        margin: [1, 1, 1, 1],
+        filename: `Struk-${lastActiveTxForReceipt.id}.pdf`,
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: {
+          scale: 3,
+          useCORS: true,
+          scrollX: 0,
+          scrollY: 0,
+          backgroundColor: '#ffffff',
+          width: 280
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: [76, heightMm],
+          orientation: 'portrait'
+        }
+      };
+
+      const worker = html2pdf().set(opt).from(isolatedDom);
+
+      // Bersihkan DOM sementara setelah proses render
+      setTimeout(() => {
+        if (isolatedDom && isolatedDom.parentNode) {
+          isolatedDom.parentNode.removeChild(isolatedDom);
+        }
+      }, 3000);
+
+      return worker;
+    }
+
+    function downloadReceiptPDF() {
+      if (!lastActiveTxForReceipt) return;
+      const worker = getReceiptPdfWorker();
+      if (!worker) return;
+
+      worker.save().then(() => {
+        showToast('Struk PDF pas ukuran berhasil diunduh!');
+      }).catch(err => {
+        console.error('PDF Download Error:', err);
+        showToast('Gagal memproses file PDF!');
+      });
+    }
+
+    // Modal internal untuk no WA agar tidak kena Pop-Up Blocker Browser
+    function openPromptWaModal() {
       if (!lastActiveTxForReceipt) return;
       const tx = lastActiveTxForReceipt;
-      let targetPhone = tx.customerPhone || '';
-
-      if (!targetPhone) {
-        targetPhone = prompt("Masukkan nomor WhatsApp member/pelanggan (contoh: 08123456789):");
-        if (!targetPhone) return;
+      if (tx.customerPhone && tx.customerPhone.trim().length >= 6) {
+        eksekusiKirimWhatsApp(tx.customerPhone);
+      } else {
+        document.getElementById('input-manual-wa').value = '';
+        openModal('modal-prompt-wa');
+        setTimeout(() => document.getElementById('input-manual-wa').focus(), 150);
       }
+    }
 
+    function submitManualWaAndSend() {
+      const phoneInput = document.getElementById('input-manual-wa').value.trim();
+      if (!phoneInput) {
+        alert('Harap masukkan nomor WhatsApp pelanggan!');
+        return;
+      }
+      closeModal('modal-prompt-wa');
+      eksekusiKirimWhatsApp(phoneInput);
+    }
+
+    function eksekusiKirimWhatsApp(phoneNumber) {
+      if (!lastActiveTxForReceipt) return;
+      const tx = lastActiveTxForReceipt;
+
+      let targetPhone = phoneNumber.replace(/\D/g, '');
       if (targetPhone.startsWith('0')) targetPhone = '62' + targetPhone.substring(1);
-      if (targetPhone.startsWith('+62')) targetPhone = targetPhone.substring(1);
+      if (targetPhone.startsWith('8')) targetPhone = '62' + targetPhone;
 
-      downloadReceiptPDF();
+      let rincianBarang = (tx.items || []).map((it, idx) => {
+        const p = it.currentPrice || it.harga || it.hJual;
+        return `   ${idx + 1}. ${it.nama} (${it.qty}x) = Rp${(it.qty * p).toLocaleString('id-ID')}`;
+      }).join('\n');
 
-      const pesan = `Halo kak ${tx.customerName || 'Pelanggan'},\nTerima kasih telah berbelanja di *TOKO BUNG EDI*!\n\nBerikut terlampir detail transaksi Anda:\n📄 *No Transaksi:* ${tx.id}\n📅 *Waktu:* ${tx.waktu}\n💰 *Total Pembelian:* Rp${tx.total.toLocaleString('id-ID')}\n💳 *Metode:* ${tx.metode}\n\nFile Struk resmi PDF otomatis tersimpan di perangkat kasir. Semoga harimu menyenangkan!`;
+      const pesan = `*TOKO BUNG EDI*\nJalan Turonggo Karangturi\nWhatsApp: 0851327958234\n--------------------------------\n*STRUK PEMBAYARAN RESMI*\nNo Transaksi : ${tx.id}\nWaktu        : ${tx.waktu}\nKasir        : ${tx.kasir}\nPelanggan    : ${tx.customerName || 'Umum'}\nMetode       : ${tx.metode}\n--------------------------------\n*DETAIL PEMBELIAN:*\n${rincianBarang}\n--------------------------------\n*TOTAL TAGIHAN : Rp${tx.total.toLocaleString('id-ID')}*\nBayar         : Rp${(tx.bayar || tx.total).toLocaleString('id-ID')}\nKembalian     : Rp${(tx.kembali || 0).toLocaleString('id-ID')}\n--------------------------------\nTerima kasih telah berbelanja di Toko Bung Edi!`;
 
-      const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(pesan)}`;
+      const waUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(pesan)}`;
+      
+      // Buka langsung tanpa jeda async agar browser tidak memblokir jendela WhatsApp
       window.open(waUrl, '_blank');
-      showToast('Membuka WhatsApp & Struk PDF diunduh...');
+      showToast('Membuka WhatsApp...');
     }
 
     function openCheckoutModal() {
@@ -2222,9 +2400,6 @@
       select.innerHTML = opts;
     }
 
-    // ==========================================
-    // LOGIKA PENGELUARAN TOKO & BRILINK DIPERBARUI
-    // ==========================================
     function openModalKas(type) {
       document.getElementById('kas-type').value = type;
       const targetContainer = document.getElementById('kas-target-container');
@@ -2285,10 +2460,10 @@
         addLog('CASH_IN', `Pemasukan manual Rp${nominal.toLocaleString('id-ID')}`);
       } else {
         const targetRadio = document.querySelector('input[name="kas-target"]:checked');
-        const expenseType = targetRadio ? targetRadio.value : 'toko'; // 'toko' atau 'brilink'
+        const expenseType = targetRadio ? targetRadio.value : 'toko';
         const entry = {
           id: (expenseType === 'brilink' ? 'EXP-BRI-' : 'EXP-TOK-') + Date.now(),
-          expenseType: expenseType, // 'toko' atau 'brilink'
+          expenseType: expenseType,
           dateKey,
           tanggal: timeStr,
           kategori,
@@ -2356,7 +2531,6 @@
     }
 
     function renderKasTable() {
-      // Pemasukan Table
       const tbodyMasuk = document.getElementById('table-pemasukan-body');
       if (tbodyMasuk) {
         const allMasuk = getIntegratedPemasukanList();
@@ -2383,7 +2557,6 @@
           `).join('');
       }
 
-      // Pengeluaran Table & Metric Cards
       const tbodyKeluar = document.getElementById('table-pengeluaran-body');
       if (tbodyKeluar) {
         const totalSemuaKeluar = pengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
@@ -2400,11 +2573,8 @@
         document.getElementById('card-exp-brilink').innerText = 'Rp' + totalBri.toLocaleString('id-ID');
 
         let filteredKeluar = pengeluarans;
-        if (activePengeluaranTab === 'toko') {
-          filteredKeluar = expToko;
-        } else if (activePengeluaranTab === 'brilink') {
-          filteredKeluar = expBri;
-        }
+        if (activePengeluaranTab === 'toko') filteredKeluar = expToko;
+        else if (activePengeluaranTab === 'brilink') filteredKeluar = expBri;
 
         tbodyKeluar.innerHTML = filteredKeluar.length === 0
           ? `<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Tidak ada catatan pengeluaran (${activePengeluaranTab})</td></tr>`
@@ -2697,11 +2867,9 @@
 
     function renderLaporan() {
       const validTx = transactions.filter(t => t.status !== 'DIBATALKAN');
-      
       const totalSales = validTx.reduce((s, i) => s + (i.total || 0), 0);
       const grossProfit = validTx.reduce((s, i) => s + (i.profit || 0), 0);
       
-      // Pembagian Pengeluaran Khusus Toko & BRI Link
       const totalExpToko = pengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (i.nominal || 0), 0);
       const totalExpBri = pengeluarans.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (i.nominal || 0), 0);
 
@@ -2746,7 +2914,6 @@
         const sVal = dayTx.reduce((acc, t) => acc + (t.total || 0), 0);
         const lVal = dayTx.reduce((acc, t) => acc + (t.profit || 0), 0);
 
-        // Pengeluaran per hari toko vs brilink
         const dayExpToko = pengeluarans.filter(p => p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko')).reduce((acc, p) => acc + (p.nominal || 0), 0);
         const dayExpBri = pengeluarans.filter(p => p.dateKey === isoDate && p.expenseType === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
 
