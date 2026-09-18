@@ -2153,9 +2153,7 @@
         if (rows.length) {
           const id = rows[activePopupIndex]?.dataset.productId;
           if (id) {
-            addToCart(id, {focusQty:false});
-            const input = document.getElementById('popup-barang-search');
-            if (input) { input.value=''; renderPopupBarangList(); input.focus(); }
+            selectProductFromPopup(id);
             return;
           }
         }
@@ -2163,8 +2161,8 @@
         if (!query) return;
         const exact = products.find(p => String(p.barcode||'').toLowerCase() === query || String(p.kode||'').toLowerCase() === query);
         if (exact) {
-          addToCart(exact.id, {focusQty:false});
-          event.target.value=''; renderPopupBarangList(); return;
+          selectProductFromPopup(exact.id);
+          return;
         }
         showToast('Barang tidak ditemukan');
       }
@@ -2195,7 +2193,7 @@
         return `
           <div class="classic-popup-row ${index===activePopupIndex ? 'active-popup-row' : ''} ${disabled ? 'opacity-50' : ''}"
                data-product-id="${p.id}"
-               onclick="${disabled ? '' : `addToCart('${p.id}', {focusQty:false}); renderPopupBarangList();`}"
+               onclick="${disabled ? '' : `selectProductFromPopup('${p.id}')`}"
                title="${disabled ? 'Stok habis' : 'Enter untuk memilih'}">
             <div class="p-code">${p.barcode || p.kode}</div>
             <div class="p-name">${p.nama}</div>
@@ -2206,6 +2204,20 @@
           </div>
         `;
       }).join('');
+    }
+
+    // Memilih produk dari popup: tambah ke keranjang lalu tutup popup otomatis.
+    function selectProductFromPopup(productId) {
+      const prod = products.find(p => String(p.id) === String(productId));
+
+      if (!prod || Number(prod.stok) <= 0) {
+        showToast('Stok barang fisik habis!');
+        return;
+      }
+
+      addToCart(productId, {focusQty:false});
+      closeModal('modal-katalog-barang');
+      focusKasirSearch();
     }
 
     function renderKasirCategoryPills() {
@@ -2312,8 +2324,42 @@
     }
 
     function updateCartQtyFromInput(productId, input) {
+      // Jangan render ulang tabel setiap tombol keyboard ditekan.
+      // Jika tabel dirender ulang pada oninput, fokus input akan hilang
+      // sehingga kasir harus klik lagi untuk mengetik angka berikutnya.
       if (input.value === '') return;
-      setCartQty(productId, input.value);
+
+      const item = cart.find(c => String(c.id) === String(productId));
+      if (!item) return;
+
+      let qty = parseInt(input.value, 10);
+      if (!Number.isFinite(qty) || qty < 1) return;
+
+      const maxStock = Number(item.stok) || 0;
+      if (maxStock > 0 && qty > maxStock) {
+        qty = maxStock;
+        input.value = String(maxStock);
+        showToast(`QTY dibatasi stok ${maxStock}`);
+      }
+
+      item.qty = qty;
+      activeCartItemId = productId;
+      activeCartRowIndex = cart.findIndex(c => String(c.id) === String(productId));
+
+      // Perbarui total tanpa mengganti HTML input QTY.
+      const totalItems = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+      const totalPrice = cart.reduce((sum, item) => sum + (Number(item.qty || 0) * Number(item.currentPrice || 0)), 0);
+      const formattedTotal = 'Rp' + totalPrice.toLocaleString('id-ID');
+      const countEl = document.getElementById('cart-count');
+      const subtotalEl = document.getElementById('subtotal-val');
+      const totalEl = document.getElementById('total-val');
+      const classicTotal = document.getElementById('classic-total-display');
+      const classicSub = document.getElementById('classic-kasir-sub');
+      if (countEl) countEl.innerText = totalItems;
+      if (subtotalEl) subtotalEl.innerText = formattedTotal;
+      if (totalEl) totalEl.innerText = formattedTotal;
+      if (classicTotal) classicTotal.innerText = formattedTotal;
+      if (classicSub) classicSub.innerText = `${totalItems} Barang di Kasir`;
     }
 
     function normalizeCartQtyInput(productId, input) {
