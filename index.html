@@ -144,6 +144,28 @@
     .classic-popup-row{display:grid;grid-template-columns:130px 1fr 110px 100px 85px;align-items:center;gap:6px;padding:7px 9px;border-bottom:1px solid #d1d5db;font-family:'Courier Prime',monospace;font-size:11px;cursor:pointer}
     .classic-popup-row:hover,.classic-popup-row.active-popup-row{background:#dcfce7}
     .classic-popup-row .p-name{font-weight:700}.classic-popup-row .p-code{color:#6b7280}.classic-popup-row .p-stock{text-align:center}.classic-popup-row .p-price{text-align:right}
+    /* KASIR MODERN + FULLSCREEN */
+    .kasir-fullscreen main{padding:0!important;overflow:hidden!important}
+    .kasir-fullscreen #app-sidebar{transform:translateX(-100%)!important;position:fixed!important}
+    .kasir-fullscreen .classic-pos-shell{border:0;border-radius:0;box-shadow:none;min-height:calc(100vh - 16px);display:flex;flex-direction:column}
+    .kasir-fullscreen .classic-table-wrap{flex:1;max-height:none;min-height:0}
+    .kasir-fullscreen .classic-shortcuts{border-radius:0}
+    .kasir-nav-toggle{height:36px;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);color:#fff;border-radius:10px;padding:0 11px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:.18s}
+    .kasir-nav-toggle:hover{background:rgba(255,255,255,.18)}
+    .classic-pos-shell,.classic-pos-shell button,.classic-pos-shell input,.classic-pos-shell select,.classic-pos-shell table{font-family:'Inter',sans-serif}
+    .classic-pos-title{font-family:'Inter',sans-serif;letter-spacing:-.02em;font-size:19px}
+    .classic-pos-subtitle,.classic-field-label,.classic-info-row,.classic-toolbar button,.classic-shortcuts{font-family:'Inter',sans-serif}
+    .classic-pos-total{font-family:'Share Tech Mono',monospace}
+    .classic-popup-row{grid-template-columns:125px minmax(180px,1fr) 125px 125px 90px 80px}
+    .classic-popup-head{display:grid;grid-template-columns:125px minmax(180px,1fr) 125px 125px 90px 80px;gap:6px;padding:7px 9px;background:#f8fafc;border-bottom:1px solid #e5e7eb;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase}
+    .classic-popup-head > div:nth-child(n+3){text-align:right}
+    .classic-popup-head > div:nth-child(5){text-align:center}
+    .classic-popup-row .p-price-grosir{color:#15803d;font-weight:800;text-align:right}
+    @media(max-width:800px){
+      .kasir-fullscreen main{padding:0!important}
+      .kasir-fullscreen .classic-pos-shell{min-height:100vh}
+      .classic-popup-row,.classic-popup-head{grid-template-columns:105px minmax(160px,1fr) 110px 110px 70px 65px}
+    }
     @media(max-width:800px){
       .classic-pos-total{font-size:28px;min-width:0}.classic-pos-header{padding:8px}.classic-input-row{grid-template-columns:1fr 95px}.classic-field-label{display:none}.classic-scanner-badge{display:none}
       .classic-info-row{flex-wrap:wrap;gap:8px}.classic-hint{margin-left:0}.classic-table-wrap{max-height:none}
@@ -345,9 +367,15 @@
         <!-- HEADER KASIR KLASIK -->
         <div class="classic-pos-shell">
           <div class="classic-pos-header">
-            <div>
-              <div class="classic-pos-title">TOKO BUNG EDI</div>
-              <div class="classic-pos-subtitle">KASIR / PENJUALAN</div>
+            <div class="flex items-center gap-3">
+              <button type="button" id="kasir-nav-toggle" class="kasir-nav-toggle" onclick="toggleKasirNavigation()" title="Tampilkan/sembunyikan navigasi">
+                <i data-lucide="panel-left-close" class="w-4 h-4"></i>
+                <span>Navigasi</span>
+              </button>
+              <div>
+                <div class="classic-pos-title">TOKO BUNG EDI</div>
+                <div class="classic-pos-subtitle">KASIR / PENJUALAN</div>
+              </div>
             </div>
             <div class="classic-pos-total-wrap">
               <span class="classic-pos-total-label">TOTAL</span>
@@ -429,7 +457,7 @@
             </div>
             <div class="classic-footer-actions">
               <button type="button" onclick="openModalKatalogBarang()">F2 DAFTAR BARANG</button>
-              <button type="button" onclick="openCheckoutModal()" class="classic-pay-btn">F9 BAYAR / CTRL+ENTER</button>
+              <button type="button" onclick="openCheckoutModal()" class="classic-pay-btn">F9 BAYAR</button>
             </div>
           </div>
         </div>
@@ -449,7 +477,7 @@
           <span>F10 Qty</span>
           <span>E/G Ecer/Grosir</span>
           <span>Delete Hapus</span>
-          <span>Ctrl+Enter Bayar</span>
+          <span>Enter Bayar</span>
           <span>Esc Tutup</span>
         </div>
       </section>
@@ -473,6 +501,14 @@
               onkeydown="handlePopupSearchKey(event)"
               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-700" />
             <div id="popup-cat-pills" class="hidden"></div>
+          </div>
+          <div class="classic-popup-head">
+            <div>Kode / Barcode</div>
+            <div>Nama Barang</div>
+            <div>Harga Eceran</div>
+            <div>Harga Grosir</div>
+            <div>Stok</div>
+            <div>Aksi</div>
           </div>
           <div class="overflow-y-auto custom-scrollbar flex-1" id="popup-barang-list"></div>
           <div class="p-2 border-t border-gray-200 bg-gray-100 flex justify-between items-center text-xs">
@@ -1939,7 +1975,7 @@
         return;
       }
       if (e.key === 'F8') { e.preventDefault(); navigate('member'); return; }
-      if (e.key === 'F9' || (e.ctrlKey && e.key === 'Enter')) {
+      if (e.key === 'F9') {
         e.preventDefault(); openCheckoutModal(); return;
       }
       if (e.key === 'F10') { e.preventDefault(); focusFirstCartQty(); return; }
@@ -2164,7 +2200,8 @@
             <div class="p-code">${p.barcode || p.kode}</div>
             <div class="p-name">${p.nama}</div>
             <div class="p-price">Rp${Number(p.hJual||0).toLocaleString('id-ID')}</div>
-            <div class="p-stock">STOK ${p.stok}</div>
+            <div class="p-price-grosir">Rp${Number(grosir||0).toLocaleString('id-ID')}</div>
+            <div class="p-stock">${p.stok}</div>
             <div class="p-price">${disabled ? 'HABIS' : 'PILIH'}</div>
           </div>
         `;
@@ -3796,6 +3833,27 @@
       setTimeout(() => toast.classList.add('translate-x-full'), 3000);
     }
 
+    function toggleKasirNavigation() {
+      const app = document.getElementById('view-app');
+      const btn = document.getElementById('kasir-nav-toggle');
+      if (!app || !btn) return;
+      const hidden = app.classList.toggle('kasir-fullscreen');
+      btn.innerHTML = hidden
+        ? '<i data-lucide="panel-left-open" class="w-4 h-4"></i><span>Buka Navigasi</span>'
+        : '<i data-lucide="panel-left-close" class="w-4 h-4"></i><span>Sembunyikan</span>';
+      lucide.createIcons();
+      setTimeout(() => focusKasirSearch(), 50);
+    }
+
+    function resetKasirNavigation() {
+      const app = document.getElementById('view-app');
+      const btn = document.getElementById('kasir-nav-toggle');
+      if (!app || !btn) return;
+      app.classList.remove('kasir-fullscreen');
+      btn.innerHTML = '<i data-lucide="panel-left-close" class="w-4 h-4"></i><span>Navigasi</span>';
+      lucide.createIcons();
+    }
+
     function toggleMobileSidebar() {
       document.getElementById('app-sidebar').classList.toggle('-translate-x-full');
       document.getElementById('sidebar-backdrop').classList.toggle('hidden');
@@ -3849,6 +3907,8 @@
           const scanInput = document.getElementById('kasir-search');
           if (scanInput && window.innerWidth > 768) scanInput.focus();
         }, 100);
+      } else {
+        resetKasirNavigation();
       }
     }
 
