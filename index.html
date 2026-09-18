@@ -1497,13 +1497,18 @@
         </div>
         <div>
           <label class="block text-[10px] text-gray-500 mb-0.5">Kategori</label>
-          <select id="barang-kategori" class="w-full border rounded-xl p-2.5 font-medium">
-            <option value="Minuman">Minuman</option>
-            <option value="Sembako">Sembako</option>
-            <option value="Snack">Snack</option>
-            <option value="Rokok">Rokok</option>
-            <option value="Lainnya">Lainnya</option>
-          </select>
+          <div class="flex gap-2">
+            <select id="barang-kategori" class="w-full border rounded-xl p-2.5 font-medium">
+              <option value="Minuman">Minuman</option>
+              <option value="Sembako">Sembako</option>
+              <option value="Snack">Snack</option>
+              <option value="Rokok">Rokok</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+            <button type="button" onclick="addProductCategory()" class="shrink-0 px-3 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700" title="Tambah kategori">+ Kategori</button>
+            <button type="button" onclick="deleteProductCategory()" class="shrink-0 px-3 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700" title="Hapus kategori">− Hapus</button>
+          </div>
+          <p class="text-[10px] text-gray-400 mt-1">Tambahkan kategori baru tanpa harus menutup form barang.</p>
         </div>
         <div class="grid grid-cols-3 gap-2">
           <div>
@@ -1778,6 +1783,7 @@
           renderKasirCategoryPills();
           renderDashboard();
           renderPopupBarangList();
+          refreshProductCategories();
         } else {
           products.forEach(p => syncToCloud("products", p.id, p));
         }
@@ -2983,6 +2989,56 @@
       openModal('modal-barang');
       setupEnterStepNavigation();
       setTimeout(() => document.getElementById('barang-nama').focus(), 150);
+    }
+
+    async function addProductCategory() {
+      const select = document.getElementById('barang-kategori');
+      const name = prompt('Masukkan nama kategori baru:');
+      if (name === null) return;
+      const kategori = name.trim().replace(/\s+/g, ' ');
+      if (!kategori) return showToast('Nama kategori tidak boleh kosong', 'error');
+      const exists = Array.from(select.options).some(o => o.value.toLowerCase() === kategori.toLowerCase());
+      if (exists) { select.value = Array.from(select.options).find(o => o.value.toLowerCase() === kategori.toLowerCase()).value; return showToast('Kategori sudah tersedia'); }
+      const option = new Option(kategori, kategori);
+      select.add(option);
+      select.value = kategori;
+      try {
+        if (isFirebaseReady && db) await db.collection('categories').doc(kategori.toLowerCase().replace(/[^a-z0-9]+/g, '-')).set({ nama: kategori, dibuat: new Date().toISOString() }, { merge: true });
+        showToast(`Kategori "${kategori}" berhasil ditambahkan${isFirebaseReady ? ' ke Cloud' : ''}`);
+      } catch (err) {
+        console.error('Gagal menyimpan kategori:', err);
+        showToast('Kategori ditambahkan sementara, tetapi gagal disimpan ke Cloud', 'error');
+      }
+    }
+
+    async function refreshProductCategories() {
+      const selects = [document.getElementById('barang-kategori'), document.getElementById('filter-barang-kategori')].filter(Boolean);
+      const names = new Set();
+      products.forEach(p => { if (p.kategori && String(p.kategori).trim()) names.add(String(p.kategori).trim()); });
+      if (isFirebaseReady && db) {
+        try { const snap = await db.collection('categories').get(); snap.forEach(d => { const n=d.data().nama || d.id; if(n) names.add(String(n).trim()); }); } catch(e) { console.warn('Kategori cloud tidak terbaca',e); }
+      }
+      selects.forEach((select, idx) => {
+        const current = select.value;
+        select.innerHTML = idx === 1 ? '<option value="semua">Semua Kategori</option>' : '<option value="">Pilih kategori</option>';
+        [...names].sort((a,b)=>a.localeCompare(b,'id')).forEach(n => select.add(new Option(n,n)));
+        if ([...select.options].some(o=>o.value===current)) select.value=current;
+      });
+    }
+
+    async function deleteProductCategory() {
+      const select = document.getElementById('barang-kategori');
+      const kategori = select?.value?.trim();
+      if (!kategori) return showToast('Pilih kategori yang ingin dihapus', 'error');
+      const dipakai = products.some(p => String(p.kategori || '').toLowerCase() === kategori.toLowerCase());
+      if (dipakai) return showToast('Kategori masih digunakan oleh barang dan tidak dapat dihapus', 'error');
+      if (!confirm(`Hapus kategori "${kategori}"?`)) return;
+      try {
+        if (isFirebaseReady && db) await db.collection('categories').doc(kategori.toLowerCase().replace(/[^a-z0-9]+/g,'-')).delete();
+        await refreshProductCategories();
+        select.value = '';
+        showToast(`Kategori "${kategori}" berhasil dihapus`);
+      } catch (err) { console.error(err); showToast('Gagal menghapus kategori dari Cloud','error'); }
     }
 
     async function saveProduct(e) {
