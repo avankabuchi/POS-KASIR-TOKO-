@@ -102,6 +102,17 @@
     .classic-pos-total-wrap{display:flex;align-items:center;gap:14px}
     .classic-pos-total-label{font-family:'Courier Prime',monospace;font-size:12px;font-weight:700;color:#d1d5db}
     .classic-pos-total{font-family:'Share Tech Mono',monospace;font-size:38px;line-height:1;color:#86efac;font-weight:700;min-width:260px;text-align:right}
+
+    /* Perbaikan posisi harga pada tabel kasir */
+    #cart-table th, #cart-table td { vertical-align: middle; }
+    #cart-table th:nth-child(4), #cart-table td:nth-child(4),
+    #cart-table th:nth-child(5), #cart-table td:nth-child(5) {
+      white-space: nowrap;
+      text-align: right;
+      min-width: 120px;
+    }
+    #cart-table th:nth-child(3), #cart-table td:nth-child(3) { min-width: 70px; text-align: center; }
+
     .classic-input-row{display:grid;grid-template-columns:120px minmax(250px,1fr) 110px 125px;align-items:center;gap:7px;padding:8px;background:#e5e7eb;border-bottom:1px solid #9ca3af}
     .classic-field-label{font-family:'Courier Prime',monospace;font-size:11px;font-weight:700;color:#374151}
     #kasir-search{height:42px;background:#fff;border:2px solid #374151;border-radius:3px;padding:0 12px;font-family:'Courier Prime',monospace;font-size:18px;font-weight:700;outline:none}
@@ -118,14 +129,15 @@
     .classic-toolbar .classic-pay-btn:hover,.classic-pay-btn:hover{background:#14532d}
     .classic-toolbar .classic-danger-btn{color:#991b1b;background:#fff}
     .classic-table-wrap{overflow:auto;max-height:calc(100vh - 390px);min-height:300px;background:#fff}
-    .classic-pos-table{width:100%;border-collapse:collapse;table-layout:fixed;font-family:'Courier Prime',monospace;font-size:12px}
+    .classic-pos-table{width:100%;min-width:980px;border-collapse:collapse;table-layout:fixed;font-family:'Courier Prime',monospace;font-size:12px}
     .classic-pos-table th{position:sticky;top:0;z-index:3;background:#374151;color:#fff;border:1px solid #6b7280;padding:7px 6px;text-align:center;font-size:10px;letter-spacing:.03em;white-space:nowrap}
     .classic-pos-table td{border:1px solid #d1d5db;padding:3px 5px;height:38px;background:#fff;vertical-align:middle}
     .classic-pos-table tbody tr:hover td{background:#f8fafc}
     .classic-pos-table tbody tr.active-cart-row td{background:#dcfce7!important;border-top:2px solid #16a34a;border-bottom:2px solid #16a34a}
-    .classic-pos-table .col-no{width:48px}.classic-pos-table .col-code{width:145px}.classic-pos-table .col-name{width:auto}
-    .classic-pos-table .col-price-type{width:105px}.classic-pos-table .col-price{width:125px}.classic-pos-table .col-qty{width:88px}
-    .classic-pos-table .col-subtotal{width:145px}.classic-pos-table .col-delete{width:48px}
+    .classic-pos-table .col-no{width:48px}.classic-pos-table .col-code{width:175px}.classic-pos-table .col-name{width:300px}
+    .classic-pos-table .col-price-type{width:110px}.classic-pos-table .col-price{width:135px}.classic-pos-table .col-qty{width:88px}
+    .classic-pos-table .col-subtotal{width:155px}.classic-pos-table .col-delete{width:48px}
+    .classic-pos-table th:nth-child(4),.classic-pos-table td:nth-child(4),.classic-pos-table th:nth-child(5),.classic-pos-table td:nth-child(5),.classic-pos-table th:nth-child(7),.classic-pos-table td:nth-child(7){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .classic-cell-input{width:100%;height:30px;border:1px solid transparent;background:transparent;border-radius:2px;padding:3px 5px;font-family:'Courier Prime',monospace;font-size:12px;font-weight:700;outline:none}
     .classic-cell-input:focus{background:#fff;border:2px solid #166534;box-shadow:inset 0 0 0 1px #bbf7d0}
     .classic-qty-input{text-align:center;font-size:14px;border:1px solid #9ca3af;background:#fff;font-weight:700}
@@ -193,50 +205,35 @@
         <p class="text-[11px] sm:text-xs text-gray-400 mt-1 uppercase tracking-wider font-semibold">Realtime Cloud POS & BRI Link</p>
       </div>
 
-      <form id="form-login" class="space-y-3 sm:space-y-4" onsubmit="handleLogin(event)">
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
-          <input type="email" id="login-email" required placeholder="admin@example.com"
-            class="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" />
-        </div>
+      <div id="login-role-selection" class="space-y-3">
+        <p class="text-center text-sm font-semibold text-gray-700 mb-4">Pilih jenis akun untuk masuk</p>
+        <button type="button" onclick="selectLoginRole('admin')" class="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 transition text-left">
+          <span class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center"><i data-lucide="shield-check" class="w-5 h-5"></i></span>
+          <span><strong class="block text-sm text-gray-800">Admin</strong><small class="text-xs text-gray-500">Masuk sebagai administrator toko</small></span>
+        </button>
+        <button type="button" onclick="selectLoginRole('kasir')" class="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition text-left">
+          <span class="w-11 h-11 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center"><i data-lucide="calculator" class="w-5 h-5"></i></span>
+          <span><strong class="block text-sm text-gray-800">Kasir</strong><small class="text-xs text-gray-500">Masuk sebagai petugas kasir</small></span>
+        </button>
+      </div>
 
+      <form id="form-login" class="space-y-3 sm:space-y-4 hidden" onsubmit="handleLogin(event)">
+        <div class="flex items-center justify-between mb-3">
+          <div><p class="text-xs text-gray-500">Login sebagai</p><p id="selected-login-role" class="font-bold text-gray-800">Admin</p></div>
+          <button type="button" onclick="backToLoginRoleSelection()" class="text-xs text-emerald-600 hover:underline">Ganti akun</button>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Username</label>
+          <input type="text" id="login-username" required autocomplete="username" placeholder="Masukkan username" class="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" />
+        </div>
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1">Password</label>
-          <div class="relative">
-            <input type="password" id="login-password" required placeholder="••••••••"
-              class="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" />
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
-              <i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i>
-            </button>
-          </div>
+          <div class="relative"><input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" /><button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"><i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i></button></div>
         </div>
-
-        <button type="submit" id="btn-login"
-          class="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm rounded-xl transition duration-150 shadow-md shadow-emerald-600/20">
-          Masuk
-        </button>
+        <button type="submit" id="btn-login" class="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm rounded-xl transition duration-150 shadow-md shadow-emerald-600/20">Masuk</button>
       </form>
-
-      <div class="mt-6 border border-gray-100 rounded-xl p-3 bg-gray-50/60">
-        <div class="flex items-center space-x-1.5 text-gray-400 text-xs font-medium mb-2.5">
-          <i data-lucide="key" class="w-3.5 h-3.5"></i>
-          <span class="tracking-wide text-[10px] sm:text-[11px] font-bold">AKUN DEMO CEPAT</span>
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <button type="button" onclick="quickFill('admin')" class="border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100/60 text-emerald-800 p-2 sm:p-2.5 rounded-lg transition text-left">
-            <span class="font-bold block text-emerald-700 text-xs">ADMIN</span>
-            <span class="text-[10px] text-gray-500 truncate block">Owner Admin</span>
-          </button>
-          <button type="button" onclick="quickFill('kasir')" class="border border-blue-200 bg-blue-50/50 hover:bg-blue-100/60 text-blue-800 p-2 sm:p-2.5 rounded-lg transition text-left">
-            <span class="font-bold block text-blue-700 text-xs">KASIR</span>
-            <span class="text-[10px] text-gray-500 truncate block">Kasir Utama</span>
-          </button>
-        </div>
-      </div>
     </div>
-    <div class="mt-6 text-xs text-gray-400 font-medium text-center">
-      &copy; 2026 TOKO BUNG EDI. All rights reserved.
-    </div>
+    <div class="mt-6 text-xs text-gray-400 font-medium text-center">&copy; 2026 TOKO BUNG EDI. All rights reserved.</div>
   </div>
 
   <!-- ==================== APP LAYOUT ==================== -->
@@ -369,7 +366,7 @@
           <div class="classic-pos-header">
             <div class="flex items-center gap-3">
               <button type="button" id="kasir-nav-toggle" class="kasir-nav-toggle" onclick="toggleKasirNavigation()" title="Tampilkan/sembunyikan navigasi">
-                <i data-lucide="panel-left-close" class="w-4 h-4"></i>
+                <i data-lucide="menu" class="w-4 h-4"></i>
                 <span>Navigasi</span>
               </button>
               <div>
@@ -418,7 +415,6 @@
             <button type="button" onclick="setAllPriceMode('eceran')"><b>F4</b> SEMUA ECER</button>
             <button type="button" onclick="setAllPriceMode('grosir')"><b>F5</b> SEMUA GROSIR</button>
             <button type="button" onclick="focusFirstCartQty()"><b>F10</b> JUMLAH</button>
-            <button type="button" onclick="openModalBarangSimple()" class="admin-only"><b>F7</b> BARANG BARU</button>
             <button type="button" onclick="navigate('member')"><b>F8</b> MEMBER</button>
             <button type="button" onclick="openCheckoutModal()" class="classic-pay-btn"><b>F9</b> BAYAR</button>
             <button type="button" onclick="clearCart()" class="classic-danger-btn"><b>F6</b> KOSONGKAN</button>
@@ -584,8 +580,8 @@
       <section id="page-barang" class="page-content hidden space-y-4 sm:space-y-5">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Data Barang & Stok</h1>
-            <p class="text-xs text-gray-500 mt-0.5" id="barang-count-label">Katalog barang, penyesuaian opname, dan mutasi stok realtime</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Data Barang</h1>
+            <p class="text-xs text-gray-500 mt-0.5" id="barang-count-label">Katalog barang dan pengelolaan stok melalui fitur Tambah Stok</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <input type="file" id="input-import-xlsx" accept=".xlsx, .xls" class="hidden" onchange="handleExcelImport(event)" />
@@ -596,10 +592,6 @@
             <button onclick="exportBarangExcel()" class="admin-only px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-50 shadow-sm">
               <i data-lucide="download" class="w-3.5 h-3.5"></i>
               <span>Export</span>
-            </button>
-            <button onclick="openModalBarangSimple()" class="admin-only px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-blue-700 shadow-sm">
-              <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-              <span>+ Cepat</span>
             </button>
             <button onclick="openModalBarang()" class="admin-only px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
@@ -654,7 +646,7 @@
             </div>
 
             <div class="overflow-x-auto custom-scrollbar">
-              <table class="w-full text-left text-xs min-w-[750px] sm:min-w-full">
+              <table class="w-full text-left text-xs min-w-[1100px] sm:min-w-full" style="table-layout:fixed">
                 <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
                   <tr>
                     <th class="admin-only px-4 py-3.5 w-10 text-center">
@@ -666,9 +658,9 @@
                     <th class="px-4 py-3.5">Kategori</th>
                     <th class="admin-only px-4 py-3.5">H. Modal</th>
                     <th class="px-4 py-3.5 font-bold text-gray-900">H. Eceran</th>
-                    <th class="px-4 py-3.5 text-emerald-700 font-bold">H. Grosir</th>
-                    <th class="px-4 py-3.5">Stok</th>
-                    <th class="admin-only px-6 py-3.5 text-right">Aksi</th>
+                    <th class="px-4 py-3.5 text-emerald-700 font-bold whitespace-nowrap">H. Grosir</th>
+                    <th class="px-4 py-3.5 text-center font-bold text-indigo-700 whitespace-nowrap">Stok Tersedia</th>
+                    <th class="admin-only px-6 py-3.5 text-right whitespace-nowrap">Aksi / Stok</th>
                   </tr>
                 </thead>
                 <tbody id="table-barang-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
@@ -858,6 +850,15 @@
           </button>
         </div>
 
+        <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
+  <div class="flex flex-wrap items-end gap-2 sm:gap-3">
+    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-pemasukan-date" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
+    <div class="flex-1 min-w-[130px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label><select id="filter-pemasukan-month" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div>
+    <div class="flex-1 min-w-[110px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tahun</label><select id="filter-pemasukan-year" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Tahun</option></select></div>
+    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Reset</button>
+  </div>
+</div>
+
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
           <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left text-xs min-w-[500px] sm:min-w-full">
@@ -896,6 +897,15 @@
             </button>
           </div>
         </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
+  <div class="flex flex-wrap items-end gap-2 sm:gap-3">
+    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-pengeluaran-date" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
+    <div class="flex-1 min-w-[130px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label><select id="filter-pengeluaran-month" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div>
+    <div class="flex-1 min-w-[110px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tahun</label><select id="filter-pengeluaran-year" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Tahun</option></select></div>
+    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Reset</button>
+  </div>
+</div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
@@ -964,6 +974,15 @@
             <h3 class="text-xl sm:text-2xl font-extrabold text-blue-700 mt-1" id="brilink-profit-total">Rp0</h3>
           </div>
         </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
+  <div class="flex flex-wrap items-end gap-2 sm:gap-3">
+    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-brilink-date" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
+    <div class="flex-1 min-w-[130px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label><select id="filter-brilink-month" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div>
+    <div class="flex-1 min-w-[110px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tahun</label><select id="filter-brilink-year" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Tahun</option></select></div>
+    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Reset</button>
+  </div>
+</div>
 
         <button onclick="openModalBriLink()" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1.5 shadow hover:bg-emerald-700">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i>
@@ -1410,53 +1429,6 @@
         <div class="flex justify-end space-x-2 pt-2 border-t">
           <button type="button" onclick="closeModal('modal-barang')" class="px-4 py-2 border rounded-xl font-medium">Batal</button>
           <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700">Simpan Barang</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL BARANG SIMPLE -->
-  <div id="modal-barang-simple" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3 text-xs">
-      <div class="flex justify-between items-center border-b pb-2">
-        <div class="flex items-center space-x-1.5 text-blue-600 font-bold text-sm">
-          <i data-lucide="zap" class="w-4 h-4"></i>
-          <span>Tambah Barang Cepat</span>
-        </div>
-        <button onclick="closeModal('modal-barang-simple')"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <form id="form-barang-simple" onsubmit="saveProductSimple(event)" class="space-y-3">
-        <div>
-          <label class="block text-[10px] text-gray-500 mb-0.5">Barcode Scan (Auto Detect)</label>
-          <input type="text" id="simple-barcode" data-barcode-input="true" placeholder="Scan Barcode..." onkeydown="handleBarcodeFieldKey(event, 'simple-barcode')" class="w-full border border-blue-200 bg-blue-50/20 rounded-xl p-2.5 font-mono font-bold focus:ring-2 focus:ring-blue-500 outline-none" />
-        </div>
-        <div>
-          <label class="block text-[10px] text-gray-500 mb-0.5">Nama Barang</label>
-          <input type="text" id="simple-nama" placeholder="Nama barang..." class="w-full border rounded-xl p-2.5 font-bold" required />
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[10px] text-gray-500 mb-0.5">H. Modal</label>
-            <input type="number" id="simple-modal" placeholder="0" class="w-full border rounded-xl p-2 font-bold" required />
-          </div>
-          <div>
-            <label class="block text-[10px] text-gray-900 font-bold mb-0.5">H. Eceran</label>
-            <input type="number" id="simple-jual" placeholder="0" class="w-full border rounded-xl p-2 font-bold text-gray-900" required />
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[10px] text-emerald-700 font-bold mb-0.5">H. Grosir</label>
-            <input type="number" id="simple-grosir" placeholder="Auto 90%" class="w-full border border-emerald-200 rounded-xl p-2 font-bold text-emerald-700" />
-          </div>
-          <div>
-            <label class="block text-[10px] text-gray-500 mb-0.5">Stok Awal</label>
-            <input type="number" id="simple-stok" value="10" class="w-full border rounded-xl p-2 font-bold" required />
-          </div>
-        </div>
-        <div class="flex justify-end space-x-2 pt-2 border-t">
-          <button type="button" onclick="closeModal('modal-barang-simple')" class="px-4 py-2 border rounded-xl">Batal</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Simpan Kilat</button>
         </div>
       </form>
     </div>
@@ -1946,12 +1918,6 @@
       if (e.key === 'F4') { e.preventDefault(); setAllPriceMode('eceran'); return; }
       if (e.key === 'F5') { e.preventDefault(); setAllPriceMode('grosir'); return; }
       if (e.key === 'F6') { e.preventDefault(); clearCart(); focusKasirSearch(); return; }
-      if (e.key === 'F7') {
-        e.preventDefault();
-        if (currentUser?.role === 'admin') openModalBarangSimple();
-        else showToast('Tambah barang hanya untuk admin');
-        return;
-      }
       if (e.key === 'F8') { e.preventDefault(); navigate('member'); return; }
       if (e.key === 'F9') {
         e.preventDefault(); openCheckoutModal(); return;
@@ -2488,16 +2454,17 @@
             <td class="px-4 py-3 font-mono text-gray-500 text-[11px]">${p.barcode || '-'}</td>
             <td class="px-5 py-3 font-semibold text-gray-900 whitespace-nowrap">${p.nama}</td>
             <td class="px-4 py-3 text-gray-500">${p.kategori}</td>
-            <td class="admin-only px-4 py-3 font-medium text-gray-700">
-              ${isAdmin ? 'Rp' + (p.hModal || 0).toLocaleString('id-ID') : '•••'}
-            </td>
+            ${isAdmin ? `
+              <td class="px-4 py-3 font-medium text-gray-700">
+                Rp${(p.hModal || 0).toLocaleString('id-ID')}
+              </td>
+            ` : ''}
             <td class="px-4 py-3 font-bold text-gray-900">Rp${(p.hJual || 0).toLocaleString('id-ID')}</td>
-            <td class="px-4 py-3 font-bold text-emerald-700">Rp${grosirPrice.toLocaleString('id-ID')}</td>
-            <td class="px-4 py-3">
-              <span class="font-bold ${p.stok <= 5 ? 'text-amber-600 bg-amber-50 px-2 py-0.5 rounded' : 'text-gray-800'}">${p.stok}</span>
-            </td>
+            <td class="px-4 py-3 font-bold text-emerald-700 whitespace-nowrap">Rp${grosirPrice.toLocaleString('id-ID')}</td>
+            <td class="px-4 py-3 text-center font-extrabold ${Number(p.stok || 0) <= 5 ? 'text-rose-600' : 'text-indigo-700'} whitespace-nowrap">${Number(p.stok || 0).toLocaleString('id-ID')} ${Number(p.stok || 0) <= 5 ? '<span class="text-[10px]">(Menipis)</span>' : ''}</td>
             ${isAdmin ? `
               <td class="px-6 py-3 text-right space-x-1 whitespace-nowrap">
+                <button onclick="openModalStok('tambah', '${p.id}')" title="Tambah Stok Barang" class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold"><i data-lucide="package-plus" class="w-4 h-4"></i><span>Stok</span></button>
                 <button onclick="showBarcodeModal('${p.id}')" title="Cetak Barcode" class="p-1 text-gray-400 hover:text-indigo-600"><i data-lucide="barcode" class="w-4 h-4"></i></button>
                 <button onclick="openModalBarang('${p.id}')" title="Edit Barang" class="p-1 text-gray-400 hover:text-emerald-600"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                 <button onclick="deleteProduct('${p.id}')" title="Hapus Barang" class="p-1 text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -3094,10 +3061,50 @@
       return list;
     }
 
+    function getPeriodFilter(prefix) {
+      return {
+        date: document.getElementById(`filter-${prefix}-date`)?.value || '',
+        month: document.getElementById(`filter-${prefix}-month`)?.value || '',
+        year: document.getElementById(`filter-${prefix}-year`)?.value || ''
+      };
+    }
+
+    function matchesPeriod(item, prefix) {
+      const f = getPeriodFilter(prefix);
+      const date = String(item.dateKey || '');
+      if (f.date && date !== f.date) return false;
+      if (f.month && date.slice(5, 7) !== f.month) return false;
+      if (f.year && date.slice(0, 4) !== f.year) return false;
+      return true;
+    }
+
+    function populatePeriodYears() {
+      const years = new Set([String(new Date().getFullYear())]);
+      [...pemasukans, ...pengeluarans, ...brilinks, ...transactions].forEach(item => {
+        if (item.dateKey) years.add(String(item.dateKey).slice(0, 4));
+      });
+      ['pemasukan', 'pengeluaran', 'brilink'].forEach(prefix => {
+        const el = document.getElementById(`filter-${prefix}-year`);
+        if (!el) return;
+        const current = el.value;
+        el.innerHTML = '<option value="">Semua Tahun</option>' + [...years].sort().reverse().map(y => `<option value="${y}">${y}</option>`).join('');
+        el.value = current;
+      });
+    }
+
+    function clearKasFilters() {
+      ['pemasukan', 'pengeluaran', 'brilink'].forEach(prefix => {
+        ['date','month','year'].forEach(kind => { const el = document.getElementById(`filter-${prefix}-${kind}`); if (el) el.value = ''; });
+      });
+      renderKasTable();
+      renderBriLinkTable();
+    }
+
     function renderKasTable() {
+      populatePeriodYears();
       const tbodyMasuk = document.getElementById('table-pemasukan-body');
       if (tbodyMasuk) {
-        const allMasuk = getIntegratedPemasukanList();
+        const allMasuk = getIntegratedPemasukanList().filter(p => matchesPeriod(p, 'pemasukan'));
         const totalMasuk = allMasuk.reduce((s, i) => s + (i.nominal || 0), 0);
         document.getElementById('pemasukan-total-label').innerText = `Total Aliran Kas Masuk: Rp${totalMasuk.toLocaleString('id-ID')}`;
 
@@ -3123,20 +3130,21 @@
 
       const tbodyKeluar = document.getElementById('table-pengeluaran-body');
       if (tbodyKeluar) {
-        const totalSemuaKeluar = pengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
-        const expToko = pengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko');
-        const expBri = pengeluarans.filter(p => p.expenseType === 'brilink');
+        const filteredPengeluarans = pengeluarans.filter(p => matchesPeriod(p, 'pengeluaran'));
+        const totalSemuaKeluar = filteredPengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
+        const expToko = filteredPengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko');
+        const expBri = filteredPengeluarans.filter(p => p.expenseType === 'brilink');
 
         const totalToko = expToko.reduce((s, i) => s + (i.nominal || 0), 0);
         const totalBri = expBri.reduce((s, i) => s + (i.nominal || 0), 0);
 
         document.getElementById('pengeluaran-total-label').innerText = `Total: Rp${totalSemuaKeluar.toLocaleString('id-ID')} (Toko: Rp${totalToko.toLocaleString('id-ID')} | BRI Link: Rp${totalBri.toLocaleString('id-ID')})`;
         document.getElementById('card-exp-total').innerText = 'Rp' + totalSemuaKeluar.toLocaleString('id-ID');
-        document.getElementById('card-exp-count').innerText = `${pengeluarans.length} pengeluaran total`;
+        document.getElementById('card-exp-count').innerText = `${filteredPengeluarans.length} pengeluaran total`;
         document.getElementById('card-exp-toko').innerText = 'Rp' + totalToko.toLocaleString('id-ID');
         document.getElementById('card-exp-brilink').innerText = 'Rp' + totalBri.toLocaleString('id-ID');
 
-        let filteredKeluar = pengeluarans;
+        let filteredKeluar = filteredPengeluarans;
         if (activePengeluaranTab === 'toko') filteredKeluar = expToko;
         else if (activePengeluaranTab === 'brilink') filteredKeluar = expBri;
 
@@ -3169,7 +3177,7 @@
 
     function openModalRetur(defaultType = 'pelanggan') {
       const select = document.getElementById('retur-barang-id');
-      select.innerHTML = products.map(p => `<option value="${p.id}">${p.nama} (Stok: ${p.stok})</option>`).join('');
+      select.innerHTML = products.map(p => `<option value="${p.id}" ${String(p.id) === String(productId) ? 'selected' : ''}>${p.nama} (Stok saat ini: ${p.stok})</option>`).join('');
       document.getElementById('retur-type').value = defaultType;
       updateReturTypeUI();
       updateReturPricePreview();
@@ -3374,22 +3382,24 @@
     }
 
     function renderBriLinkTable() {
+      populatePeriodYears();
       const tbody = document.getElementById('table-brilink-body');
-      const totalVolume = brilinks.reduce((s, i) => s + (i.nominal || 0), 0);
-      const totalProfit = brilinks.reduce((s, i) => s + (i.profit || 0), 0);
+      const filteredBri = brilinks.filter(b => matchesPeriod(b, 'brilink'));
+      const totalVolume = filteredBri.reduce((s, i) => s + (i.nominal || 0), 0);
+      const totalProfit = filteredBri.reduce((s, i) => s + (i.profit || 0), 0);
       const isAdmin = currentUser && currentUser.role === 'admin';
 
       document.getElementById('brilink-volume-total').innerText = 'Rp' + totalVolume.toLocaleString('id-ID');
       document.getElementById('brilink-profit-total').innerText = 'Rp' + totalProfit.toLocaleString('id-ID');
       document.getElementById('brilink-profit-today').innerText = 'Rp' + totalProfit.toLocaleString('id-ID');
-      document.getElementById('brilink-tx-today').innerText = `${brilinks.length} transaksi`;
+      document.getElementById('brilink-tx-today').innerText = `${filteredBri.length} transaksi`;
 
-      if (brilinks.length === 0) {
+      if (filteredBri.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Belum ada transaksi BRI Link</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = brilinks.map(b => `
+      tbody.innerHTML = filteredBri.map(b => `
         <tr class="hover:bg-gray-50/60 transition">
           <td class="px-4 sm:px-6 py-3 font-semibold text-gray-900">${b.id}</td>
           <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${b.waktu}</td>
@@ -3523,13 +3533,13 @@
       lucide.createIcons();
     }
 
-    function openModalStok(mode) {
+    function openModalStok(mode, productId = '') {
       document.getElementById('stok-mode').value = mode;
       document.getElementById('modal-stok-title').innerText = mode === 'tambah' ? 'Tambah Stok Barang' : 'Penyesuaian Stok (Opname)';
       document.getElementById('stok-qty-label').innerText = mode === 'tambah' ? 'Jumlah Tambahan Stok' : 'Stok Fisik Sebenarnya';
 
       const select = document.getElementById('stok-barang-id');
-      select.innerHTML = products.map(p => `<option value="${p.id}">${p.nama} (Stok: ${p.stok})</option>`).join('');
+      select.innerHTML = products.map(p => `<option value="${p.id}" ${String(p.id) === String(productId) ? 'selected' : ''}>${p.nama} (Stok saat ini: ${p.stok})</option>`).join('');
       openModal('modal-stok');
     }
 
@@ -3684,25 +3694,83 @@
       }
     }
 
+    let selectedLoginRole = null;
+
+    function selectLoginRole(role) {
+      selectedLoginRole = role;
+      document.getElementById('login-role-selection').classList.add('hidden');
+      document.getElementById('form-login').classList.remove('hidden');
+      document.getElementById('selected-login-role').innerText = role === 'admin' ? 'Admin' : 'Kasir';
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      document.getElementById('login-username').placeholder = 'Masukkan username';
+      setTimeout(() => document.getElementById('login-username').focus(), 50);
+    }
+
+    function backToLoginRoleSelection() {
+      selectedLoginRole = null;
+      document.getElementById('form-login').classList.add('hidden');
+      document.getElementById('login-role-selection').classList.remove('hidden');
+    }
+
     function handleLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('login-email').value.trim();
-      const isKasir = email.toLowerCase().includes('kasir');
+
+      const username = document.getElementById('login-username').value.trim().toLowerCase();
+      const password = document.getElementById('login-password').value;
+
+      const accounts = {
+        admin: {
+          username: 'tokobungedi',
+          password: 'admin',
+          name: 'Owner Admin',
+          role: 'admin',
+          badge: 'ADMIN',
+          badgeColor: 'bg-emerald-100 text-emerald-700'
+        },
+        kasir: {
+          username: 'tokobungedi',
+          password: 'kasir',
+          name: 'Kasir Utama',
+          role: 'kasir',
+          badge: 'KASIR',
+          badgeColor: 'bg-blue-100 text-blue-700'
+        }
+      };
+
+      const account = accounts[selectedLoginRole];
+
+      if (!selectedLoginRole || !account || account.username !== username || account.password !== password) {
+        currentUser = null;
+        showToast('Username atau password salah. Silakan coba lagi.');
+        document.getElementById('login-password').value = '';
+        document.getElementById('login-password').focus();
+        return;
+      }
+
       currentUser = {
-        name: isKasir ? 'Kasir Utama' : 'Owner Admin',
-        email: email,
-        role: isKasir ? 'kasir' : 'admin',
-        badge: isKasir ? 'KASIR' : 'ADMIN',
-        badgeColor: isKasir ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
+        name: account.name,
+        username,
+        email: `${username}@tokobungedi.local`,
+        role: account.role,
+        badge: account.badge,
+        badgeColor: account.badgeColor
       };
 
       addLog('LOGIN', `Login sebagai ${currentUser.role}`);
       setupEnterStepNavigation();
-    setupUserInterface();
+      setupUserInterface();
       document.getElementById('view-login').classList.add('hidden');
       document.getElementById('view-app').classList.remove('hidden');
       showToast('Berhasil masuk. Selamat bertransaksi!');
-      navigate('kasir');
+      navigate(currentUser.role === 'admin' ? 'dashboard' : 'kasir');
+      if (currentUser.role === 'kasir') {
+        setTimeout(() => {
+          const app = document.getElementById('view-app');
+          if (app) app.classList.add('kasir-fullscreen');
+          resetKasirNavigation();
+        }, 100);
+      }
     }
 
     function handleLogout() {
@@ -3730,15 +3798,6 @@
       else syncToCloud("aktivitasLogs", logEntry.id, logEntry);
     }
 
-    function quickFill(type) {
-      if (type === 'admin') {
-        document.getElementById('login-email').value = 'avan.kabuchi@gmail.com';
-        document.getElementById('login-password').value = 'admin123';
-      } else {
-        document.getElementById('login-email').value = 'kasir@tokobungedi.com';
-        document.getElementById('login-password').value = 'kasir123';
-      }
-    }
 
     function togglePasswordVisibility() {
       const p = document.getElementById('login-password');
@@ -3761,8 +3820,8 @@
       if (!app || !btn) return;
       const hidden = app.classList.toggle('kasir-fullscreen');
       btn.innerHTML = hidden
-        ? '<i data-lucide="panel-left-open" class="w-4 h-4"></i><span>Buka Navigasi</span>'
-        : '<i data-lucide="panel-left-close" class="w-4 h-4"></i><span>Sembunyikan</span>';
+        ? '<i data-lucide="menu" class="w-4 h-4"></i><span>Buka Navigasi</span>'
+        : '<i data-lucide="menu" class="w-4 h-4"></i><span>Sembunyikan</span>';
       lucide.createIcons();
       setTimeout(() => focusKasirSearch(), 50);
     }
@@ -3772,7 +3831,7 @@
       const btn = document.getElementById('kasir-nav-toggle');
       if (!app || !btn) return;
       app.classList.remove('kasir-fullscreen');
-      btn.innerHTML = '<i data-lucide="panel-left-close" class="w-4 h-4"></i><span>Navigasi</span>';
+      btn.innerHTML = '<i data-lucide="menu" class="w-4 h-4"></i><span>Navigasi</span>';
       lucide.createIcons();
     }
 
