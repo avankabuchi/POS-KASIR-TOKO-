@@ -123,6 +123,7 @@
     .classic-info-row{display:flex;align-items:center;gap:22px;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #d1d5db;font-family:'Courier Prime',monospace;font-size:11px;min-height:34px}
     .classic-member-select{margin-left:4px;border:1px solid #9ca3af;background:#fff;border-radius:2px;padding:3px 6px;font-family:'Courier Prime',monospace;font-size:11px;min-width:210px}
     .classic-hint{margin-left:auto;color:#166534;font-weight:700}
+    .classic-toolbar-label{display:inline-flex;align-items:center;font-weight:800;color:#374151;font-size:11px;white-space:nowrap}
     .classic-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:5px;background:#d1d5db;border-bottom:1px solid #9ca3af}
     .classic-toolbar button{height:30px;padding:0 9px;font-size:10px}
     .classic-toolbar .classic-pay-btn,.classic-pay-btn{background:#166534;color:#fff;border-color:#14532d}
@@ -148,8 +149,33 @@
     .classic-pos-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:#e5e7eb;border-top:2px solid #9ca3af}
     .classic-summary{display:flex;align-items:center;gap:18px;font-family:'Courier Prime',monospace;font-size:12px}
     .classic-summary b{font-weight:700;color:#111827}
-    .classic-grand-total{font-size:15px}
-    .classic-grand-total b{font-size:17px;color:#166534}
+    .classic-grand-total{font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:12px;line-height:1.25;white-space:nowrap}
+    .classic-grand-total b{font-size:30px;font-weight:900;color:#166534;letter-spacing:.3px}
+
+    /* Perapihan katalog barang admin: kolom tidak saling menabrak dan tombol aksi selalu terlihat */
+    #subview-katalog-barang .catalog-table-wrap{overflow-x:auto;overflow-y:visible;max-width:100%;}
+    #subview-katalog-barang .catalog-table{width:100%;min-width:1500px;table-layout:auto;border-collapse:separate;border-spacing:0;}
+    #subview-katalog-barang .catalog-table th{white-space:nowrap;vertical-align:middle;line-height:1.35;}
+    #subview-katalog-barang .catalog-table td{vertical-align:middle;line-height:1.45;}
+    #subview-katalog-barang .catalog-table .catalog-name{min-width:210px;max-width:280px;white-space:normal;overflow-wrap:anywhere;word-break:normal;}
+    #subview-katalog-barang .catalog-table .catalog-category{min-width:135px;max-width:180px;white-space:normal;overflow-wrap:anywhere;}
+    #subview-katalog-barang .catalog-table .catalog-barcode{min-width:155px;white-space:nowrap;}
+    #subview-katalog-barang .catalog-table .catalog-price{min-width:120px;white-space:nowrap;}
+    #subview-katalog-barang .catalog-table .catalog-stock{min-width:125px;white-space:nowrap;text-align:center;}
+    #subview-katalog-barang .catalog-table .catalog-actions{min-width:330px;width:330px;white-space:nowrap;text-align:center;}
+    #subview-katalog-barang .catalog-table .catalog-actions button{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:34px;margin:2px;padding:7px 9px;border:1px solid transparent;border-radius:8px;cursor:pointer;position:relative;z-index:2;}
+    #subview-katalog-barang .catalog-table .catalog-actions .btn-delete-product{background:#fff1f2;color:#be123c;border-color:#fecdd3;font-weight:800;}
+    #subview-katalog-barang .catalog-table .catalog-actions .btn-delete-product:hover{background:#ffe4e6;color:#9f1239;}
+    #subview-katalog-barang .catalog-table .catalog-actions .btn-edit-product{background:#ecfdf5;color:#047857;border-color:#a7f3d0;}
+    #subview-katalog-barang .catalog-table .catalog-actions .btn-barcode-product{background:#f8fafc;color:#475569;border-color:#e2e8f0;}
+    #subview-katalog-barang .catalog-table .catalog-actions .btn-stock-add{background:#ecfdf5;color:#047857;border-color:#a7f3d0;font-weight:800;}
+    #subview-katalog-barang .catalog-table .catalog-actions .btn-stock-minus{background:#fff7ed;color:#c2410c;border-color:#fed7aa;font-weight:800;}
+    #subview-katalog-barang .catalog-table .catalog-actions .btn-stock-add:hover{background:#d1fae5;}
+    #subview-katalog-barang .catalog-table .catalog-actions .btn-stock-minus:hover{background:#ffedd5;}
+    @media (max-width:767px){
+      #subview-katalog-barang .catalog-table{min-width:1450px;}
+      #subview-katalog-barang .catalog-table .catalog-actions{min-width:320px;width:320px;}
+    }
     .classic-footer-actions{display:flex;gap:5px}
     .classic-shortcuts{display:flex;flex-wrap:wrap;gap:5px 13px;background:#111827;color:#e5e7eb;padding:6px 9px;border-radius:3px;font-family:'Courier Prime',monospace;font-size:10px}
     .classic-shortcuts b{color:#86efac}
@@ -192,6 +218,17 @@
   <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform translate-x-full transition-transform duration-300 ease-in-out bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center space-x-2 text-xs font-semibold no-print">
     <i data-lucide="check-circle" class="w-4 h-4 shrink-0"></i>
     <span id="toast-msg" class="truncate">Notifikasi</span>
+  </div>
+
+  <!-- MODAL KALKULATOR KASIR -->
+  <div id="modal-kalkulator" class="fixed inset-0 z-50 bg-black/60 hidden flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5">
+      <div class="flex items-center justify-between mb-4"><h3 class="font-bold text-lg">Kalkulator</h3><button type="button" onclick="closeModal('modal-kalkulator')" class="text-gray-500 text-xl">&times;</button></div>
+      <input id="calc-display" type="text" inputmode="decimal" autocomplete="off" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-right text-2xl font-bold mb-3" placeholder="0" aria-label="Layar kalkulator">
+      <div class="grid grid-cols-4 gap-2"><button type="button" onclick="calcPress('7')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">7</button><button type="button" onclick="calcPress('8')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">8</button><button type="button" onclick="calcPress('9')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">9</button><button type="button" onclick="calcPress('/')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">/</button><button type="button" onclick="calcPress('4')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">4</button><button type="button" onclick="calcPress('5')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">5</button><button type="button" onclick="calcPress('6')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">6</button><button type="button" onclick="calcPress('*')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">*</button><button type="button" onclick="calcPress('1')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">1</button><button type="button" onclick="calcPress('2')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">2</button><button type="button" onclick="calcPress('3')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">3</button><button type="button" onclick="calcPress('-')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">-</button><button type="button" onclick="calcPress('0')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">0</button><button type="button" onclick="calcPress('.')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">.</button><button type="button" onclick="calcPress('C')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">C</button><button type="button" onclick="calcPress('+')" class="py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-lg">+</button></div>
+      <button type="button" onclick="calcEquals()" class="w-full mt-3 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">=</button>
+      <p class="text-xs text-gray-400 mt-3 text-center">F1 membuka kalkulator • Enter menghitung • Esc menutup</p>
+    </div>
   </div>
 
   <!-- ==================== HALAMAN LOGIN ==================== -->
@@ -412,6 +449,7 @@
 
           <!-- TOOLBAR KEYBOARD -->
           <div class="classic-toolbar">
+            <button type="button" onclick="openCalculator()" class="classic-calculator-btn"><b>F1</b> KALKULATOR</button>
             <button type="button" onclick="setAllPriceMode('eceran')"><b>F4</b> SEMUA ECER</button>
             <button type="button" onclick="setAllPriceMode('grosir')"><b>F5</b> SEMUA GROSIR</button>
             <button type="button" onclick="focusFirstCartQty()"><b>F10</b> JUMLAH</button>
@@ -645,8 +683,8 @@
               </div>
             </div>
 
-            <div class="overflow-x-auto custom-scrollbar">
-              <table class="w-full text-left text-xs min-w-[1100px] sm:min-w-full" style="table-layout:fixed">
+            <div class="catalog-table-wrap custom-scrollbar">
+              <table class="catalog-table text-left text-xs">
                 <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
                   <tr>
                     <th class="admin-only px-4 py-3.5 w-10 text-center">
@@ -861,16 +899,16 @@
 
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
           <div class="overflow-x-auto custom-scrollbar">
-            <table class="w-full text-left text-xs min-w-[500px] sm:min-w-full">
+            <table class="w-full text-left text-xs min-w-[900px] sm:min-w-full">
               <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
                 <tr>
-                  <th class="px-4 sm:px-6 py-3.5">No</th>
-                  <th class="px-4 sm:px-6 py-3.5">Tanggal</th>
-                  <th class="px-4 sm:px-6 py-3.5">Kategori / Sumber</th>
-                  <th class="px-4 sm:px-6 py-3.5">Metode</th>
-                  <th class="px-4 sm:px-6 py-3.5">Nominal</th>
-                  <th class="px-4 sm:px-6 py-3.5">Catatan</th>
-                  <th class="px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                  <th class="px-4 sm:px-6 py-3.5 whitespace-nowrap">No</th>
+                  <th class="px-4 sm:px-6 py-3.5 whitespace-nowrap">Tanggal</th>
+                  <th class="px-4 sm:px-6 py-3.5 whitespace-nowrap">Kategori / Sumber</th>
+                  <th class="px-4 sm:px-6 py-3.5 whitespace-nowrap">Metode</th>
+                  <th class="px-4 sm:px-6 py-3.5 whitespace-nowrap">Nominal</th>
+                  <th class="px-4 sm:px-6 py-3.5 whitespace-nowrap">Catatan</th>
+                  <th class="px-4 sm:px-6 py-3.5 text-right whitespace-nowrap">Aksi</th>
                 </tr>
               </thead>
               <tbody id="table-pemasukan-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
@@ -1194,7 +1232,7 @@
               <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-4 sm:px-6 py-3.5">Nama</th>
-                  <th class="px-4 sm:px-6 py-3.5">Email</th>
+                  <th class="px-4 sm:px-6 py-3.5">Username Login</th>
                   <th class="px-4 sm:px-6 py-3.5">Role</th>
                   <th class="px-4 sm:px-6 py-3.5">Status</th>
                   <th class="px-4 sm:px-6 py-3.5">Dibuat</th>
@@ -1212,6 +1250,13 @@
         <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Pengaturan Toko</h1>
 
         <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 divide-y divide-gray-100 shadow-sm text-xs">
+          <form onsubmit="saveStoreSettings(event)" class="pb-4 mb-4 border-b space-y-2">
+            <h4 class="font-bold text-gray-900">Ubah Informasi Toko</h4>
+            <input id="store-name-input" class="w-full border rounded-xl p-2.5" placeholder="Nama toko" required />
+            <input id="store-address-input" class="w-full border rounded-xl p-2.5" placeholder="Alamat toko" required />
+            <input id="store-phone-input" class="w-full border rounded-xl p-2.5" placeholder="No HP / WhatsApp" required />
+            <button class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold" type="submit">Simpan Informasi Toko</button>
+          </form>
           <div class="py-3 first:pt-0 flex items-start space-x-3 sm:space-x-4">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
               <i data-lucide="store" class="w-5 h-5"></i>
@@ -1219,8 +1264,8 @@
             <div>
               <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Informasi Toko</h4>
               <p class="text-gray-800 font-semibold mt-0.5">TOKO BUNG EDI</p>
-              <p class="text-gray-500 text-[11px]">Jalan Turonggo karangturi</p>
-              <p class="text-emerald-700 font-medium text-[11px]">No HP / WA: 0851327958234</p>
+              <p class="text-gray-500 text-[11px]" id="store-address-display">Jalan Turonggo karangturi</p>
+              <p class="text-emerald-700 font-medium text-[11px]" id="store-phone-display">No HP / WA: 0851327958234</p>
             </div>
           </div>
 
@@ -1581,7 +1626,8 @@
       <div class="flex justify-between items-center border-b pb-2"><h3 class="font-bold text-sm">Tambah User Pengguna</h3><button onclick="closeModal('modal-user')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
       <form id="form-user" onsubmit="saveNewUser(event)" class="space-y-3">
         <input type="text" id="user-fullname" placeholder="Nama Lengkap" class="w-full border rounded-xl p-2.5" required />
-        <input type="email" id="user-newemail" placeholder="Email Akun" class="w-full border rounded-xl p-2.5" required />
+        <input type="text" id="user-newusername" placeholder="Username Login" class="w-full border rounded-xl p-2.5" required />
+        <input type="password" id="user-newpassword" placeholder="Password Login" class="w-full border rounded-xl p-2.5" required />
         <select id="user-role-select" class="w-full border rounded-xl p-2.5 font-bold"><option value="kasir">KASIR</option><option value="admin">ADMIN</option></select>
         <div class="flex justify-end space-x-2 pt-2 border-t"><button type="button" onclick="closeModal('modal-user')" class="px-4 py-2 border rounded-xl">Batal</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold">Daftarkan</button></div>
       </form>
@@ -1650,11 +1696,12 @@
     let pengeluarans = [];
     let brilinks = [];
     let appUsers = [
-      { id: '1', nama: 'Owner Admin', email: 'avan.kabuchi@gmail.com', role: 'ADMIN', status: 'AKTIF', dibuat: '11 Sep 2026, 18.24 WIB' },
-      { id: '2', nama: 'Kasir Utama', email: 'kasir@tokobungedi.com', role: 'KASIR', status: 'AKTIF', dibuat: '11 Sep 2026, 18.24 WIB' }
+      { id: '1', nama: 'Owner Admin', username: 'tokobungedi', password: 'admin', role: 'ADMIN', status: 'AKTIF', dibuat: '11 Sep 2026, 18.24 WIB' },
+      { id: '2', nama: 'Kasir Utama', username: 'tokobungedi', password: 'kasir', role: 'KASIR', status: 'AKTIF', dibuat: '11 Sep 2026, 18.24 WIB' }
     ];
     let aktivitasLogs = [];
 
+    let storeInfo = { name: 'TOKO BUNG EDI', address: 'Jalan Turonggo karangturi', phone: '0851327958234' };
     let currentUser = null;
     let cart = [];
     let activeCartItemId = null;
@@ -1746,10 +1793,40 @@
         renderKasTable();
       }, err => console.error("Err brilink sync:", err));
 
+      db.collection("storeSettings").doc("main").onSnapshot(doc => {
+        if (doc.exists) {
+          const data = doc.data() || {};
+          storeInfo = {
+            name: String(data.name || storeInfo.name),
+            address: String(data.address || storeInfo.address),
+            phone: String(data.phone || storeInfo.phone)
+          };
+          applyStoreInfo();
+        } else {
+          syncToCloud("storeSettings", "main", storeInfo);
+        }
+      }, err => console.error("Err store settings sync:", err));
+
       db.collection("appUsers").onSnapshot(snapshot => {
         if (!snapshot.empty) {
           appUsers = [];
-          snapshot.forEach(doc => appUsers.push({ id: doc.id, ...doc.data() }));
+          snapshot.forEach(doc => {
+            const data = doc.data() || {};
+            appUsers.push({
+              id: doc.id,
+              ...data,
+              username: String(data.username || '').trim(),
+              password: String(data.password ?? '').trim(),
+              role: String(data.role || 'KASIR').trim().toUpperCase()
+            });
+          });
+          // Pastikan akun admin utama tetap tersedia apabila data cloud belum lengkap.
+          if (!appUsers.some(u => String(u.username).trim().toLowerCase() === 'tokobungedi' && String(u.role).toUpperCase() === 'ADMIN')) {
+            appUsers.unshift({ id: '1', nama: 'Owner Admin', username: 'tokobungedi', password: 'admin', role: 'ADMIN', status: 'AKTIF', dibuat: '11 Sep 2026, 18.24 WIB' });
+          }
+          if (!appUsers.some(u => String(u.username).trim().toLowerCase() === 'tokobungedi' && String(u.role).toUpperCase() === 'KASIR')) {
+            appUsers.push({ id: '2', nama: 'Kasir Toko', username: 'tokobungedi', password: 'kasir', role: 'KASIR', status: 'AKTIF', dibuat: '11 Sep 2026, 18.24 WIB' });
+          }
           renderUsersTable();
         } else {
           appUsers.forEach(u => syncToCloud("appUsers", u.id, u));
@@ -1819,6 +1896,20 @@
       if (!el) return;
       el.focus();
       if (selectAll) el.select();
+    }
+
+
+    // Mengosongkan seluruh input pada form setelah data berhasil dijalankan/disimpan.
+    function clearExecutedForm(formId, options = {}) {
+      const form = document.getElementById(formId);
+      if (!form) return;
+      form.reset();
+      form.querySelectorAll('input:not([type="hidden"]), textarea').forEach(el => {
+        if (!options.keepIds || !options.keepIds.includes(el.id)) el.value = '';
+      });
+      form.querySelectorAll('select').forEach(el => {
+        if (!options.keepIds || !options.keepIds.includes(el.id)) el.selectedIndex = 0;
+      });
     }
 
     function syncActiveCartRow() {
@@ -1905,11 +1996,18 @@
 
     window.addEventListener("keydown", function(e) {
       const target = e.target;
+      if (!document.getElementById('modal-kalkulator')?.classList.contains('hidden')) {
+        if (e.key === 'Escape') { e.preventDefault(); closeModal('modal-kalkulator'); return; }
+        if (e.key === 'Enter') { e.preventDefault(); calcEquals(); return; }
+        if (/^[0-9+\-*/.()]$/.test(e.key)) { e.preventDefault(); calcPress(e.key); return; }
+        if (e.key === 'Backspace') { e.preventDefault(); const d=document.getElementById('calc-display'); d.value=d.value.slice(0,-1); return; }
+      }
       const tag = (target?.tagName || '').toLowerCase();
       const typing = tag === 'input' || tag === 'textarea' || tag === 'select' || target?.isContentEditable;
       const modalOpen = [...document.querySelectorAll('[id^="modal-"]')].some(m => !m.classList.contains('hidden'));
 
       // Tombol fungsi POS tetap bekerja walaupun kursor berada di input.
+      if (e.key === 'F1') { e.preventDefault(); openCalculator(); return; }
       if (e.key === 'F2' || e.key === 'F3') {
         e.preventDefault();
         if (isKasirPageActive()) openModalKatalogBarang();
@@ -2059,13 +2157,25 @@
     // ============================================================
     function openModalKatalogBarang() {
       activePopupIndex = 0;
+
+      // Setiap kali daftar barang dibuka, kosongkan keyword sebelumnya.
+      // Jadi kasir selalu siap mengetik keyword/barcode baru.
+      const input = document.getElementById('popup-barang-search');
+      if (input) {
+        input.value = '';
+      }
+
       renderKasirCategoryPills();
       renderPopupBarangList();
       openModal('modal-katalog-barang');
       setTimeout(() => {
-        const input = document.getElementById('popup-barang-search');
-        input?.focus();
-        input?.select();
+        const searchInput = document.getElementById('popup-barang-search');
+        if (searchInput) {
+          searchInput.value = '';
+          searchInput.focus();
+          searchInput.select();
+        }
+        renderPopupBarangList();
       }, 100);
     }
 
@@ -2160,6 +2270,12 @@
       }
 
       addToCart(productId, {focusQty:false});
+
+      // Bersihkan pencarian setelah barang masuk ke keranjang.
+      const input = document.getElementById('popup-barang-search');
+      if (input) input.value = '';
+      renderPopupBarangList();
+
       closeModal('modal-katalog-barang');
       focusKasirSearch();
     }
@@ -2451,23 +2567,24 @@
               </td>
             ` : ''}
             <td class="px-4 py-3 font-semibold text-gray-900">${p.kode}</td>
-            <td class="px-4 py-3 font-mono text-gray-500 text-[11px]">${p.barcode || '-'}</td>
-            <td class="px-5 py-3 font-semibold text-gray-900 whitespace-nowrap">${p.nama}</td>
-            <td class="px-4 py-3 text-gray-500">${p.kategori}</td>
+            <td class="catalog-barcode px-4 py-3 font-mono text-gray-500 text-[11px]">${p.barcode || '-'}</td>
+            <td class="catalog-name px-5 py-3 font-semibold text-gray-900">${p.nama}</td>
+            <td class="catalog-category px-4 py-3 text-gray-500">${p.kategori}</td>
             ${isAdmin ? `
-              <td class="px-4 py-3 font-medium text-gray-700">
+              <td class="catalog-price px-4 py-3 font-medium text-gray-700">
                 Rp${(p.hModal || 0).toLocaleString('id-ID')}
               </td>
             ` : ''}
-            <td class="px-4 py-3 font-bold text-gray-900">Rp${(p.hJual || 0).toLocaleString('id-ID')}</td>
-            <td class="px-4 py-3 font-bold text-emerald-700 whitespace-nowrap">Rp${grosirPrice.toLocaleString('id-ID')}</td>
-            <td class="px-4 py-3 text-center font-extrabold ${Number(p.stok || 0) <= 5 ? 'text-rose-600' : 'text-indigo-700'} whitespace-nowrap">${Number(p.stok || 0).toLocaleString('id-ID')} ${Number(p.stok || 0) <= 5 ? '<span class="text-[10px]">(Menipis)</span>' : ''}</td>
+            <td class="catalog-price px-4 py-3 font-bold text-gray-900">Rp${(p.hJual || 0).toLocaleString('id-ID')}</td>
+            <td class="catalog-price px-4 py-3 font-bold text-emerald-700">Rp${grosirPrice.toLocaleString('id-ID')}</td>
+            <td class="catalog-stock px-4 py-3 text-center font-extrabold ${Number(p.stok || 0) <= 5 ? 'text-rose-600' : 'text-indigo-700'}">${Number(p.stok || 0).toLocaleString('id-ID')} ${Number(p.stok || 0) <= 5 ? '<span class="text-[10px]">(Menipis)</span>' : ''}</td>
             ${isAdmin ? `
-              <td class="px-6 py-3 text-right space-x-1 whitespace-nowrap">
-                <button onclick="openModalStok('tambah', '${p.id}')" title="Tambah Stok Barang" class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold"><i data-lucide="package-plus" class="w-4 h-4"></i><span>Stok</span></button>
-                <button onclick="showBarcodeModal('${p.id}')" title="Cetak Barcode" class="p-1 text-gray-400 hover:text-indigo-600"><i data-lucide="barcode" class="w-4 h-4"></i></button>
-                <button onclick="openModalBarang('${p.id}')" title="Edit Barang" class="p-1 text-gray-400 hover:text-emerald-600"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                <button onclick="deleteProduct('${p.id}')" title="Hapus Barang" class="p-1 text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              <td class="catalog-actions px-3 py-3">
+                <button onclick="openModalStok('tambah', '${p.id}')" title="Tambah Stok Barang" class="btn-stock-add"><i data-lucide="plus-circle" class="w-4 h-4"></i><span>Tambah</span></button>
+                <button onclick="openModalStok('kurang', '${p.id}')" title="Kurangi Stok Barang" class="btn-stock-minus"><i data-lucide="minus-circle" class="w-4 h-4"></i><span>Kurangi</span></button>
+                <button onclick="showBarcodeModal('${p.id}')" title="Cetak Barcode" class="btn-barcode-product" aria-label="Cetak barcode"><i data-lucide="barcode" class="w-4 h-4"></i></button>
+                <button onclick="openModalBarang('${p.id}')" title="Edit Barang" class="btn-edit-product" aria-label="Edit barang"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                <button onclick="deleteProduct('${p.id}')" title="Hapus Barang" aria-label="Hapus barang" class="btn-delete-product"><i data-lucide="trash-2" class="w-4 h-4"></i><span>Hapus</span></button>
               </td>
             ` : ''}
           </tr>
@@ -2492,7 +2609,7 @@
       }
 
       document.getElementById('user-avatar').innerText = isAdmin ? 'OA' : 'KU';
-      document.getElementById('settings-user-info').innerText = `${currentUser.name} · ${currentUser.email}`;
+      document.getElementById('settings-user-info').innerText = `${currentUser.name} · @${currentUser.username}`;
       document.getElementById('settings-user-role').innerText = currentUser.role;
 
       const today = new Date().toISOString().slice(0, 10);
@@ -2569,6 +2686,7 @@
         alert('Harap masukkan nomor WhatsApp pelanggan!');
         return;
       }
+      document.getElementById('input-manual-wa').value = '';
       closeModal('modal-prompt-wa');
       eksekusiKirimWhatsApp(phoneInput);
     }
@@ -2728,6 +2846,10 @@
       addLog('SALE', `Transaksi kasir ${txNumber} Rp${total.toLocaleString('id-ID')}`);
       closeModal('modal-checkout');
       clearCart();
+      const checkoutForm = document.getElementById('form-checkout');
+      if (checkoutForm) checkoutForm.reset();
+      const kasirSearch = document.getElementById('kasir-search');
+      if (kasirSearch) kasirSearch.value = '';
       renderTransaksiTable();
       renderDashboard();
       renderLaporan();
@@ -2778,6 +2900,7 @@
       else await syncToCloud("products", id, prodData);
 
       addLog('QUICK_ADD_PRODUCT', `Barang kilat ${nama} ditambahkan`);
+      clearExecutedForm('form-barang-simple');
       closeModal('modal-barang-simple');
       renderProductsTable();
       renderPopupBarangList();
@@ -2833,6 +2956,7 @@
       }
 
       addLog('SAVE_PRODUCT', `Barang ${nama} (${kode}) disimpan ke Cloud`);
+      clearExecutedForm('form-barang');
       closeModal('modal-barang');
       renderProductsTable();
       renderPopupBarangList();
@@ -2877,6 +3001,7 @@
       }
 
       addLog('SAVE_MEMBER', `Member: ${nama} (${phone}) tersimpan`);
+      clearExecutedForm('form-member');
       closeModal('modal-member');
       renderMemberTable();
       renderKasirMemberDropdown();
@@ -3011,6 +3136,7 @@
       renderKasTable();
       renderDashboard();
       renderLaporan();
+      clearExecutedForm('form-kas');
       closeModal('modal-kas');
       showToast('Data berhasil disimpan & terintegrasi ke pembukuan!');
     }
@@ -3121,8 +3247,8 @@
               <td class="px-4 sm:px-6 py-3">${p.metode}</td>
               <td class="px-4 sm:px-6 py-3 font-bold text-emerald-600">Rp${(p.nominal || 0).toLocaleString('id-ID')}</td>
               <td class="px-4 sm:px-6 py-3 text-gray-500">${p.catatan || '-'}</td>
-              <td class="px-4 sm:px-6 py-3 text-right">
-                ${!p.isSystem ? `<button onclick="deleteKas('pemasukan', '${p.id}')" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '<span class="text-gray-400 text-[10px]">Sistem</span>'}
+              <td class="px-4 sm:px-6 py-3 text-right whitespace-nowrap">
+                ${!p.isSystem ? `<button type="button" onclick="deleteKas('pemasukan', '${p.id}')" class="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white transition font-bold text-[11px] whitespace-nowrap shadow-sm" title="Hapus arus pemasukan"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Hapus</span></button>` : '<span class="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-500 text-[10px] font-semibold">Sistem</span>'}
               </td>
             </tr>
           `).join('');
@@ -3293,6 +3419,7 @@
       renderKasTable();
       renderDashboard();
       renderLaporan();
+      clearExecutedForm('form-retur');
       showToast(`Retur ${type} tersimpan di Cloud!`);
     }
 
@@ -3367,6 +3494,7 @@
       renderDashboard();
       renderLaporan();
       renderKasTable();
+      clearExecutedForm('form-brilink');
       showToast('Transaksi BRI Link tersimpan di Cloud!');
     }
 
@@ -3535,8 +3663,8 @@
 
     function openModalStok(mode, productId = '') {
       document.getElementById('stok-mode').value = mode;
-      document.getElementById('modal-stok-title').innerText = mode === 'tambah' ? 'Tambah Stok Barang' : 'Penyesuaian Stok (Opname)';
-      document.getElementById('stok-qty-label').innerText = mode === 'tambah' ? 'Jumlah Tambahan Stok' : 'Stok Fisik Sebenarnya';
+      document.getElementById('modal-stok-title').innerText = mode === 'tambah' ? 'Tambah Stok Barang' : mode === 'kurang' ? 'Kurangi Stok Barang' : 'Penyesuaian Stok (Opname)';
+      document.getElementById('stok-qty-label').innerText = mode === 'tambah' ? 'Jumlah Tambahan Stok' : mode === 'kurang' ? 'Jumlah Stok yang Dikurangi' : 'Stok Fisik Sebenarnya';
 
       const select = document.getElementById('stok-barang-id');
       select.innerHTML = products.map(p => `<option value="${p.id}" ${String(p.id) === String(productId) ? 'selected' : ''}>${p.nama} (Stok saat ini: ${p.stok})</option>`).join('');
@@ -3552,12 +3680,26 @@
       const prod = products.find(p => String(p.id) === String(prodId));
       if (!prod) return;
 
-      const sebelum = prod.stok;
+      if (qtyInput <= 0) {
+        showToast('Jumlah stok harus lebih dari 0');
+        return;
+      }
+
+      const sebelum = Number(prod.stok) || 0;
       let tipe = 'RESTOCK';
       let delta = qtyInput;
 
-      if (mode === 'tambah') prod.stok += qtyInput;
-      else {
+      if (mode === 'tambah') {
+        prod.stok = sebelum + qtyInput;
+      } else if (mode === 'kurang') {
+        if (qtyInput > sebelum) {
+          showToast(`Stok tidak cukup. Stok saat ini hanya ${sebelum}`);
+          return;
+        }
+        tipe = 'STOCK_OUT';
+        delta = -qtyInput;
+        prod.stok = sebelum - qtyInput;
+      } else {
         tipe = 'ADJUSTMENT';
         delta = qtyInput - sebelum;
         prod.stok = qtyInput;
@@ -3591,7 +3733,8 @@
       closeModal('modal-stok');
       renderStokTable();
       renderProductsTable();
-      showToast('Stok fisik berhasil diperbarui di Cloud!');
+      clearExecutedForm('form-stok');
+      showToast(mode === 'tambah' ? 'Stok berhasil ditambahkan' : mode === 'kurang' ? 'Stok berhasil dikurangi' : 'Stok fisik berhasil diperbarui di Cloud!');
     }
 
     function renderStokTable() {
@@ -3715,62 +3858,17 @@
 
     function handleLogin(e) {
       e.preventDefault();
-
       const username = document.getElementById('login-username').value.trim().toLowerCase();
       const password = document.getElementById('login-password').value;
-
-      const accounts = {
-        admin: {
-          username: 'tokobungedi',
-          password: 'admin',
-          name: 'Owner Admin',
-          role: 'admin',
-          badge: 'ADMIN',
-          badgeColor: 'bg-emerald-100 text-emerald-700'
-        },
-        kasir: {
-          username: 'tokobungedi',
-          password: 'kasir',
-          name: 'Kasir Utama',
-          role: 'kasir',
-          badge: 'KASIR',
-          badgeColor: 'bg-blue-100 text-blue-700'
-        }
-      };
-
-      const account = accounts[selectedLoginRole];
-
-      if (!selectedLoginRole || !account || account.username !== username || account.password !== password) {
-        currentUser = null;
-        showToast('Username atau password salah. Silakan coba lagi.');
-        document.getElementById('login-password').value = '';
-        document.getElementById('login-password').focus();
-        return;
-      }
-
-      currentUser = {
-        name: account.name,
-        username,
-        email: `${username}@tokobungedi.local`,
-        role: account.role,
-        badge: account.badge,
-        badgeColor: account.badgeColor
-      };
-
-      addLog('LOGIN', `Login sebagai ${currentUser.role}`);
-      setupEnterStepNavigation();
-      setupUserInterface();
-      document.getElementById('view-login').classList.add('hidden');
-      document.getElementById('view-app').classList.remove('hidden');
-      showToast('Berhasil masuk. Selamat bertransaksi!');
-      navigate(currentUser.role === 'admin' ? 'dashboard' : 'kasir');
-      if (currentUser.role === 'kasir') {
-        setTimeout(() => {
-          const app = document.getElementById('view-app');
-          if (app) app.classList.add('kasir-fullscreen');
-          resetKasirNavigation();
-        }, 100);
-      }
+      const account = appUsers.find(u =>
+        String(u.username || '').trim().toLowerCase() === username &&
+        String(u.password ?? '').trim() === password.trim() &&
+        String(u.role || '').trim().toLowerCase() === String(selectedLoginRole || '').trim().toLowerCase()
+      );
+      if (!selectedLoginRole || !account) { currentUser = null; showToast('Username atau password salah. Silakan coba lagi.'); document.getElementById('login-password').value = ''; document.getElementById('login-password').focus(); return; }
+      currentUser = { name: account.nama, username: account.username, email: account.email, role: account.role.toLowerCase(), badge: account.role, badgeColor: account.role === 'ADMIN' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700' };
+      addLog('LOGIN', `Login sebagai ${currentUser.role}`); setupEnterStepNavigation(); setupUserInterface(); applyStoreInfo(); document.getElementById('view-login').classList.add('hidden'); document.getElementById('view-app').classList.remove('hidden'); showToast('Berhasil masuk. Selamat bertransaksi!'); navigate(currentUser.role === 'admin' ? 'dashboard' : 'kasir');
+      if (currentUser.role === 'kasir') setTimeout(() => { document.getElementById('view-app')?.classList.add('kasir-fullscreen'); resetKasirNavigation(); }, 100);
     }
 
     function handleLogout() {
@@ -3804,6 +3902,9 @@
       p.type = p.type === 'password' ? 'text' : 'password';
     }
 
+    function openCalculator() { openModal('modal-kalkulator'); const d=document.getElementById('calc-display'); d.value=''; setTimeout(()=>d.focus(),50); }
+    function calcPress(v){ const d=document.getElementById('calc-display'); if(v==='C') d.value=''; else d.value+=v; d.focus(); }
+    function calcEquals(){ const d=document.getElementById('calc-display'); try { if(!/^[0-9+\-*/.() ]+$/.test(d.value)) throw new Error(); const result=Function('"use strict";return ('+d.value+')')(); if(!Number.isFinite(result)) throw new Error(); d.value=String(result); } catch(e){ d.value=''; showToast('Perhitungan tidak valid'); } d.focus(); }
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -4170,6 +4271,7 @@
           await syncToCloud("transactions", id, tx);
         }
         addLog('UPDATE_TX', `Edit status transaksi ${id}`);
+        clearExecutedForm('form-edit-tx');
         closeModal('modal-edit-tx');
         showToast('Transaksi berhasil diperbarui di Cloud');
       }
@@ -4325,17 +4427,48 @@
       showToast('Laporan BRI Link diexport ke Excel');
     }
 
+
+    function applyStoreInfo() {
+      document.title = storeInfo.name + ' - POS Realtime Cloud';
+      document.querySelectorAll('h1,h2,.classic-pos-title').forEach(el => { if (el.textContent.trim() === 'TOKO BUNG EDI') el.textContent = storeInfo.name; });
+      const a=document.getElementById('store-address-display'); if(a) a.textContent=storeInfo.address;
+      const ph=document.getElementById('store-phone-display'); if(ph) ph.textContent='No HP / WA: '+storeInfo.phone;
+      const n=document.getElementById('store-name-input'); if(n) n.value=storeInfo.name;
+      const ad=document.getElementById('store-address-input'); if(ad) ad.value=storeInfo.address;
+      const p=document.getElementById('store-phone-input'); if(p) p.value=storeInfo.phone;
+    }
+    async function saveStoreSettings(e) {
+      e.preventDefault();
+      storeInfo = {
+        name: document.getElementById('store-name-input').value.trim(),
+        address: document.getElementById('store-address-input').value.trim(),
+        phone: document.getElementById('store-phone-input').value.trim()
+      };
+      applyStoreInfo();
+      if (isFirebaseReady && db) {
+        try {
+          await db.collection('storeSettings').doc('main').set(storeInfo, { merge: true });
+          showToast('Informasi toko berhasil disimpan ke cloud');
+        } catch (err) {
+          console.error('Gagal menyimpan pengaturan toko:', err);
+          showToast('Gagal menyimpan ke cloud. Periksa aturan Firestore.');
+        }
+      } else {
+        showToast('Informasi toko tersimpan sementara di perangkat');
+      }
+    }
     function openModalUser() { openModal('modal-user'); }
 
     async function saveNewUser(e) {
       e.preventDefault();
       const nama = document.getElementById('user-fullname').value.trim();
-      const email = document.getElementById('user-newemail').value.trim();
+      const username = document.getElementById('user-newusername').value.trim().toLowerCase();
+      const password = document.getElementById('user-newpassword').value;
       const role = document.getElementById('user-role-select').value.toUpperCase();
 
       const now = new Date();
       const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
-      const uEntry = { id: String(Date.now()), nama, email, role, status: 'AKTIF', dibuat: timeStr };
+      const uEntry = { id: String(Date.now()), nama, username, password, role, status: 'AKTIF', dibuat: timeStr };
       
       if (!isFirebaseReady) appUsers.push(uEntry);
       else await syncToCloud("appUsers", uEntry.id, uEntry);
@@ -4343,6 +4476,7 @@
       addLog('CREATE_USER', `Tambah user ${nama} (${role})`);
       closeModal('modal-user');
       renderUsersTable();
+      clearExecutedForm('form-user');
       showToast('User berhasil didaftarkan di Cloud');
     }
 
@@ -4363,7 +4497,7 @@
       tbody.innerHTML = appUsers.map(u => `
         <tr class="hover:bg-gray-50/60 transition">
           <td class="px-4 sm:px-6 py-3 font-bold text-gray-900">${u.nama}</td>
-          <td class="px-4 sm:px-6 py-3 text-gray-500">${u.email}</td>
+          <td class="px-4 sm:px-6 py-3 font-semibold text-gray-700">${u.username || '-'}</td>
           <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'ADMIN' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}">${u.role}</span></td>
           <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600">${u.status}</span></td>
           <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${u.dibuat}</td>
