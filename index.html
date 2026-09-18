@@ -210,12 +210,64 @@
       .classic-pos-table{min-width:850px}.classic-pos-footer{flex-direction:column;align-items:stretch}.classic-footer-actions button{flex:1}
     }
 
+
+    /* RESPONSIVE HARDENING: desktop, tablet, mobile */
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{overflow-x:hidden;line-height:1.45}
+    button,input,select,textarea{max-width:100%;font:inherit}
+    button{touch-action:manipulation}
+    #toast{visibility:hidden;display:flex;max-width:min(420px,calc(100vw - 2rem));overflow:hidden}
+    #toast.opacity-100{visibility:visible}
+    #toast-msg{overflow-wrap:anywhere;white-space:normal}
+    .classic-pos-header{flex-wrap:wrap}
+    .classic-pos-total-wrap{margin-left:auto;min-width:0;flex-wrap:wrap;justify-content:flex-end}
+    .classic-pos-total{max-width:100%;overflow-wrap:anywhere}
+    .classic-input-row{grid-template-columns:minmax(90px,120px) minmax(0,1fr) auto auto}
+    .classic-info-row>*{min-width:0}
+    .classic-member-select{max-width:100%;min-width:0}
+    .classic-toolbar button{min-height:34px;white-space:normal}
+    .classic-pos-footer{flex-wrap:wrap}
+    .classic-summary{flex-wrap:wrap;min-width:0}
+    .classic-footer-actions{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+    .classic-footer-actions button{min-height:36px}
+    .modal-content,.modal-content *{max-width:100%}
+    @media (max-width:1024px){
+      .classic-pos-total{font-size:32px;min-width:0}
+      .classic-pos-title{font-size:17px}
+      .classic-input-row{grid-template-columns:1fr auto auto}
+      .classic-input-row .classic-field-label{display:none}
+    }
+    @media (max-width:640px){
+      main{padding-left:10px!important;padding-right:10px!important}
+      .classic-pos-header{padding:12px;gap:10px}
+      .classic-pos-total-wrap{width:100%;justify-content:space-between;margin-left:0}
+      .classic-pos-total{font-size:27px;text-align:left}
+      .classic-input-row{grid-template-columns:minmax(0,1fr) auto;gap:6px}
+      .classic-input-row>*{min-width:0}
+      .classic-input-row .classic-scanner-badge{display:none}
+      .classic-toolbar{gap:5px;padding:7px}
+      .classic-toolbar button{flex:1 1 auto;font-size:11px;padding:0 8px}
+      .classic-info-row{align-items:stretch;gap:6px;padding:8px;flex-direction:column}
+      .classic-hint{margin-left:0}
+      .classic-table-wrap{min-height:220px;max-height:none;-webkit-overflow-scrolling:touch}
+      .classic-pos-table{min-width:850px}
+      .classic-pos-footer{align-items:stretch;padding:10px}
+      .classic-summary{justify-content:space-between;gap:8px}
+      .classic-footer-actions{width:100%}
+      .classic-footer-actions button{flex:1 1 120px}
+      .grid{min-width:0}
+      .overflow-x-auto{-webkit-overflow-scrolling:touch}
+      .fixed.inset-0{padding:12px!important}
+    }
+    @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
   <!-- ==================== NOTIFIKASI TOAST ==================== -->
-  <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform translate-x-full transition-transform duration-300 ease-in-out bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center space-x-2 text-xs font-semibold no-print">
+  <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform translate-x-full opacity-0 pointer-events-none transition-all duration-300 ease-in-out bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center space-x-2 text-xs font-semibold no-print">
     <i data-lucide="check-circle" class="w-4 h-4 shrink-0"></i>
     <span id="toast-msg" class="truncate">Notifikasi</span>
   </div>
@@ -3908,11 +3960,20 @@
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
+    let toastTimer;
     function showToast(msg) {
       const toast = document.getElementById('toast');
+      if (!toast) return;
+      clearTimeout(toastTimer);
       document.getElementById('toast-msg').innerText = msg;
-      toast.classList.remove('translate-x-full');
-      setTimeout(() => toast.classList.add('translate-x-full'), 3000);
+      toast.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      toast.style.visibility = 'visible';
+      toastTimer = setTimeout(() => {
+        toast.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+        toast.classList.remove('opacity-100');
+        toast.style.visibility = 'hidden';
+      }, 3000);
     }
 
     function toggleKasirNavigation() {
