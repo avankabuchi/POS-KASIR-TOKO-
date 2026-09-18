@@ -1002,9 +1002,11 @@
             <p class="text-xs text-gray-500 mt-0.5">Semua pemasukan kasir & BRI Link otomatis menyatu dengan kalkulasi laba bersih</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 text-xs">
-            <div class="flex items-center space-x-1 border border-gray-200 rounded-lg p-1 bg-white w-full sm:w-auto">
-              <span class="text-gray-500 font-medium pl-1 text-[11px]">Hari:</span>
-              <input type="date" id="laporan-delete-date" class="px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs flex-1 sm:flex-none" />
+            <div class="flex flex-wrap items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white w-full sm:w-auto">
+              <span class="text-gray-500 font-medium pl-1 text-[11px]">Periode:</span>
+              <input type="month" id="laporan-period" onchange="renderLaporan()" class="px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs" />
+              <span class="text-gray-500 font-medium text-[11px]">Hapus:</span>
+              <input type="date" id="laporan-delete-date" class="px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs" />
               <button onclick="hapusLaporanTanggalTertentu(document.getElementById('laporan-delete-date').value)" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded flex items-center space-x-1">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 <span class="hidden sm:inline">Hapus Tanggal Ini</span>
@@ -2529,6 +2531,7 @@
       const today = new Date().toISOString().slice(0, 10);
       if (document.getElementById('filter-tx-date')) document.getElementById('filter-tx-date').value = today;
       if (document.getElementById('laporan-delete-date')) document.getElementById('laporan-delete-date').value = today;
+      if (document.getElementById('laporan-period')) document.getElementById('laporan-period').value = today.slice(0, 7);
 
       document.querySelectorAll('.admin-only').forEach(el => {
         if (el.id === 'subview-mutasi-stok') return;
@@ -3426,14 +3429,33 @@
       renderLaporan();
     }
 
+    function getLaporanPeriod() {
+      const input = document.getElementById('laporan-period');
+      const now = new Date();
+      const fallback = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const value = input?.value || fallback;
+      const [year, month] = value.split('-').map(Number);
+      return {
+        value,
+        year: year || now.getFullYear(),
+        month: month || now.getMonth() + 1,
+        label: new Date(year || now.getFullYear(), (month || now.getMonth() + 1) - 1, 1)
+          .toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+      };
+    }
+
     function renderLaporan() {
-      const validTx = transactions.filter(t => t.status !== 'DIBATALKAN');
+      const period = getLaporanPeriod();
+      const { year, month, label } = period;
+      const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+      const validTx = transactions.filter(t => t.status !== 'DIBATALKAN' && String(t.dateKey || '').startsWith(monthKey));
+      const monthExp = pengeluarans.filter(p => String(p.dateKey || '').startsWith(monthKey));
+      const monthBri = brilinks.filter(b => String(b.dateKey || '').startsWith(monthKey));
+
       const totalSales = validTx.reduce((s, i) => s + (i.total || 0), 0);
       const grossProfit = validTx.reduce((s, i) => s + (i.profit || 0), 0);
-      
-      const totalExpToko = pengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (i.nominal || 0), 0);
-      const totalExpBri = pengeluarans.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (i.nominal || 0), 0);
-
+      const totalExpToko = monthExp.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (i.nominal || 0), 0);
+      const totalExpBri = monthExp.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (i.nominal || 0), 0);
       const netProfitToko = grossProfit - totalExpToko;
 
       document.getElementById('lap-penjualan').innerText = 'Rp' + totalSales.toLocaleString('id-ID');
@@ -3441,26 +3463,23 @@
       document.getElementById('lap-pengeluaran').innerText = 'Rp' + totalExpToko.toLocaleString('id-ID');
       document.getElementById('lap-lababersih').innerText = 'Rp' + netProfitToko.toLocaleString('id-ID');
 
-      const briVol = brilinks.reduce((s, i) => s + (i.nominal || 0), 0);
-      const briFee = brilinks.reduce((s, i) => s + (i.fee || 0), 0);
-      const briGrossProfit = brilinks.reduce((s, i) => s + (i.profit || 0), 0);
+      const briVol = monthBri.reduce((s, i) => s + (i.nominal || 0), 0);
+      const briFee = monthBri.reduce((s, i) => s + (i.fee || 0), 0);
+      const briGrossProfit = monthBri.reduce((s, i) => s + (i.profit || 0), 0);
       const briNetProfit = briGrossProfit - totalExpBri;
 
       document.getElementById('lap-bri-volume').innerText = 'Rp' + briVol.toLocaleString('id-ID');
       document.getElementById('lap-bri-fee').innerText = 'Rp' + briFee.toLocaleString('id-ID');
       document.getElementById('lap-bri-exp').innerText = 'Rp' + totalExpBri.toLocaleString('id-ID');
       document.getElementById('lap-bri-profit').innerText = 'Rp' + briNetProfit.toLocaleString('id-ID');
+      document.getElementById('label-bulan-laporan').innerText = label;
+      document.getElementById('label-bulan-laporan-bri').innerText = label;
 
       const tbodyToko = document.getElementById('table-laporan-harian');
-      let rowsToko = '';
       const tbodyBri = document.getElementById('table-laporan-brilink-harian');
+      let rowsToko = '';
       let rowsBri = '';
-
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const totalDays = new Date(year, now.getMonth() + 1, 0).getDate();
-
+      const totalDays = new Date(year, month, 0).getDate();
       const daysArr = Array.from({ length: totalDays }, (_, i) => String(i + 1).padStart(2, '0'));
       const sData = new Array(totalDays).fill(0);
       const lData = new Array(totalDays).fill(0);
@@ -3468,53 +3487,25 @@
 
       for (let day = 1; day <= totalDays; day++) {
         const dayStr = String(day).padStart(2, '0');
-        const isoDate = `${year}-${month}-${dayStr}`;
-        const dStr = `${dayStr}/${month}/${year}`;
-
+        const isoDate = `${monthKey}-${dayStr}`;
+        const dStr = `${dayStr}/${String(month).padStart(2, '0')}/${year}`;
         const dayTx = validTx.filter(t => t.dateKey === isoDate);
         const sVal = dayTx.reduce((acc, t) => acc + (t.total || 0), 0);
         const lVal = dayTx.reduce((acc, t) => acc + (t.profit || 0), 0);
-
-        const dayExpToko = pengeluarans.filter(p => p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko')).reduce((acc, p) => acc + (p.nominal || 0), 0);
-        const dayExpBri = pengeluarans.filter(p => p.dateKey === isoDate && p.expenseType === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
-
+        const dayExpToko = monthExp.filter(p => p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko')).reduce((acc, p) => acc + (p.nominal || 0), 0);
+        const dayExpBri = monthExp.filter(p => p.dateKey === isoDate && p.expenseType === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
         const netVal = lVal - dayExpToko;
-
         sData[day - 1] = sVal;
         lData[day - 1] = lVal;
+        rowsToko += `<tr class="hover:bg-gray-50/60 transition"><td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td><td class="px-4 sm:px-6 py-3 text-right">Rp${sVal.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${lVal.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-red-600">Rp${dayExpToko.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right font-extrabold ${netVal >= 0 ? 'text-emerald-700' : 'text-rose-600'}">Rp${netVal.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right"><button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus seluruh data tanggal ini"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
 
-        rowsToko += `
-          <tr class="hover:bg-gray-50/60 transition">
-            <td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td>
-            <td class="px-4 sm:px-6 py-3 text-right">Rp${sVal.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${lVal.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right text-red-600">Rp${dayExpToko.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right font-extrabold ${netVal >= 0 ? 'text-emerald-700' : 'text-rose-600'}">Rp${netVal.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right">
-              <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus seluruh data tanggal ini"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-            </td>
-          </tr>
-        `;
-
-        const dayBri = brilinks.filter(b => b.dateKey === isoDate);
+        const dayBri = monthBri.filter(b => b.dateKey === isoDate);
         const bVol = dayBri.reduce((acc, b) => acc + (b.nominal || 0), 0);
         const bFee = dayBri.reduce((acc, b) => acc + (b.fee || 0), 0);
         const bProfitGross = dayBri.reduce((acc, b) => acc + (b.profit || 0), 0);
         const bNetProfit = bProfitGross - dayExpBri;
         briProfitData[day - 1] = bNetProfit;
-
-        rowsBri += `
-          <tr class="hover:bg-gray-50/60 transition">
-            <td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td>
-            <td class="px-4 sm:px-6 py-3 text-right">Rp${bVol.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right text-teal-600 font-medium">Rp${bFee.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right text-red-500 font-medium">Rp${dayExpBri.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${bNetProfit.toLocaleString('id-ID')}</td>
-            <td class="px-4 sm:px-6 py-3 text-right">
-              <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus laporan tanggal ini"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-            </td>
-          </tr>
-        `;
+        rowsBri += `<tr class="hover:bg-gray-50/60 transition"><td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td><td class="px-4 sm:px-6 py-3 text-right">Rp${bVol.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-teal-600 font-medium">Rp${bFee.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-red-500 font-medium">Rp${dayExpBri.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${bNetProfit.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right"><button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus laporan tanggal ini"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
       }
       tbodyToko.innerHTML = rowsToko;
       tbodyBri.innerHTML = rowsBri;
@@ -3522,32 +3513,12 @@
       const ctxToko = document.getElementById('chartLaporanToko');
       if (ctxToko) {
         if (chartLaporanTokoObj) chartLaporanTokoObj.destroy();
-        chartLaporanTokoObj = new Chart(ctxToko, {
-          type: 'line',
-          data: {
-            labels: daysArr,
-            datasets: [
-              { label: 'Penjualan', data: sData, borderColor: '#10b981', tension: 0.3 },
-              { label: 'Laba Kotor', data: lData, borderColor: '#059669', tension: 0.3 }
-            ]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-        });
+        chartLaporanTokoObj = new Chart(ctxToko, { type: 'line', data: { labels: daysArr, datasets: [{ label: 'Penjualan', data: sData, borderColor: '#10b981', tension: 0.3 }, { label: 'Laba Kotor', data: lData, borderColor: '#059669', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
       }
-
       const ctxBri = document.getElementById('chartLaporanBri');
       if (ctxBri) {
         if (chartLaporanBriObj) chartLaporanBriObj.destroy();
-        chartLaporanBriObj = new Chart(ctxBri, {
-          type: 'bar',
-          data: {
-            labels: daysArr,
-            datasets: [
-              { label: 'Laba Bersih Agen (Rp)', data: briProfitData, backgroundColor: '#3b82f6', borderRadius: 4 }
-            ]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-        });
+        chartLaporanBriObj = new Chart(ctxBri, { type: 'bar', data: { labels: daysArr, datasets: [{ label: 'Laba Bersih Agen (Rp)', data: briProfitData, backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
       }
       lucide.createIcons();
     }
@@ -4231,12 +4202,14 @@
     }
 
     function exportLaporanTokoExcel() {
+      const period = getLaporanPeriod();
       const validTx = transactions.filter(t => t.status !== 'DIBATALKAN');
       const rows = [];
-      for (let day = 1; day <= 30; day++) {
+      const totalDays = new Date(period.year, period.month, 0).getDate();
+      for (let day = 1; day <= totalDays; day++) {
         const dayStr = String(day).padStart(2, '0');
-        const isoDate = `2026-09-${dayStr}`;
-        const simpleDate = `${dayStr}/09/2026`;
+        const isoDate = `${period.value}-${dayStr}`;
+        const simpleDate = `${dayStr}/${String(period.month).padStart(2, '0')}/${period.year}`;
 
         const dayTx = validTx.filter(t => t.dateKey === isoDate);
         const sVal = dayTx.reduce((acc, t) => acc + (t.total || 0), 0);
@@ -4262,11 +4235,13 @@
     }
 
     function exportLaporanBriLinkExcel() {
+      const period = getLaporanPeriod();
       const rows = [];
-      for (let day = 1; day <= 30; day++) {
+      const totalDays = new Date(period.year, period.month, 0).getDate();
+      for (let day = 1; day <= totalDays; day++) {
         const dayStr = String(day).padStart(2, '0');
-        const isoDate = `2026-09-${dayStr}`;
-        const simpleDate = `${dayStr}/09/2026`;
+        const isoDate = `${period.value}-${dayStr}`;
+        const simpleDate = `${dayStr}/${String(period.month).padStart(2, '0')}/${period.year}`;
 
         const dayBri = brilinks.filter(b => b.dateKey === isoDate);
         const bVol = dayBri.reduce((acc, b) => acc + (b.nominal || 0), 0);
