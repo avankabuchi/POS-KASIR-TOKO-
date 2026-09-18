@@ -411,7 +411,6 @@
                 <option value="">Non Member (Umum)</option>
               </select>
             </div>
-            <div class="classic-hint">ENTER = PROSES / NEXT</div>
           </div>
 
           <!-- TOOLBAR KEYBOARD -->
@@ -462,24 +461,6 @@
           </div>
         </div>
 
-        <!-- PANDUAN -->
-        <div class="classic-shortcuts no-print">
-          <b>KEYBOARD:</b>
-          <span>F2/F3 Cari</span>
-          <span>Enter Proses/Next</span>
-          <span>↑↓ Pindah Baris</span>
-          <span>F4 Semua Ecer</span>
-          <span>F5 Semua Grosir</span>
-          <span>F6 Kosongkan</span>
-          <span>F7 Barang</span>
-          <span>F8 Member</span>
-          <span>F9 Bayar</span>
-          <span>F10 Qty</span>
-          <span>E/G Ecer/Grosir</span>
-          <span>Delete Hapus</span>
-          <span>Enter Bayar</span>
-          <span>Esc Tutup</span>
-        </div>
       </section>
 
       <!-- MODAL POPUP DAFTAR BARANG -->
@@ -1272,24 +1253,19 @@
       </div>
 
       <div class="space-y-2 no-print">
-        <div class="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-[10px] text-amber-800">
-          <b>Urutan:</b> 1. Cetak → 2. Unduh PDF → 3. Kirim WhatsApp. Ukuran struk mengikuti preview 76 mm.
+        <div class="rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2 text-[10px] text-emerald-800">
+          <b>Selamat Transaksi Berhasil</b><br>
+          Silahkan Print Struk. Tekan ENTER untuk mencetak otomatis.
         </div>
-        <button onclick="printCustomArea('thermal-receipt')" class="w-full py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-2 shadow">
+        <button type="button" onclick="printReceiptAutomatically()" class="w-full py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-2 shadow">
           <i data-lucide="printer" class="w-4 h-4"></i>
-          <span>1. Cetak Thermal (USB/POS)</span>
+          <span>Cetak Thermal</span>
         </button>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="downloadReceiptPDF()" class="py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 shadow">
-            <i data-lucide="file-down" class="w-4 h-4"></i>
-            <span>2. Unduh PDF</span>
-          </button>
-          <button onclick="openPromptWaModal()" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 shadow">
-            <i data-lucide="send" class="w-4 h-4"></i>
-            <span>3. Kirim WA</span>
-          </button>
-        </div>
-        <button onclick="closeModal('modal-receipt')" class="w-full py-2 border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-xl text-xs font-semibold">Tutup</button>
+        <button type="button" onclick="openPromptWaModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 shadow">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Kirim WhatsApp</span>
+        </button>
+        <button type="button" onclick="closeModal('modal-receipt')" class="w-full py-2 border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-xl text-xs font-semibold">Tutup</button>
       </div>
     </div>
   </div>
@@ -2605,71 +2581,6 @@
       lucide.createIcons();
     }
 
-    function generateCleanReceiptDom(tx) {
-      // PDF memakai DOM preview yang sama agar urutan, teks, dan ukuran selalu identik.
-      const source = document.getElementById('thermal-receipt');
-      if (!source) return null;
-      const clone = source.cloneNode(true);
-      clone.id = 'receipt-pdf-clone';
-      clone.className = 'receipt-pdf-render';
-      clone.style.width = '76mm';
-      clone.style.maxWidth = '76mm';
-      clone.style.margin = '0';
-      clone.style.border = '0';
-      clone.style.boxShadow = 'none';
-      clone.style.borderRadius = '0';
-      clone.style.boxSizing = 'border-box';
-      return clone;
-    }
-
-    function getReceiptPdfWorker() {
-      if (!lastActiveTxForReceipt) return null;
-      const isolatedDom = generateCleanReceiptDom(lastActiveTxForReceipt);
-      if (!isolatedDom) return null;
-      isolatedDom.style.position = 'absolute';
-      isolatedDom.style.left = '-10000px';
-      isolatedDom.style.top = '0';
-      document.body.appendChild(isolatedDom);
-
-      const heightPx = Math.ceil(isolatedDom.getBoundingClientRect().height || 380);
-      const heightMm = Math.max(60, Math.ceil(heightPx * 25.4 / 96) + 2);
-      const opt = {
-        margin: 0,
-        filename: `Struk-${lastActiveTxForReceipt.id}.pdf`,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: {
-          scale: 3,
-          useCORS: true,
-          scrollX: 0,
-          scrollY: 0,
-          backgroundColor: '#ffffff',
-          width: 287
-        },
-        jsPDF: { unit: 'mm', format: [76, heightMm], orientation: 'portrait' }
-      };
-      const worker = html2pdf().set(opt).from(isolatedDom);
-      worker.get('pdf').then(() => {
-        if (isolatedDom.parentNode) isolatedDom.parentNode.removeChild(isolatedDom);
-      }).catch(() => {
-        if (isolatedDom.parentNode) isolatedDom.parentNode.removeChild(isolatedDom);
-      });
-      return worker;
-    }
-
-
-    function downloadReceiptPDF() {
-      if (!lastActiveTxForReceipt) return;
-      const worker = getReceiptPdfWorker();
-      if (!worker) return;
-
-      worker.save().then(() => {
-        showToast('Struk PDF pas ukuran berhasil diunduh!');
-      }).catch(err => {
-        console.error('PDF Download Error:', err);
-        showToast('Gagal memproses file PDF!');
-      });
-    }
-
     function openPromptWaModal() {
       if (!lastActiveTxForReceipt) return;
       const tx = lastActiveTxForReceipt;
@@ -2715,29 +2626,17 @@
     function handleCheckoutKeydown(event) {
       if (event.key === 'Escape') {
         event.preventDefault();
+        event.stopPropagation();
         closeModal('modal-checkout');
         focusKasirSearch();
         return;
       }
+
       if (event.key === 'Enter') {
         event.preventDefault();
-        const metode = document.getElementById('checkout-metode');
-        const bayar = document.getElementById('checkout-bayar');
-        if (event.target === metode) {
-          bayar?.focus();
-          bayar?.select();
-          return;
-        }
-        if (event.target === bayar) {
-          const total = cart.reduce((s,i) => s + (Number(i.qty)||0) * (Number(i.currentPrice)||0), 0);
-          const nominal = parseInt(bayar.value,10) || 0;
-          if (nominal < total) {
-            showToast('Uang diterima masih kurang');
-            bayar.select();
-            return;
-          }
-          confirmCheckout();
-        }
+        event.stopPropagation();
+        confirmCheckout();
+        return;
       }
     }
 
@@ -2863,10 +2762,16 @@
       renderDashboard();
       renderLaporan();
       renderKasTable();
-      showToast('Transaksi Sukses Disimpan!');
+      showToast('Selamat Transaksi Berhasil Silahkan Print Struk');
 
       showReceiptModal(newTx);
-      setTimeout(() => focusKasirSearch(), 100);
+      setTimeout(() => {
+        const receiptModal = document.getElementById('modal-receipt');
+        if (receiptModal) {
+          receiptModal.setAttribute('tabindex', '-1');
+          receiptModal.focus();
+        }
+      }, 150);
     }
 
     function openModalBarangSimple() {
@@ -3981,6 +3886,26 @@
       lucide.createIcons();
     }
 
+    let receiptPrintLocked = false;
+
+    function printReceiptAutomatically() {
+      if (receiptPrintLocked) return;
+      if (!lastActiveTxForReceipt) {
+        showToast('Data struk belum tersedia');
+        return;
+      }
+
+      receiptPrintLocked = true;
+      showToast('Menyiapkan printer struk...');
+
+      setTimeout(() => {
+        printCustomArea('thermal-receipt');
+        setTimeout(() => {
+          receiptPrintLocked = false;
+        }, 1500);
+      }, 150);
+    }
+
     function printCustomArea(elementId) {
       const el = document.getElementById(elementId);
       if (!el) return window.print();
@@ -4435,6 +4360,47 @@
       lucide.createIcons();
       initRealtimeListeners();
     });
-  </script>
+  
+    document.addEventListener('keydown', function (event) {
+      const checkoutModal = document.getElementById('modal-checkout');
+      const receiptModal = document.getElementById('modal-receipt');
+      const checkoutOpen = checkoutModal && !checkoutModal.classList.contains('hidden');
+      const receiptOpen = receiptModal && !receiptModal.classList.contains('hidden');
+
+      if (receiptOpen) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          event.stopPropagation();
+          printReceiptAutomatically();
+          return;
+        }
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          event.stopPropagation();
+          closeModal('modal-receipt');
+          focusKasirSearch();
+          return;
+        }
+      }
+
+      if (checkoutOpen && event.key === 'Enter') {
+        event.preventDefault();
+        event.stopPropagation();
+        confirmCheckout();
+        return;
+      }
+
+      if (!checkoutOpen && !receiptOpen && event.key === 'F9') {
+        event.preventDefault();
+        openCheckoutModal();
+        return;
+      }
+
+      if (!checkoutOpen && !receiptOpen && event.key === 'Enter' && event.ctrlKey) {
+        event.preventDefault();
+        openCheckoutModal();
+      }
+    }, true);
+</script>
 </body>
 </html>
