@@ -33,8 +33,8 @@
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&family=Share+Tech+Mono&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&family=Share+Tech+Mono&display=swap');
+    body { font-family: 'Inter', sans-serif; }
     .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9999px; }
     .font-digital { font-family: 'Share Tech Mono', monospace; }
@@ -188,14 +188,14 @@
     .kasir-fullscreen .classic-pos-shell{border:0;border-radius:0;box-shadow:none;min-height:calc(100vh - 16px);display:flex;flex-direction:column}
     .kasir-fullscreen .classic-table-wrap{flex:1;max-height:none;min-height:0}
     .kasir-fullscreen .classic-shortcuts{border-radius:0}
-    .kasir-nav-toggle{height:36px;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);color:#fff;border-radius:10px;padding:0 11px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:.18s}
+    .kasir-nav-toggle{height:36px;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.10);color:#fff;border-radius:10px;padding:0 11px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:.18s}
     .kasir-nav-toggle:hover{background:rgba(255,255,255,.18)}
-    .classic-pos-shell,.classic-pos-shell button,.classic-pos-shell input,.classic-pos-shell select,.classic-pos-shell table{font-family:'Plus Jakarta Sans',sans-serif}
-    .classic-pos-title{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em;font-size:19px}
-    .classic-pos-subtitle,.classic-field-label,.classic-info-row,.classic-toolbar button,.classic-shortcuts{font-family:'Plus Jakarta Sans',sans-serif}
+    .classic-pos-shell,.classic-pos-shell button,.classic-pos-shell input,.classic-pos-shell select,.classic-pos-shell table{font-family:'Inter',sans-serif}
+    .classic-pos-title{font-family:'Inter',sans-serif;letter-spacing:-.02em;font-size:19px}
+    .classic-pos-subtitle,.classic-field-label,.classic-info-row,.classic-toolbar button,.classic-shortcuts{font-family:'Inter',sans-serif}
     .classic-pos-total{font-family:'Share Tech Mono',monospace}
     .classic-popup-row{grid-template-columns:125px minmax(180px,1fr) 125px 125px 90px 80px}
-    .classic-popup-head{display:grid;grid-template-columns:125px minmax(180px,1fr) 125px 125px 90px 80px;gap:6px;padding:7px 9px;background:#f8fafc;border-bottom:1px solid #e5e7eb;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase}
+    .classic-popup-head{display:grid;grid-template-columns:125px minmax(180px,1fr) 125px 125px 90px 80px;gap:6px;padding:7px 9px;background:#f8fafc;border-bottom:1px solid #e5e7eb;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase}
     .classic-popup-head > div:nth-child(n+3){text-align:right}
     .classic-popup-head > div:nth-child(5){text-align:center}
     .classic-popup-row .p-price-grosir{color:#15803d;font-weight:800;text-align:right}
@@ -210,188 +210,6 @@
       .classic-pos-table{min-width:850px}.classic-pos-footer{flex-direction:column;align-items:stretch}.classic-footer-actions button{flex:1}
     }
 
-
-
-    /* MODERN UI KASIR: bingkai tetap kotak, tombol lebih modern */
-    .classic-pos-shell{border-radius:4px !important}
-    .classic-pos-shell button{border-radius:10px;transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .12s ease}
-    .classic-pos-shell button:hover{transform:translateY(-1px)}
-    .classic-pos-shell button:active{transform:translateY(0)}
-    .classic-key-btn,.classic-toolbar button,.classic-footer-actions button{border-radius:10px !important;font-family:'Plus Jakarta Sans',sans-serif !important;letter-spacing:-.01em}
-    .classic-toolbar button{border-radius:9px !important;font-weight:700}
-    .classic-pos-table button,.classic-price-toggle{border-radius:8px !important}
-    .classic-qty-input,.classic-cell-input{border-radius:7px !important;font-family:'Plus Jakarta Sans',sans-serif !important}
-    .classic-pos-shell input,.classic-pos-shell select{font-family:'Plus Jakarta Sans',sans-serif}
-
-
-    /* TYPOGRAPHY KASIR - lebih bold, modern, dan mudah dibaca */
-    .classic-pos-shell,
-    .classic-pos-shell button,
-    .classic-pos-shell input,
-    .classic-pos-shell select,
-    .classic-pos-shell table {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-    }
-    .classic-pos-shell {
-      font-weight:600;
-    }
-    .classic-pos-title {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-size:20px !important;
-      font-weight:800 !important;
-      letter-spacing:-.025em !important;
-    }
-    .classic-pos-subtitle {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-size:11px !important;
-      font-weight:600 !important;
-      letter-spacing:-.01em;
-    }
-    .classic-pos-total-label {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:800 !important;
-    }
-    .classic-field-label,
-    .classic-toolbar-label {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:800 !important;
-      letter-spacing:-.01em;
-    }
-    #kasir-search {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-size:17px !important;
-      font-weight:700 !important;
-      letter-spacing:-.015em;
-    }
-    .classic-key-btn,
-    .classic-toolbar button,
-    .classic-footer-actions button {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-size:11px !important;
-      font-weight:800 !important;
-      letter-spacing:-.01em;
-    }
-    .classic-scanner-badge {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:800 !important;
-    }
-    .classic-info-row {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:600;
-    }
-    .classic-member-select {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:600 !important;
-    }
-    .classic-pos-table {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-size:12px !important;
-      font-weight:600 !important;
-    }
-    .classic-pos-table th {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-size:10px !important;
-      font-weight:800 !important;
-      letter-spacing:.025em;
-    }
-    .classic-pos-table td {
-      font-weight:600 !important;
-    }
-    .classic-cell-input,
-    .classic-qty-input,
-    .classic-price-toggle {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:700 !important;
-    }
-    .classic-qty-input {
-      font-size:14px !important;
-      font-weight:800 !important;
-    }
-    .classic-grand-total {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:800 !important;
-    }
-    .classic-grand-total b {
-      font-weight:900 !important;
-    }
-    .classic-summary {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:600 !important;
-    }
-    .classic-shortcuts {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-weight:600 !important;
-    }
-    .classic-shortcuts b {
-      font-weight:900 !important;
-    }
-
-
-    /* PENEGASAN FONT: TOTAL ATAS + POPUP DAFTAR BARANG */
-    .classic-pos-total-label {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-size:14px !important;
-      font-weight:900 !important;
-      letter-spacing:.02em !important;
-    }
-    .classic-pos-total {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-      font-size:42px !important;
-      font-weight:900 !important;
-      letter-spacing:-.035em !important;
-      line-height:1 !important;
-    }
-    .classic-popup-head,
-    .classic-popup-row,
-    #modal-katalog-barang button,
-    #modal-katalog-barang input,
-    #modal-katalog-barang p,
-    #modal-katalog-barang > div {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-    }
-    .classic-popup-head {
-      font-size:11px !important;
-      font-weight:900 !important;
-      letter-spacing:.015em !important;
-    }
-    .classic-popup-row {
-      font-size:12px !important;
-      font-weight:600 !important;
-      line-height:1.45 !important;
-      padding-top:9px !important;
-      padding-bottom:9px !important;
-    }
-    .classic-popup-row .p-name,
-    .classic-popup-row .p-code,
-    .classic-popup-row .p-price,
-    .classic-popup-row .p-price-grosir,
-    .classic-popup-row .p-stock {
-      font-weight:700 !important;
-    }
-    .classic-popup-row .p-name { font-weight:800 !important; }
-    #popup-barang-search {
-      font-size:14px !important;
-      font-weight:700 !important;
-    }
-    #modal-katalog-barang h3 {
-      font-size:16px !important;
-      font-weight:900 !important;
-      letter-spacing:-.015em !important;
-    }
-    #modal-katalog-barang > div > div:first-child p {
-      font-size:11px !important;
-      font-weight:600 !important;
-    }
-    #modal-katalog-barang .classic-popup-head + div {
-      font-family:'Plus Jakarta Sans',sans-serif !important;
-    }
-    @media (max-width:1024px){
-      .classic-pos-total { font-size:38px !important; }
-    }
-    @media (max-width:640px){
-      .classic-pos-total { font-size:31px !important; }
-      .classic-pos-total-label { font-size:13px !important; }
-    }
 
     /* RESPONSIVE HARDENING: desktop, tablet, mobile */
     *,*::before,*::after{box-sizing:border-box}
@@ -444,7 +262,332 @@
     }
     @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
-  </style>
+
+    /* ============================================================
+       MODERN UI OVERRIDES
+       - tombol lebih rounded, tidak kaku/mengotak
+       - typography lebih tegas dan mudah dibaca
+       - POS responsif di desktop/tablet/mobile
+       ============================================================ */
+    :root{
+      --ui-radius:14px;
+      --ui-radius-sm:11px;
+      --ui-border:#e5e7eb;
+      --ui-text:#111827;
+      --ui-muted:#64748b;
+      --ui-green:#16a34a;
+      --ui-green-dark:#15803d;
+      --ui-shadow:0 8px 24px rgba(15,23,42,.07);
+    }
+
+    body{
+      font-family:'Inter',sans-serif;
+      color:var(--ui-text);
+      font-weight:500;
+      background:#f8fafc;
+    }
+
+    button, input, select, textarea{font-family:'Inter',sans-serif}
+    button{border-radius:12px!important}
+    input, select, textarea{border-radius:12px!important}
+
+    /* Kasir */
+    .classic-pos-shell{
+      background:#fff;
+      border:1px solid var(--ui-border);
+      border-radius:18px;
+      box-shadow:var(--ui-shadow);
+      overflow:hidden;
+    }
+    .classic-pos-header{
+      background:linear-gradient(135deg,#111827,#1f2937);
+      min-height:86px;
+      padding:14px 18px;
+      border-bottom:0;
+      border-radius:0;
+    }
+    .classic-pos-title{
+      font-family:'Inter',sans-serif;
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:-.03em;
+    }
+    .classic-pos-subtitle{
+      font-family:'Inter',sans-serif;
+      color:#cbd5e1;
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:.02em;
+    }
+    .classic-pos-total-wrap{
+      gap:12px;
+      padding:8px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.07);
+    }
+    .classic-pos-total-label{
+      font-family:'Inter',sans-serif;
+      font-size:12px;
+      font-weight:800;
+      color:#d1d5db;
+    }
+    .classic-pos-total{
+      font-family:'Inter',sans-serif;
+      font-size:38px;
+      font-weight:900;
+      letter-spacing:-.035em;
+      color:#bbf7d0;
+      min-width:260px;
+    }
+
+    .kasir-nav-toggle,
+    .classic-key-btn,
+    .classic-toolbar button,
+    .classic-footer-actions button{
+      border:1px solid #dbe2ea;
+      background:#fff;
+      color:#0f172a;
+      border-radius:12px!important;
+      min-height:40px;
+      padding:0 13px;
+      font-size:11px;
+      font-weight:800;
+      box-shadow:0 1px 2px rgba(15,23,42,.04);
+      transition:all .18s ease;
+    }
+    .classic-key-btn:hover,
+    .classic-toolbar button:hover,
+    .classic-footer-actions button:hover{
+      background:#f8fafc;
+      border-color:#cbd5e1;
+      transform:translateY(-1px);
+      box-shadow:0 5px 12px rgba(15,23,42,.07);
+    }
+    .classic-toolbar .classic-pay-btn,
+    .classic-pay-btn{
+      background:linear-gradient(135deg,#16a34a,#15803d);
+      border-color:#15803d;
+      color:#fff;
+    }
+    .classic-toolbar .classic-pay-btn:hover,
+    .classic-pay-btn:hover{
+      background:linear-gradient(135deg,#15803d,#166534);
+    }
+    .classic-toolbar .classic-danger-btn{
+      color:#b91c1c;
+      background:#fff;
+      border-color:#fecaca;
+    }
+
+    .classic-input-row{
+      grid-template-columns:120px minmax(250px,1fr) 110px 130px;
+      gap:9px;
+      padding:10px;
+      background:#f8fafc;
+      border-bottom:1px solid var(--ui-border);
+    }
+    .classic-field-label{
+      font-size:11px;
+      font-weight:800;
+      color:#475569;
+    }
+    #kasir-search{
+      height:46px;
+      border:2px solid #cbd5e1;
+      border-radius:12px!important;
+      padding:0 14px;
+      font-size:16px;
+      font-weight:800;
+      color:#0f172a;
+    }
+    #kasir-search:focus{
+      border-color:#22c55e;
+      box-shadow:0 0 0 4px rgba(34,197,94,.12);
+    }
+    .classic-scanner-badge{
+      height:40px;
+      border:1px solid #bbf7d0;
+      background:#f0fdf4;
+      color:#15803d;
+      border-radius:12px!important;
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .classic-info-row{
+      gap:20px;
+      padding:8px 12px;
+      background:#fff;
+      border-bottom:1px solid var(--ui-border);
+      font-size:12px;
+      font-weight:600;
+    }
+    .classic-member-select{
+      border:1px solid #dbe2ea;
+      border-radius:10px!important;
+      padding:7px 9px;
+      font-size:12px;
+      font-weight:700;
+    }
+    .classic-toolbar{
+      gap:7px;
+      padding:8px 10px;
+      background:#f8fafc;
+      border-bottom:1px solid var(--ui-border);
+    }
+    .classic-toolbar button{
+      min-height:38px;
+      font-size:10px;
+    }
+
+    .classic-table-wrap{
+      background:#fff;
+      border-bottom:1px solid var(--ui-border);
+    }
+    .classic-pos-table{
+      font-family:'Inter',sans-serif;
+      font-size:14px;
+      min-width:980px;
+    }
+    .classic-pos-table th{
+      background:#f8fafc;
+      color:#475569;
+      border:0;
+      border-bottom:1px solid #e2e8f0;
+      padding:11px 8px;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+    .classic-pos-table td{
+      border:0;
+      border-bottom:1px solid #eef2f7;
+      padding:7px 8px;
+      height:50px;
+      font-size:14px;
+      font-weight:700;
+      color:#1e293b;
+    }
+    .classic-pos-table tbody tr:hover td{background:#f8fafc}
+    .classic-pos-table tbody tr.active-cart-row td{
+      background:#f0fdf4!important;
+      border-top:2px solid #22c55e;
+      border-bottom:2px solid #22c55e;
+    }
+    .classic-cell-input{
+      height:38px;
+      border-radius:10px!important;
+      padding:5px 8px;
+      font-size:14px;
+      font-weight:800;
+    }
+    .classic-qty-input{
+      height:38px;
+      border:1px solid #cbd5e1;
+      border-radius:10px!important;
+      background:#fff;
+      font-size:15px;
+      font-weight:900;
+    }
+    .classic-price-toggle{
+      height:36px;
+      border:1px solid #cbd5e1;
+      border-radius:10px!important;
+      font-size:11px;
+      font-weight:800;
+    }
+    .classic-delete-cell button{
+      border-radius:10px!important;
+      color:#dc2626;
+    }
+    .classic-empty-row td{
+      height:190px;
+      font-size:14px;
+      font-weight:600;
+      color:#64748b;
+    }
+
+    .classic-pos-footer{
+      padding:11px 14px;
+      background:#fff;
+      border-top:0;
+    }
+    .classic-summary{
+      gap:22px;
+      font-size:13px;
+      font-weight:700;
+    }
+    .classic-summary b{font-weight:900}
+    .classic-grand-total{
+      font-size:16px;
+      font-weight:900;
+    }
+    .classic-grand-total b{
+      font-family:'Inter',sans-serif;
+      font-size:28px;
+      font-weight:950;
+      color:#15803d;
+      letter-spacing:-.025em;
+    }
+
+    /* Font lebih besar & bold pada daftar barang popup */
+    .classic-popup-head{
+      font-size:11px;
+      font-weight:900;
+      padding:9px 12px;
+      border-bottom:1px solid #e2e8f0;
+      background:#f8fafc;
+    }
+    .classic-popup-row{
+      min-height:54px;
+      padding:9px 12px;
+      font-size:13px;
+      font-weight:700;
+      border-bottom:1px solid #eef2f7;
+    }
+    .classic-popup-row .p-name{font-size:14px;font-weight:850;color:#0f172a}
+    .classic-popup-row .p-code{font-weight:700;color:#64748b}
+    .classic-popup-row .p-price-grosir{font-weight:900}
+    .classic-popup-row button{
+      border-radius:10px!important;
+      font-weight:800;
+    }
+
+    /* Hilangkan label periode dashboard "Menampilkan: ..." */
+    #dash-period-label{display:none!important}
+
+    /* Responsif */
+    @media(max-width:1024px){
+      .classic-pos-total{font-size:32px;min-width:0}
+      .classic-input-row{grid-template-columns:minmax(0,1fr) auto auto}
+      .classic-field-label{display:none}
+    }
+    @media(max-width:640px){
+      main{padding-left:10px!important;padding-right:10px!important}
+      .classic-pos-shell{border-radius:14px}
+      .classic-pos-header{padding:12px;gap:10px}
+      .classic-pos-title{font-size:18px}
+      .classic-pos-total-wrap{width:100%;justify-content:space-between;margin-left:0}
+      .classic-pos-total{font-size:27px;text-align:left}
+      .classic-input-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}
+      .classic-toolbar{gap:6px;padding:8px}
+      .classic-toolbar button{flex:1 1 auto;min-height:40px;font-size:10px}
+      .classic-info-row{align-items:stretch;gap:7px;padding:9px;flex-direction:column}
+      .classic-table-wrap{min-height:220px;max-height:none;-webkit-overflow-scrolling:touch}
+      .classic-pos-table{min-width:850px}
+      .classic-pos-footer{align-items:stretch;padding:10px}
+      .classic-summary{justify-content:space-between;gap:8px}
+      .classic-footer-actions{width:100%}
+      .classic-footer-actions button{flex:1 1 120px}
+      .classic-grand-total b{font-size:25px}
+    }
+
+  
+/* RETUR FIX */
+#modal-retur{z-index:9999!important}
+#modal-retur button[type="submit"]{cursor:pointer}
+
+</style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
@@ -771,13 +914,35 @@
       <section id="page-dashboard" class="page-content hidden space-y-4 sm:space-y-6">
         <div>
           <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Dashboard Realtime</h1>
-          <p class="text-xs text-gray-500 mt-0.5" id="dash-subtitle">Semua data terintegrasi otomatis secara realtime di Cloud</p>
+          <p class="text-xs text-gray-500 mt-0.5" id="dash-subtitle">Ringkasan transaksi realtime tersinkronisasi dengan Cloud</p>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 shadow-sm">
+          <div class="flex flex-wrap items-end gap-2 sm:gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tampilan Dashboard</label>
+              <select id="dash-report-mode" onchange="renderDashboard()" class="border border-gray-200 rounded-lg px-3 py-2 text-xs font-semibold outline-none bg-white">
+                <option value="day">Harian</option>
+                <option value="month">Bulanan</option>
+              </select>
+            </div>
+            <div id="dash-date-wrap">
+              <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label>
+              <input type="date" id="dash-report-date" onchange="renderDashboard()" class="border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" />
+            </div>
+            <div id="dash-month-wrap" class="hidden">
+              <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label>
+              <input type="month" id="dash-report-month" onchange="renderDashboard()" class="border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" />
+            </div>
+            <button onclick="setDashboardToday()" class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700">Hari Ini</button>
+            <div class="hidden" id="dash-period-label" aria-hidden="true"></div>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENJUALAN HARI INI</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENJUALAN <span id="dash-sales-label">HARI INI</span></span>
               <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-sales-today">Rp0</h3>
               <p class="text-[11px] text-gray-400 mt-0.5" id="dash-tx-today">0 transaksi</p>
             </div>
@@ -785,7 +950,7 @@
           </div>
           <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA KOTOR HARI INI</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA KOTOR <span id="dash-profit-label">HARI INI</span></span>
               <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-profit-today">Rp0</h3>
               <p class="text-[11px] text-emerald-500 mt-0.5 font-medium">Margin terhitung</p>
             </div>
@@ -795,7 +960,7 @@
           </div>
           <div class="admin-only bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN HARI INI</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN <span id="dash-expense-label">HARI INI</span></span>
               <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-expense-today">Rp0</h3>
               <p class="text-[11px] text-gray-400 mt-0.5" id="dash-expense-count">Toko: Rp0 | BRI: Rp0</p>
             </div>
@@ -805,7 +970,7 @@
           </div>
           <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">BRI LINK HARI INI</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">BRI LINK <span id="dash-brilink-label">HARI INI</span></span>
               <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1" id="dash-brilink-today">Rp0</h3>
               <p class="text-[11px] text-gray-400 mt-0.5" id="dash-brilink-count">0 transaksi</p>
             </div>
@@ -867,7 +1032,7 @@
             </button>
             <button onclick="openModalBarang()" class="admin-only px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Barang Baru</span>
+              <span>+ Barang Baru</span>
             </button>
           </div>
         </div>
@@ -1043,7 +1208,7 @@
               <i data-lucide="search" class="w-4 h-4 text-gray-400 shrink-0"></i>
               <input type="text" id="filter-tx-search" oninput="renderTransaksiTable()" placeholder="Cari No Transaksi / Kasir..." class="bg-transparent outline-none w-full" />
             </div>
-            <button onclick="document.getElementById('filter-tx-date').value = ''; renderTransaksiTable();" class="text-xs text-emerald-600 hover:underline font-semibold text-right sm:text-left">Semua Tanggal</button>
+            <button onclick="document.getElementById('filter-tx-date').value = getTodayISODate(); renderTransaksiTable();" class="text-xs text-emerald-600 hover:underline font-semibold text-right sm:text-left">Semua Tanggal</button>
           </div>
           <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
@@ -1073,11 +1238,11 @@
             <p class="text-xs text-gray-500 mt-0.5">Pengembalian barang otomatis memperbarui stok & buku kas toko</p>
           </div>
           <div class="flex space-x-2">
-            <button onclick="openModalRetur('pelanggan')" class="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 shadow-sm">
+            <button type="button" onclick="openModalRetur('pelanggan')" class="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
               <span>Retur Pelanggan</span>
             </button>
-            <button onclick="openModalRetur('supplier')" class="admin-only flex-1 sm:flex-none px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-50 shadow-sm">
+            <button type="button" onclick="openModalRetur('supplier')" class="admin-only flex-1 sm:flex-none px-3 py-2 bg-white border border-gray-200 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1 hover:bg-gray-50 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
               <span>Retur Supplier</span>
             </button>
@@ -1125,9 +1290,7 @@
         <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
   <div class="flex flex-wrap items-end gap-2 sm:gap-3">
     <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-pemasukan-date" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
-    <div class="flex-1 min-w-[130px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label><select id="filter-pemasukan-month" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div>
-    <div class="flex-1 min-w-[110px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tahun</label><select id="filter-pemasukan-year" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Tahun</option></select></div>
-    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Reset</button>
+    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Hari Ini</button>
   </div>
 </div>
 
@@ -1161,11 +1324,11 @@
           <div class="flex flex-wrap items-center gap-2">
             <button onclick="openModalKasSpecific('pengeluaran', 'toko')" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-emerald-700 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Pengeluaran Toko</span>
+              <span>+ Pengeluaran Toko</span>
             </button>
             <button onclick="openModalKasSpecific('pengeluaran', 'brilink')" class="px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1 hover:bg-blue-700 shadow-sm">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Pengeluaran BRI Link</span>
+              <span>+ Pengeluaran BRI Link</span>
             </button>
           </div>
         </div>
@@ -1173,9 +1336,7 @@
         <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
   <div class="flex flex-wrap items-end gap-2 sm:gap-3">
     <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-pengeluaran-date" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
-    <div class="flex-1 min-w-[130px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label><select id="filter-pengeluaran-month" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div>
-    <div class="flex-1 min-w-[110px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tahun</label><select id="filter-pengeluaran-year" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Tahun</option></select></div>
-    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Reset</button>
+    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Hari Ini</button>
   </div>
 </div>
 
@@ -1249,10 +1410,8 @@
 
         <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
   <div class="flex flex-wrap items-end gap-2 sm:gap-3">
-    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-brilink-date" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
-    <div class="flex-1 min-w-[130px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label><select id="filter-brilink-month" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div>
-    <div class="flex-1 min-w-[110px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tahun</label><select id="filter-brilink-year" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none"><option value="">Semua Tahun</option></select></div>
-    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Reset</button>
+    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-brilink-date" onchange="renderBriLinkTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
+    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Hari Ini</button>
   </div>
 </div>
 
@@ -1687,7 +1846,7 @@
               <option value="Rokok">Rokok</option>
               <option value="Lainnya">Lainnya</option>
             </select>
-            <button type="button" onclick="addProductCategory()" class="shrink-0 px-3 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700" title="Tambah kategori">Kategori</button>
+            <button type="button" onclick="addProductCategory()" class="shrink-0 px-3 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700" title="Tambah kategori">+ Kategori</button>
             <button type="button" onclick="deleteProductCategory()" class="shrink-0 px-3 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700" title="Hapus kategori">− Hapus</button>
           </div>
           <p class="text-[10px] text-gray-400 mt-1">Tambahkan kategori baru tanpa harus menutup form barang.</p>
@@ -1781,10 +1940,11 @@
           <select id="retur-price-type" onchange="updateReturPricePreview()" class="border rounded-xl p-2.5">
             <option value="eceran">Harga Eceran</option>
             <option value="grosir">Harga Grosir</option>
+            <option value="modal">Harga Modal</option>
           </select>
         </div>
         <input type="text" id="retur-alasan" placeholder="Alasan retur barang..." class="w-full border rounded-xl p-2.5" required />
-        <div class="p-2.5 bg-gray-50 border rounded-xl flex justify-between font-medium"><span>Nilai Transaksi:</span><span id="retur-total-preview" class="font-bold text-emerald-700">Rp0</span></div>
+        <div class="p-2.5 bg-gray-50 border rounded-xl flex justify-between font-medium"><span>Nilai Refund/Retur:</span><span id="retur-total-preview" class="font-bold text-emerald-700">Rp0</span></div>
         <div class="flex justify-end space-x-2 pt-2 border-t">
           <button type="button" onclick="closeModal('modal-retur')" class="px-4 py-2 border rounded-xl font-medium">Batal</button>
           <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold">Simpan & Mutasi Kas</button>
@@ -2852,9 +3012,8 @@
       document.getElementById('settings-user-info').innerText = `${currentUser.name} · @${currentUser.username}`;
       document.getElementById('settings-user-role').innerText = currentUser.role;
 
-      const today = new Date().toISOString().slice(0, 10);
-      if (document.getElementById('filter-tx-date')) document.getElementById('filter-tx-date').value = today;
-      if (document.getElementById('laporan-delete-date')) document.getElementById('laporan-delete-date').value = today;
+      initializeDateFilters();
+      const today = getTodayISODate();
       if (document.getElementById('laporan-period')) document.getElementById('laporan-period').value = today.slice(0, 7);
 
       document.querySelectorAll('.admin-only').forEach(el => {
@@ -3389,27 +3548,31 @@
 
     async function saveKas(e) {
       e.preventDefault();
+
       const type = document.getElementById('kas-type').value;
       const kategori = document.getElementById('kas-kategori').value.trim();
       const metode = document.getElementById('kas-metode').value;
-      const nominal = parseInt(document.getElementById('kas-nominal').value) || 0;
+      const nominal = parseInt(document.getElementById('kas-nominal').value, 10) || 0;
       const catatan = document.getElementById('kas-catatan').value.trim();
 
+      if (nominal <= 0) {
+        showToast('Nominal harus lebih dari 0');
+        return;
+      }
+
       const now = new Date();
-      const dateKey = now.toISOString().slice(0, 10);
-      const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
+      const dateKey = getLocalDateKey(now);
+      const timeStr = now.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }) + ' WIB';
 
       if (type === 'pemasukan') {
-        const entry = { id: 'IN-' + Date.now(), dateKey, tanggal: timeStr, kategori, metode, nominal, catatan, source: 'manual' };
-        if (!isFirebaseReady) pemasukans.unshift(entry);
-        else await syncToCloud("pemasukans", entry.id, entry);
-        addLog('CASH_IN', `Pemasukan manual Rp${nominal.toLocaleString('id-ID')}`);
-      } else {
-        const targetRadio = document.querySelector('input[name="kas-target"]:checked');
-        const expenseType = targetRadio ? targetRadio.value : 'toko';
         const entry = {
-          id: (expenseType === 'brilink' ? 'EXP-BRI-' : 'EXP-TOK-') + Date.now(),
-          expenseType: expenseType,
+          id: 'IN-' + Date.now(),
           dateKey,
           tanggal: timeStr,
           kategori,
@@ -3418,15 +3581,51 @@
           catatan,
           source: 'manual'
         };
-        if (!isFirebaseReady) pengeluarans.unshift(entry);
-        else await syncToCloud("pengeluarans", entry.id, entry);
-        addLog('CASH_OUT', `Pengeluaran [${expenseType.toUpperCase()}] ${kategori} Rp${nominal.toLocaleString('id-ID')}`);
+
+        pemasukans.unshift(entry);
+        await syncToCloud("pemasukans", entry.id, entry);
+        addLog('CASH_IN', `Pemasukan manual Rp${nominal.toLocaleString('id-ID')}`);
+      } else {
+        // Baca pilihan radio secara eksplisit dari elemen yang diklik.
+        // Ini mencegah pilihan BRI Link jatuh kembali ke "toko".
+        const radioBrilink = document.getElementById('target-brilink');
+        const radioToko = document.getElementById('target-toko');
+        const expenseType = radioBrilink && radioBrilink.checked
+          ? 'brilink'
+          : (radioToko && radioToko.checked ? 'toko' : 'toko');
+
+        const entry = {
+          id: (expenseType === 'brilink' ? 'EXP-BRI-' : 'EXP-TOK-') + Date.now(),
+          expenseType,
+          jenisPengeluaran: expenseType,
+          dateKey,
+          tanggal: timeStr,
+          kategori,
+          metode,
+          nominal,
+          catatan,
+          source: 'manual'
+        };
+
+        pengeluarans.unshift(entry);
+        await syncToCloud("pengeluarans", entry.id, entry);
+
+        addLog(
+          'CASH_OUT',
+          `Pengeluaran [${expenseType.toUpperCase()}] ${kategori} Rp${nominal.toLocaleString('id-ID')}`
+        );
       }
 
       renderKasTable();
       renderDashboard();
       renderLaporan();
       clearExecutedForm('form-kas');
+      // Setelah reset, pastikan default kembali ke Toko untuk input berikutnya.
+      const targetToko = document.getElementById('target-toko');
+      const targetBri = document.getElementById('target-brilink');
+      if (targetToko) targetToko.checked = true;
+      if (targetBri) targetBri.checked = false;
+
       closeModal('modal-kas');
       showToast('Data berhasil disimpan & terintegrasi ke pembukuan!');
     }
@@ -3478,46 +3677,24 @@
     }
 
     function getPeriodFilter(prefix) {
-      return {
-        date: document.getElementById(`filter-${prefix}-date`)?.value || '',
-        month: document.getElementById(`filter-${prefix}-month`)?.value || '',
-        year: document.getElementById(`filter-${prefix}-year`)?.value || ''
-      };
+      return { date: document.getElementById(`filter-${prefix}-date`)?.value || getTodayISODate() };
     }
 
     function matchesPeriod(item, prefix) {
-      const f = getPeriodFilter(prefix);
-      const date = String(item.dateKey || '');
-      if (f.date && date !== f.date) return false;
-      if (f.month && date.slice(5, 7) !== f.month) return false;
-      if (f.year && date.slice(0, 4) !== f.year) return false;
-      return true;
-    }
-
-    function populatePeriodYears() {
-      const years = new Set([String(new Date().getFullYear())]);
-      [...pemasukans, ...pengeluarans, ...brilinks, ...transactions].forEach(item => {
-        if (item.dateKey) years.add(String(item.dateKey).slice(0, 4));
-      });
-      ['pemasukan', 'pengeluaran', 'brilink'].forEach(prefix => {
-        const el = document.getElementById(`filter-${prefix}-year`);
-        if (!el) return;
-        const current = el.value;
-        el.innerHTML = '<option value="">Semua Tahun</option>' + [...years].sort().reverse().map(y => `<option value="${y}">${y}</option>`).join('');
-        el.value = current;
-      });
+      return getItemDateKey(item) === getPeriodFilter(prefix).date;
     }
 
     function clearKasFilters() {
-      ['pemasukan', 'pengeluaran', 'brilink'].forEach(prefix => {
-        ['date','month','year'].forEach(kind => { const el = document.getElementById(`filter-${prefix}-${kind}`); if (el) el.value = ''; });
+      const today = getTodayISODate();
+      ['pemasukan','pengeluaran','brilink'].forEach(prefix => {
+        const el = document.getElementById(`filter-${prefix}-date`);
+        if (el) el.value = today;
       });
       renderKasTable();
       renderBriLinkTable();
     }
 
     function renderKasTable() {
-      populatePeriodYears();
       const tbodyMasuk = document.getElementById('table-pemasukan-body');
       if (tbodyMasuk) {
         const allMasuk = getIntegratedPemasukanList().filter(p => matchesPeriod(p, 'pemasukan'));
@@ -3592,12 +3769,45 @@
     }
 
     function openModalRetur(defaultType = 'pelanggan') {
+      const modal = document.getElementById('modal-retur');
       const select = document.getElementById('retur-barang-id');
-      select.innerHTML = products.map(p => `<option value="${p.id}" ${String(p.id) === String(productId) ? 'selected' : ''}>${p.nama} (Stok saat ini: ${p.stok})</option>`).join('');
-      document.getElementById('retur-type').value = defaultType;
+      const typeSelect = document.getElementById('retur-type');
+      const qtyInput = document.getElementById('retur-qty');
+      const alasanInput = document.getElementById('retur-alasan');
+
+      if (!modal || !select || !typeSelect) {
+        console.error('Modal retur tidak ditemukan di halaman.');
+        showToast('Form retur tidak tersedia.');
+        return;
+      }
+
+      // Jangan bergantung pada variabel productId global yang tidak selalu ada.
+      // Jika sebelumnya ada pilihan barang, pertahankan pilihan tersebut.
+      const previousProductId = String(select.value || '');
+      const list = Array.isArray(products) ? products : [];
+
+      if (!list.length) {
+        select.innerHTML = '<option value="">Belum ada barang</option>';
+        showToast('Belum ada barang yang dapat diretur.');
+      } else {
+        select.innerHTML = list.map(p => {
+          const id = String(p.id ?? '');
+          const nama = String(p.nama ?? 'Barang');
+          const stok = Number(p.stok) || 0;
+          return `<option value="${id.replace(/\"/g, '&quot;')}">${nama.replace(/</g, '&lt;')} (Stok saat ini: ${stok})</option>`;
+        }).join('');
+        if (previousProductId && list.some(p => String(p.id) === previousProductId)) {
+          select.value = previousProductId;
+        }
+      }
+
+      typeSelect.value = defaultType === 'supplier' ? 'supplier' : 'pelanggan';
+      if (qtyInput) qtyInput.value = '1';
+      if (alasanInput) alasanInput.value = '';
+
       updateReturTypeUI();
       updateReturPricePreview();
-      openModal('modal-retur');
+      modal.classList.remove('hidden');
     }
 
     function updateReturTypeUI() {
@@ -3617,100 +3827,197 @@
         document.getElementById('retur-total-preview').innerText = 'Rp0';
         return;
       }
-      const unitPrice = priceType === 'grosir' ? (prod.hGrosir || prod.hJual) : prod.hJual;
+      const unitPrice = priceType === 'modal'
+        ? Number(prod.hModal || 0)
+        : (priceType === 'grosir' ? Number(prod.hGrosir || prod.hJual || 0) : Number(prod.hJual || 0));
       const total = unitPrice * qty;
       document.getElementById('retur-total-preview').innerText = 'Rp' + total.toLocaleString('id-ID');
     }
 
     async function saveRetur(e) {
-      e.preventDefault();
-      const type = document.getElementById('retur-type').value;
-      const prodId = document.getElementById('retur-barang-id').value;
-      const qty = parseInt(document.getElementById('retur-qty').value) || 0;
-      const priceType = document.getElementById('retur-price-type').value;
-      const alasan = document.getElementById('retur-alasan').value.trim();
+      if (e) e.preventDefault();
 
-      const prod = products.find(p => String(p.id) === String(prodId));
-      if (!prod || qty <= 0) return;
+      const typeEl = document.getElementById('retur-type');
+      const productEl = document.getElementById('retur-barang-id');
+      const qtyEl = document.getElementById('retur-qty');
+      const priceTypeEl = document.getElementById('retur-price-type');
+      const alasanEl = document.getElementById('retur-alasan');
 
-      const unitPrice = priceType === 'grosir' ? (prod.hGrosir || prod.hJual) : prod.hJual;
-      const totalNilai = unitPrice * qty;
-      const sebelum = prod.stok;
+      const type = typeEl ? String(typeEl.value || '').trim().toLowerCase() : '';
+      const prodId = productEl ? String(productEl.value || '').trim() : '';
+      const qty = Math.floor(Number(qtyEl ? qtyEl.value : 0));
 
-      if (type === 'pelanggan') {
-        prod.stok += qty;
-        const expEntry = {
-          id: 'EXP-RET-' + Date.now(),
-          expenseType: 'toko',
-          dateKey: new Date().toISOString().slice(0, 10),
-          tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
-          kategori: 'Refund Retur Pelanggan',
-          metode: 'CASH',
-          nominal: totalNilai,
-          catatan: `Barang: ${prod.nama} (${qty}x) - ${alasan}`
-        };
-        pengeluarans.unshift(expEntry);
-        await syncToCloud("pengeluarans", expEntry.id, expEntry);
-      } else {
-        if (prod.stok < qty) {
-          alert(`Stok fisik tidak mencukupi untuk retur supplier! Stok saat ini: ${prod.stok}`);
-          return;
-        }
-        prod.stok -= qty;
+      if (type !== 'pelanggan' && type !== 'supplier') {
+        showToast('Jenis retur tidak valid');
+        return;
+      }
+      if (!prodId) {
+        showToast('Pilih barang terlebih dahulu');
+        return;
+      }
+      if (!Number.isFinite(qty) || qty <= 0) {
+        showToast('Jumlah retur harus lebih dari 0');
+        return;
       }
 
+      // Ambil produk TERBARU dari state lokal.
+      const prod = products.find(p => String(p.id) === prodId);
+      if (!prod) {
+        showToast('Barang retur tidak ditemukan');
+        return;
+      }
+
+      const stokSebelum = Math.max(0, Number(prod.stok) || 0);
+
+      // LOGIKA UTAMA RETUR:
+      // 1. Retur pelanggan: barang kembali ke toko => stok + qty.
+      // 2. Retur supplier: barang keluar dari toko => stok - qty.
+      let stokSesudah;
+      if (type === 'pelanggan') {
+        stokSesudah = stokSebelum + qty;
+      } else {
+        if (qty > stokSebelum) {
+          alert(`Stok tidak cukup untuk retur supplier.\nStok saat ini: ${stokSebelum}\nJumlah retur: ${qty}`);
+          return;
+        }
+        stokSesudah = stokSebelum - qty;
+      }
+
+      const priceType = priceTypeEl ? String(priceTypeEl.value || 'eceran') : 'eceran';
+      const alasan = alasanEl ? String(alasanEl.value || '').trim() : '';
+      if (!alasan) {
+        showToast('Alasan retur wajib diisi');
+        return;
+      }
+
+      const unitPrice = Number(
+        priceType === 'modal'
+          ? (prod.hModal ?? 0)
+          : priceType === 'grosir'
+            ? (prod.hGrosir ?? prod.hJual ?? 0)
+            : (prod.hJual ?? 0)
+      ) || 0;
+      const totalNilai = unitPrice * qty;
+
       const now = new Date();
-      const dateKey = now.toISOString().slice(0, 10);
-      const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
-      const returNum = 'RET-' + dateKey.replace(/-/g, '') + '-' + String(returs.length + 1).padStart(4, '0');
+      const dateKey = getLocalDateKey(now);
+      const timeStr = now.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }) + ' WIB';
+
+      const returNum = 'RET-' + dateKey.replace(/-/g, '') + '-' +
+        String(Date.now()).slice(-6);
+
+      // Ubah stok di state lokal SEBELUM render.
+      prod.stok = stokSesudah;
+
+      const stokEntry = {
+        id: 'STK-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+        timestamp: Date.now(),
+        dateKey,
+        waktu: timeStr,
+        barang: prod.nama,
+        barangId: prod.id,
+        tipe: type === 'pelanggan' ? 'RETURN_IN' : 'RETURN_OUT',
+        qty: type === 'pelanggan' ? qty : -qty,
+        sebelum: stokSebelum,
+        setelah: stokSesudah,
+        user: currentUser?.name || currentUser?.nama || 'User'
+      };
 
       const returEntry = {
         id: returNum,
         timestamp: Date.now(),
-        type: type,
-        dateKey: dateKey,
+        type,
+        dateKey,
         waktu: timeStr,
         barangId: prod.id,
         barangNama: prod.nama,
-        qty: qty,
-        priceType: priceType,
+        qty,
+        priceType,
         detail: `${prod.nama} (${qty}x @Rp${unitPrice.toLocaleString('id-ID')}) - ${alasan}`,
         nilai: totalNilai,
-        user: currentUser.name
+        user: currentUser?.name || currentUser?.nama || 'User',
+        stokSebelum,
+        stokSesudah,
+        stokLogId: stokEntry.id
       };
 
-      const stokEntry = {
-        id: String(Date.now() + Math.random()),
-        timestamp: Date.now(),
-        dateKey: dateKey,
-        waktu: timeStr,
-        barang: prod.nama,
-        tipe: type === 'pelanggan' ? 'RETURN_IN' : 'RETURN_OUT',
-        qty: type === 'pelanggan' ? qty : -qty,
-        sebelum: sebelum,
-        setelah: prod.stok,
-        user: currentUser.name
-      };
+      // Simpan data lokal dahulu supaya tampilan langsung berubah.
+      returs.unshift(returEntry);
+      stokLogs.unshift(stokEntry);
 
-      if (!isFirebaseReady) {
-        returs.unshift(returEntry);
-        stokLogs.unshift(stokEntry);
-      } else {
-        await syncToCloud("products", prod.id, prod);
-        await syncToCloud("returs", returEntry.id, returEntry);
-        await syncToCloud("stokLogs", stokEntry.id, stokEntry);
+      // Retur pelanggan = uang dikembalikan kepada pelanggan.
+      if (type === 'pelanggan') {
+        const expEntry = {
+          id: 'EXP-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+          expenseType: 'toko',
+          jenisPengeluaran: 'toko',
+          dateKey,
+          tanggal: timeStr,
+          kategori: 'Refund Retur Pelanggan',
+          metode: 'CASH',
+          nominal: totalNilai,
+          catatan: `Barang: ${prod.nama} (${qty}x) - ${alasan}`,
+          source: 'retur',
+          returId: returNum
+        };
+        pengeluarans.unshift(expEntry);
+        returEntry.expenseId = expEntry.id;
+        await syncToCloud("pengeluarans", expEntry.id, expEntry);
       }
 
+      // Retur supplier = supplier mengembalikan uang kepada toko.
+      if (type === 'supplier') {
+        const incomeEntry = {
+          id: 'IN-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+          timestamp: Date.now(),
+          dateKey,
+          tanggal: timeStr,
+          kategori: 'Pengembalian Retur Supplier',
+          metode: 'CASH',
+          nominal: totalNilai,
+          catatan: `Barang: ${prod.nama} (${qty}x) - ${alasan}`,
+          source: 'retur',
+          returId: returNum
+        };
+        pemasukans.unshift(incomeEntry);
+        returEntry.incomeId = incomeEntry.id;
+        await syncToCloud("pemasukans", incomeEntry.id, incomeEntry);
+      }
+
+      // Persist produk + histori retur + log stok.
+      await syncToCloud("products", String(prod.id), {
+        ...prod,
+        stok: stokSesudah
+      });
+      await syncToCloud("returs", returEntry.id, returEntry);
+      await syncToCloud("stokLogs", stokEntry.id, stokEntry);
+
       addLog('RETURN', `Retur ${type}: ${prod.nama} (${qty}x)`);
-      closeModal('modal-retur');
+
+      // Refresh semua tampilan yang berkaitan dengan stok/kas/retur.
       renderReturTable();
       renderStokTable();
       renderProductsTable();
       renderKasTable();
       renderDashboard();
       renderLaporan();
-      clearExecutedForm('form-retur');
-      showToast(`Retur ${type} tersimpan di Cloud!`);
+      renderPopupBarangList();
+
+      closeModal('modal-retur');
+      const form = document.getElementById('form-retur');
+      if (form) form.reset();
+
+      showToast(
+        type === 'pelanggan'
+          ? `Berhasil! Stok ${prod.nama} bertambah ${qty} (retur pelanggan).`
+          : `Berhasil! Stok ${prod.nama} berkurang ${qty} (retur supplier).`
+      );
     }
 
     function switchReturTab(tab) {
@@ -3753,10 +4060,60 @@
 
     async function deleteRetur(id) {
       if (!confirm('Hapus data retur ini?')) return;
-      if (!isFirebaseReady) returs = returs.filter(r => r.id !== id);
-      else await deleteFromCloud("returs", id);
+
+      const retur = returs.find(r => String(r.id) === String(id));
+      if (!retur) {
+        showToast('Data retur tidak ditemukan');
+        return;
+      }
+
+      const prod = products.find(p => String(p.id) === String(retur.barangId));
+      const qty = Number(retur.qty) || 0;
+
+      if (prod && qty > 0) {
+        const currentStock = Number(prod.stok) || 0;
+
+        // Balikkan mutasi stok saat retur dihapus.
+        if (retur.type === 'pelanggan') {
+          if (currentStock < qty) {
+            alert('Retur tidak dapat dihapus karena stok saat ini lebih kecil dari jumlah retur pelanggan.');
+            return;
+          }
+          prod.stok = currentStock - qty;
+        } else {
+          prod.stok = currentStock + qty;
+        }
+
+        await syncToCloud("products", prod.id, prod);
+      }
+
+      // Hapus catatan kas yang dibuat otomatis oleh retur.
+      if (retur.expenseId) {
+        pengeluarans = pengeluarans.filter(p => String(p.id) !== String(retur.expenseId));
+        await deleteFromCloud("pengeluarans", retur.expenseId);
+      }
+      if (retur.incomeId) {
+        pemasukans = pemasukans.filter(p => String(p.id) !== String(retur.incomeId));
+        await deleteFromCloud("pemasukans", retur.incomeId);
+      }
+
+      // Hapus log stok yang tepat berdasarkan ID yang disimpan pada retur.
+      if (retur.stokLogId) {
+        stokLogs = stokLogs.filter(l => String(l.id) !== String(retur.stokLogId));
+        await deleteFromCloud("stokLogs", retur.stokLogId);
+      }
+
+      returs = returs.filter(r => String(r.id) !== String(id));
+      await deleteFromCloud("returs", id);
+
       renderReturTable();
-      showToast('Data retur dihapus');
+      renderStokTable();
+      renderProductsTable();
+      renderKasTable();
+      renderDashboard();
+      renderLaporan();
+
+      showToast('Data retur dihapus dan mutasi stok dibatalkan');
     }
 
     function openModalBriLink() { openModal('modal-brilink'); }
@@ -3800,7 +4157,6 @@
     }
 
     function renderBriLinkTable() {
-      populatePeriodYears();
       const tbody = document.getElementById('table-brilink-body');
       const filteredBri = brilinks.filter(b => matchesPeriod(b, 'brilink'));
       const totalVolume = filteredBri.reduce((s, i) => s + (i.nominal || 0), 0);
@@ -4061,69 +4417,179 @@
       showToast('Catatan stok dihapus');
     }
 
+    function getTodayISODate() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function getLocalDateKey(d) {
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function getCurrentMonthISO() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    }
+
+    function getItemDateKey(item) {
+      if (item && item.dateKey) {
+        const key = String(item.dateKey).trim().slice(0, 10);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(key)) return key;
+      }
+      if (item && item.timestamp) {
+        const d = new Date(Number(item.timestamp));
+        if (!isNaN(d.getTime())) return getLocalDateKey(d);
+      }
+      return '';
+    }
+
+    function getPeriodFilter(prefix) {
+      return { date: document.getElementById(`filter-${prefix}-date`)?.value || getTodayISODate() };
+    }
+
+    function matchesPeriod(item, prefix) {
+      return getItemDateKey(item) === getPeriodFilter(prefix).date;
+    }
+
+    function setTodayForFilter(prefix) {
+      const el = document.getElementById(`filter-${prefix}-date`);
+      if (el) el.value = getTodayISODate();
+      if (prefix === 'brilink') renderBriLinkTable();
+      else renderKasTable();
+    }
+
+    function clearKasFilters() {
+      const today = getTodayISODate();
+      ['pemasukan','pengeluaran','brilink'].forEach(prefix => {
+        const el = document.getElementById(`filter-${prefix}-date`);
+        if (el) el.value = today;
+      });
+      renderKasTable();
+      renderBriLinkTable();
+    }
+
+    function initializeDateFilters() {
+      const today = getTodayISODate();
+      ['filter-tx-date','filter-pemasukan-date','filter-pengeluaran-date','filter-brilink-date','laporan-delete-date','dash-report-date'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = today;
+      });
+      const month = document.getElementById('dash-report-month');
+      if (month) month.value = today.slice(0,7);
+      const mode = document.getElementById('dash-report-mode');
+      if (mode) mode.value = 'day';
+    }
+
+    function getDashboardMode() {
+      return document.getElementById('dash-report-mode')?.value || 'day';
+    }
+
+    function getDashboardDate() {
+      return document.getElementById('dash-report-date')?.value || getTodayISODate();
+    }
+
+    function getDashboardMonth() {
+      return document.getElementById('dash-report-month')?.value || getDashboardDate().slice(0,7);
+    }
+
+    function setDashboardToday() {
+      const today = getTodayISODate();
+      const dateEl = document.getElementById('dash-report-date');
+      const monthEl = document.getElementById('dash-report-month');
+      const modeEl = document.getElementById('dash-report-mode');
+      if (dateEl) dateEl.value = today;
+      if (monthEl) monthEl.value = today.slice(0,7);
+      if (modeEl) modeEl.value = 'day';
+      renderDashboard();
+    }
+
     function renderDashboard() {
-      const validTx = transactions.filter(t => t.status !== 'DIBATALKAN');
-      const totalSales = validTx.reduce((s, i) => s + (i.total || 0), 0);
-      const totalProfit = validTx.reduce((s, i) => s + (i.profit || 0), 0);
-      const totalExpenses = pengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
-      const expToko = pengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (i.nominal || 0), 0);
-      const expBri = pengeluarans.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (i.nominal || 0), 0);
-      const totalBriLink = brilinks.reduce((s, i) => s + (i.profit || 0), 0);
+      const mode = getDashboardMode();
+      const selectedDate = getDashboardDate();
+      const selectedMonth = getDashboardMonth();
+      const dateWrap = document.getElementById('dash-date-wrap');
+      const monthWrap = document.getElementById('dash-month-wrap');
+      if (dateWrap) dateWrap.classList.toggle('hidden', mode === 'month');
+      if (monthWrap) monthWrap.classList.toggle('hidden', mode !== 'month');
 
-      document.getElementById('dash-sales-today').innerText = 'Rp' + totalSales.toLocaleString('id-ID');
-      document.getElementById('dash-tx-today').innerText = `${validTx.length} transaksi`;
-      document.getElementById('dash-profit-today').innerText = 'Rp' + totalProfit.toLocaleString('id-ID');
-      document.getElementById('dash-expense-today').innerText = 'Rp' + totalExpenses.toLocaleString('id-ID');
-      document.getElementById('dash-expense-count').innerText = `Toko: Rp${expToko.toLocaleString('id-ID')} | BRI: Rp${expBri.toLocaleString('id-ID')}`;
-      document.getElementById('dash-brilink-today').innerText = 'Rp' + totalBriLink.toLocaleString('id-ID');
-      document.getElementById('dash-brilink-count').innerText = `${brilinks.length} transaksi`;
+      let validTx, selectedExpenses, selectedBri;
+      if (mode === 'month') {
+        validTx = transactions.filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t).slice(0,7) === selectedMonth);
+        selectedExpenses = pengeluarans.filter(p => getItemDateKey(p).slice(0,7) === selectedMonth);
+        selectedBri = brilinks.filter(b => getItemDateKey(b).slice(0,7) === selectedMonth);
+      } else {
+        validTx = transactions.filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t) === selectedDate);
+        selectedExpenses = pengeluarans.filter(p => getItemDateKey(p) === selectedDate);
+        selectedBri = brilinks.filter(b => getItemDateKey(b) === selectedDate);
+      }
 
-      document.getElementById('dash-active-products').innerText = products.length;
-      document.getElementById('dash-low-stock').innerText = products.filter(p => p.stok <= 5).length;
+      const totalSales = validTx.reduce((s, i) => s + (Number(i.total) || 0), 0);
+      const totalProfit = validTx.reduce((s, i) => s + (Number(i.profit) || 0), 0);
+      const totalExpenses = selectedExpenses.reduce((s, i) => s + (Number(i.nominal) || 0), 0);
+      const expToko = selectedExpenses.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (Number(i.nominal) || 0), 0);
+      const expBri = selectedExpenses.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (Number(i.nominal) || 0), 0);
+      const totalBriLink = selectedBri.reduce((s, i) => s + (Number(i.profit) || 0), 0);
+
+      let periodText;
+      if (mode === 'month') {
+        const d = new Date(`${selectedMonth}-01T00:00:00`);
+        periodText = d.toLocaleDateString('id-ID', { month:'long', year:'numeric' });
+      } else {
+        const d = new Date(`${selectedDate}T00:00:00`);
+        periodText = d.toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' });
+      }
+
+      const setText = (id, value) => { const el = document.getElementById(id); if (el) el.innerText = value; };
+      setText('dash-sales-today', 'Rp' + totalSales.toLocaleString('id-ID'));
+      setText('dash-tx-today', `${validTx.length} transaksi`);
+      setText('dash-profit-today', 'Rp' + totalProfit.toLocaleString('id-ID'));
+      setText('dash-expense-today', 'Rp' + totalExpenses.toLocaleString('id-ID'));
+      setText('dash-expense-count', `Toko: Rp${expToko.toLocaleString('id-ID')} | BRI: Rp${expBri.toLocaleString('id-ID')}`);
+      setText('dash-brilink-today', 'Rp' + totalBriLink.toLocaleString('id-ID'));
+      setText('dash-brilink-count', `${selectedBri.length} transaksi`);
+      setText('dash-period-label', '');
+      ['sales','profit','expense','brilink'].forEach(id => setText(`dash-${id}-label`, mode === 'month' ? 'BULAN DIPILIH' : 'HARI DIPILIH'));
+      setText('chart-sales-title', mode === 'month' ? 'HARIAN DALAM BULAN' : 'TANGGAL DIPILIH');
+      setText('chart-exp-title', mode === 'month' ? '(HARIAN DALAM BULAN)' : '(TANGGAL DIPILIH)');
+      setText('dash-active-products', products.length);
+      setText('dash-low-stock', products.filter(p => Number(p.stok || 0) <= 5).length);
 
       if (currentUser && currentUser.role === 'admin') initCharts();
     }
 
     function initCharts() {
-      const days = ['H-6', 'H-5', 'H-4', 'H-3', 'H-2', 'Kemarin', 'Hari Ini'];
-      const totalSales = transactions.filter(t => t.status !== 'DIBATALKAN').reduce((s, i) => s + (i.total || 0), 0);
-      const totalExpenses = pengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
-      const totalBriLink = brilinks.reduce((s, i) => s + (i.profit || 0), 0);
+      const mode = getDashboardMode();
+      let labels = [], salesData = [], briData = [], expData = [];
+
+      if (mode === 'month') {
+        const month = getDashboardMonth();
+        const [y, m] = month.split('-').map(Number);
+        const daysInMonth = new Date(y, m, 0).getDate();
+        for (let d = 1; d <= daysInMonth; d++) {
+          const key = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          labels.push(String(d));
+          salesData.push(transactions.filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t) === key).reduce((s,x) => s + (Number(x.total)||0), 0));
+          briData.push(brilinks.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.profit)||0), 0));
+          expData.push(pengeluarans.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.nominal)||0), 0));
+        }
+      } else {
+        const selected = getDashboardDate();
+        labels = [new Date(`${selected}T00:00:00`).toLocaleDateString('id-ID', { day:'2-digit', month:'short' })];
+        salesData = [transactions.filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t) === selected).reduce((s,x) => s + (Number(x.total)||0), 0)];
+        briData = [brilinks.filter(x => getItemDateKey(x) === selected).reduce((s,x) => s + (Number(x.profit)||0), 0)];
+        expData = [pengeluarans.filter(x => getItemDateKey(x) === selected).reduce((s,x) => s + (Number(x.nominal)||0), 0)];
+      }
 
       const ctx1 = document.getElementById('chartPenjualan');
-      if (ctx1) {
+      if (ctx1 && typeof Chart !== 'undefined') {
         if (chart1) chart1.destroy();
-        chart1 = new Chart(ctx1, {
-          type: 'line',
-          data: {
-            labels: days,
-            datasets: [{
-              label: 'Penjualan',
-              data: [0, 0, 0, 0, 0, 0, totalSales],
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              tension: 0.3,
-              fill: true
-            }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-        });
+        chart1 = new Chart(ctx1, { type:'line', data:{ labels, datasets:[{ label:'Penjualan', data:salesData, borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.1)', tension:0.3, fill:true }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} } });
       }
 
       const ctx2 = document.getElementById('chartPengeluaran');
-      if (ctx2) {
+      if (ctx2 && typeof Chart !== 'undefined') {
         if (chart2) chart2.destroy();
-        chart2 = new Chart(ctx2, {
-          type: 'line',
-          data: {
-            labels: days,
-            datasets: [
-              { label: 'BRI Link', data: [0, 0, 0, 0, 0, 0, totalBriLink], borderColor: '#3b82f6', tension: 0.3 },
-              { label: 'Pengeluaran', data: [0, 0, 0, 0, 0, 0, totalExpenses], borderColor: '#ef4444', tension: 0.3 }
-            ]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
-        });
+        chart2 = new Chart(ctx2, { type:'line', data:{ labels, datasets:[{ label:'BRI Link', data:briData, borderColor:'#3b82f6', tension:0.3 }, { label:'Pengeluaran', data:expData, borderColor:'#ef4444', tension:0.3 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true}} } });
       }
     }
 
