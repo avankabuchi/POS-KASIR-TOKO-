@@ -1,6 +1,0 @@
-TOKO BUNG EDI POS - Hybrid Offline Kasir + Cloud Admin
-Scope: Full POS hardening after checkout/Firebase analysis.
-Generated: 2026-09-19
-Validation: Node syntax check passed for js/app.js and functions/index.js.
-Kasir: Firebase SDK lazy-load disabled; checkout/receipt/local persistence use browser storage.
-Admin: Firebase remains available through lazy-loaded compat SDK and realtime listeners.
