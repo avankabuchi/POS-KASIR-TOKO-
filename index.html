@@ -1496,11 +1496,23 @@
               <h3 class="text-lg sm:text-2xl font-extrabold text-emerald-700 mt-1" id="lap-labakotor">Rp0</h3>
             </div>
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">PEMASUKAN LAIN</span>
+              <h3 class="text-lg sm:text-2xl font-extrabold text-blue-600 mt-1" id="lap-pemasukan">Rp0</h3>
+            </div>
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">RETUR SUPPLIER</span>
+              <h3 class="text-lg sm:text-2xl font-extrabold text-cyan-600 mt-1" id="lap-retur-supplier">Rp0</h3>
+            </div>
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
               <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN TOKO</span>
               <h3 class="text-lg sm:text-2xl font-extrabold text-red-500 mt-1" id="lap-pengeluaran">Rp0</h3>
             </div>
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
-              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA BERSIH TOKO</span>
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">REFUND RETUR PELANGGAN</span>
+              <h3 class="text-lg sm:text-2xl font-extrabold text-orange-500 mt-1" id="lap-retur-pelanggan">Rp0</h3>
+            </div>
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">LABA / HASIL BERSIH</span>
               <h3 class="text-lg sm:text-2xl font-extrabold text-emerald-800 mt-1" id="lap-lababersih">Rp0</h3>
             </div>
           </div>
@@ -1516,14 +1528,17 @@
               <span class="text-gray-400 text-[11px] font-normal" id="label-bulan-laporan">Bulan Berjalan</span>
             </div>
             <div class="max-h-72 overflow-y-auto custom-scrollbar overflow-x-auto">
-              <table class="w-full text-left text-xs min-w-[550px] sm:min-w-full">
+              <table class="w-full text-left text-xs min-w-[980px] sm:min-w-full">
                 <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold sticky top-0">
                   <tr>
                     <th class="px-4 sm:px-6 py-3">Tanggal</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Penjualan Toko</th>
+                    <th class="px-4 sm:px-6 py-3 text-right">Penjualan</th>
                     <th class="px-4 sm:px-6 py-3 text-right">Laba Kotor</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Pengeluaran Toko</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Laba Bersih</th>
+                    <th class="px-4 sm:px-6 py-3 text-right text-blue-600">Pemasukan</th>
+                    <th class="px-4 sm:px-6 py-3 text-right text-cyan-600">Retur Supplier</th>
+                    <th class="px-4 sm:px-6 py-3 text-right text-red-600">Pengeluaran</th>
+                    <th class="px-4 sm:px-6 py-3 text-right text-orange-600">Refund Retur Pelanggan</th>
+                    <th class="px-4 sm:px-6 py-3 text-right text-emerald-700">Hasil Bersih</th>
                     <th class="px-4 sm:px-6 py-3 text-right">Aksi</th>
                   </tr>
                 </thead>
@@ -4232,37 +4247,88 @@
       const period = getLaporanPeriod();
       const { year, month, label } = period;
       const monthKey = `${year}-${String(month).padStart(2, '0')}`;
-      const validTx = transactions.filter(t => t.status !== 'DIBATALKAN' && String(t.dateKey || '').startsWith(monthKey));
-      const monthExp = pengeluarans.filter(p => String(p.dateKey || '').startsWith(monthKey));
-      const monthBri = brilinks.filter(b => String(b.dateKey || '').startsWith(monthKey));
 
-      const totalSales = validTx.reduce((s, i) => s + (i.total || 0), 0);
-      const grossProfit = validTx.reduce((s, i) => s + (i.profit || 0), 0);
-      const totalExpToko = monthExp.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (i.nominal || 0), 0);
-      const totalExpBri = monthExp.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (i.nominal || 0), 0);
-      const netProfitToko = grossProfit - totalExpToko;
+      // Semua sumber transaksi yang masuk laporan.
+      const validTx = transactions.filter(t =>
+        t.status !== 'DIBATALKAN' && String(t.dateKey || '').startsWith(monthKey)
+      );
+      const monthExp = pengeluarans.filter(p =>
+        String(p.dateKey || '').startsWith(monthKey)
+      );
+      const monthInc = pemasukans.filter(p =>
+        String(p.dateKey || '').startsWith(monthKey)
+      );
+      const monthRetur = returs.filter(r =>
+        String(r.dateKey || '').startsWith(monthKey)
+      );
+      const monthBri = brilinks.filter(b =>
+        String(b.dateKey || '').startsWith(monthKey)
+      );
 
-      document.getElementById('lap-penjualan').innerText = 'Rp' + totalSales.toLocaleString('id-ID');
-      document.getElementById('lap-labakotor').innerText = 'Rp' + grossProfit.toLocaleString('id-ID');
-      document.getElementById('lap-pengeluaran').innerText = 'Rp' + totalExpToko.toLocaleString('id-ID');
-      document.getElementById('lap-lababersih').innerText = 'Rp' + netProfitToko.toLocaleString('id-ID');
+      const n = v => Number(v) || 0;
 
-      const briVol = monthBri.reduce((s, i) => s + (i.nominal || 0), 0);
-      const briFee = monthBri.reduce((s, i) => s + (i.fee || 0), 0);
-      const briGrossProfit = monthBri.reduce((s, i) => s + (i.profit || 0), 0);
+      const totalSales = validTx.reduce((s, i) => s + n(i.total), 0);
+      const grossProfit = validTx.reduce((s, i) => s + n(i.profit), 0);
+
+      const tokoExp = monthExp.filter(p => !p.expenseType || p.expenseType === 'toko');
+      const briExp = monthExp.filter(p => p.expenseType === 'brilink');
+      const totalExpToko = tokoExp.reduce((s, i) => s + n(i.nominal), 0);
+      const totalExpBri = briExp.reduce((s, i) => s + n(i.nominal), 0);
+
+      // Pemasukan manual saja. Pemasukan retur supplier dipisahkan agar tidak dihitung dua kali.
+      const manualInc = monthInc.filter(p => p.source !== 'retur');
+      const totalPemasukan = manualInc.reduce((s, i) => s + n(i.nominal), 0);
+
+      const returPelanggan = monthRetur.filter(r => r.type === 'pelanggan');
+      const returSupplier = monthRetur.filter(r => r.type === 'supplier');
+
+      const totalRefundReturPelanggan = returPelanggan.reduce((s, r) => s + n(r.nilai), 0);
+      const totalReturSupplier = returSupplier.reduce((s, r) => s + n(r.nilai), 0);
+
+      // Hasil bersih mencakup seluruh arus pembukuan toko:
+      // laba kotor + pemasukan manual + pengembalian supplier
+      // - pengeluaran toko - refund retur pelanggan.
+      const netProfitToko =
+        grossProfit +
+        totalPemasukan +
+        totalReturSupplier -
+        totalExpToko -
+        totalRefundReturPelanggan;
+
+      const setMoney = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = 'Rp' + n(value).toLocaleString('id-ID');
+      };
+
+      setMoney('lap-penjualan', totalSales);
+      setMoney('lap-labakotor', grossProfit);
+      setMoney('lap-pemasukan', totalPemasukan);
+      setMoney('lap-retur-supplier', totalReturSupplier);
+      setMoney('lap-pengeluaran', totalExpToko);
+      setMoney('lap-retur-pelanggan', totalRefundReturPelanggan);
+      setMoney('lap-lababersih', netProfitToko);
+
+      // BRI Link tetap dilaporkan terpisah.
+      const briVol = monthBri.reduce((s, i) => s + n(i.nominal), 0);
+      const briFee = monthBri.reduce((s, i) => s + n(i.fee), 0);
+      const briGrossProfit = monthBri.reduce((s, i) => s + n(i.profit), 0);
       const briNetProfit = briGrossProfit - totalExpBri;
 
-      document.getElementById('lap-bri-volume').innerText = 'Rp' + briVol.toLocaleString('id-ID');
-      document.getElementById('lap-bri-fee').innerText = 'Rp' + briFee.toLocaleString('id-ID');
-      document.getElementById('lap-bri-exp').innerText = 'Rp' + totalExpBri.toLocaleString('id-ID');
-      document.getElementById('lap-bri-profit').innerText = 'Rp' + briNetProfit.toLocaleString('id-ID');
-      document.getElementById('label-bulan-laporan').innerText = label;
-      document.getElementById('label-bulan-laporan-bri').innerText = label;
+      setMoney('lap-bri-volume', briVol);
+      setMoney('lap-bri-fee', briFee);
+      setMoney('lap-bri-exp', totalExpBri);
+      setMoney('lap-bri-profit', briNetProfit);
+
+      const labelToko = document.getElementById('label-bulan-laporan');
+      const labelBri = document.getElementById('label-bulan-laporan-bri');
+      if (labelToko) labelToko.innerText = label;
+      if (labelBri) labelBri.innerText = label;
 
       const tbodyToko = document.getElementById('table-laporan-harian');
       const tbodyBri = document.getElementById('table-laporan-brilink-harian');
       let rowsToko = '';
       let rowsBri = '';
+
       const totalDays = new Date(year, month, 0).getDate();
       const daysArr = Array.from({ length: totalDays }, (_, i) => String(i + 1).padStart(2, '0'));
       const sData = new Array(totalDays).fill(0);
@@ -4273,37 +4339,99 @@
         const dayStr = String(day).padStart(2, '0');
         const isoDate = `${monthKey}-${dayStr}`;
         const dStr = `${dayStr}/${String(month).padStart(2, '0')}/${year}`;
+
         const dayTx = validTx.filter(t => t.dateKey === isoDate);
-        const sVal = dayTx.reduce((acc, t) => acc + (t.total || 0), 0);
-        const lVal = dayTx.reduce((acc, t) => acc + (t.profit || 0), 0);
-        const dayExpToko = monthExp.filter(p => p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko')).reduce((acc, p) => acc + (p.nominal || 0), 0);
-        const dayExpBri = monthExp.filter(p => p.dateKey === isoDate && p.expenseType === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
-        const netVal = lVal - dayExpToko;
+        const sVal = dayTx.reduce((acc, t) => acc + n(t.total), 0);
+        const lVal = dayTx.reduce((acc, t) => acc + n(t.profit), 0);
+
+        const dayInc = manualInc.filter(p => p.dateKey === isoDate)
+          .reduce((acc, p) => acc + n(p.nominal), 0);
+
+        const dayReturSupplier = returSupplier.filter(r => r.dateKey === isoDate)
+          .reduce((acc, r) => acc + n(r.nilai), 0);
+
+        const dayExpToko = tokoExp.filter(p => p.dateKey === isoDate)
+          .reduce((acc, p) => acc + n(p.nominal), 0);
+
+        const dayRefund = returPelanggan.filter(r => r.dateKey === isoDate)
+          .reduce((acc, r) => acc + n(r.nilai), 0);
+
+        const netVal = lVal + dayInc + dayReturSupplier - dayExpToko - dayRefund;
+
         sData[day - 1] = sVal;
         lData[day - 1] = lVal;
-        rowsToko += `<tr class="hover:bg-gray-50/60 transition"><td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td><td class="px-4 sm:px-6 py-3 text-right">Rp${sVal.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${lVal.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-red-600">Rp${dayExpToko.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right font-extrabold ${netVal >= 0 ? 'text-emerald-700' : 'text-rose-600'}">Rp${netVal.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right"><button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus seluruh data tanggal ini"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
+
+        rowsToko += `<tr class="hover:bg-gray-50/60 transition">
+          <td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td>
+          <td class="px-4 sm:px-6 py-3 text-right">Rp${sVal.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${lVal.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right text-blue-600">Rp${dayInc.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right text-cyan-600">Rp${dayReturSupplier.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right text-red-600">Rp${dayExpToko.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right text-orange-600">Rp${dayRefund.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right font-extrabold ${netVal >= 0 ? 'text-emerald-700' : 'text-rose-600'}">Rp${netVal.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right">
+            <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus seluruh data tanggal ini">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </td>
+        </tr>`;
 
         const dayBri = monthBri.filter(b => b.dateKey === isoDate);
-        const bVol = dayBri.reduce((acc, b) => acc + (b.nominal || 0), 0);
-        const bFee = dayBri.reduce((acc, b) => acc + (b.fee || 0), 0);
-        const bProfitGross = dayBri.reduce((acc, b) => acc + (b.profit || 0), 0);
+        const bVol = dayBri.reduce((acc, b) => acc + n(b.nominal), 0);
+        const bFee = dayBri.reduce((acc, b) => acc + n(b.fee), 0);
+        const bProfitGross = dayBri.reduce((acc, b) => acc + n(b.profit), 0);
+        const dayExpBri = briExp.filter(p => p.dateKey === isoDate)
+          .reduce((acc, p) => acc + n(p.nominal), 0);
         const bNetProfit = bProfitGross - dayExpBri;
+
         briProfitData[day - 1] = bNetProfit;
-        rowsBri += `<tr class="hover:bg-gray-50/60 transition"><td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td><td class="px-4 sm:px-6 py-3 text-right">Rp${bVol.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-teal-600 font-medium">Rp${bFee.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-red-500 font-medium">Rp${dayExpBri.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${bNetProfit.toLocaleString('id-ID')}</td><td class="px-4 sm:px-6 py-3 text-right"><button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus laporan tanggal ini"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
+        rowsBri += `<tr class="hover:bg-gray-50/60 transition">
+          <td class="px-4 sm:px-6 py-3 font-medium whitespace-nowrap">${dStr}</td>
+          <td class="px-4 sm:px-6 py-3 text-right">Rp${bVol.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right text-teal-600 font-medium">Rp${bFee.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right text-red-500 font-medium">Rp${dayExpBri.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${bNetProfit.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 text-right">
+            <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus laporan tanggal ini">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </td>
+        </tr>`;
       }
-      tbodyToko.innerHTML = rowsToko;
-      tbodyBri.innerHTML = rowsBri;
+
+      if (tbodyToko) tbodyToko.innerHTML = rowsToko;
+      if (tbodyBri) tbodyBri.innerHTML = rowsBri;
 
       const ctxToko = document.getElementById('chartLaporanToko');
       if (ctxToko) {
         if (chartLaporanTokoObj) chartLaporanTokoObj.destroy();
-        chartLaporanTokoObj = new Chart(ctxToko, { type: 'line', data: { labels: daysArr, datasets: [{ label: 'Penjualan', data: sData, borderColor: '#10b981', tension: 0.3 }, { label: 'Laba Kotor', data: lData, borderColor: '#059669', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+        chartLaporanTokoObj = new Chart(ctxToko, {
+          type: 'line',
+          data: {
+            labels: daysArr,
+            datasets: [
+              { label: 'Penjualan', data: sData, borderColor: '#10b981', tension: 0.3 },
+              { label: 'Laba Kotor', data: lData, borderColor: '#059669', tension: 0.3 }
+            ]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
       }
+
       const ctxBri = document.getElementById('chartLaporanBri');
       if (ctxBri) {
         if (chartLaporanBriObj) chartLaporanBriObj.destroy();
-        chartLaporanBriObj = new Chart(ctxBri, { type: 'bar', data: { labels: daysArr, datasets: [{ label: 'Laba Bersih Agen (Rp)', data: briProfitData, backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+        chartLaporanBriObj = new Chart(ctxBri, {
+          type: 'bar',
+          data: {
+            labels: daysArr,
+            datasets: [{ label: 'Laba Bersih Agen (Rp)', data: briProfitData, backgroundColor: '#3b82f6', borderRadius: 4 }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
       }
+
       lucide.createIcons();
     }
 
@@ -5112,6 +5240,28 @@
         else await deleteFromCloud("brilinks", b.id);
       }
 
+      // Hapus pemasukan dan retur pada tanggal yang sama agar laporan benar-benar bersih.
+      const incToDelete = pemasukans.filter(p => p.dateKey === targetDate);
+      for (const p of incToDelete) {
+        if (!isFirebaseReady) pemasukans = pemasukans.filter(x => x.id !== p.id);
+        else await deleteFromCloud("pemasukans", p.id);
+      }
+
+      const returToDelete = returs.filter(r => r.dateKey === targetDate);
+      for (const r of returToDelete) {
+        if (r.expenseId) await deleteFromCloud("pengeluarans", r.expenseId);
+        if (r.incomeId) await deleteFromCloud("pemasukans", r.incomeId);
+        if (r.stokLogId) await deleteFromCloud("stokLogs", r.stokLogId);
+        if (!isFirebaseReady) {
+          pengeluarans = pengeluarans.filter(x => x.id !== r.expenseId);
+          pemasukans = pemasukans.filter(x => x.id !== r.incomeId);
+          stokLogs = stokLogs.filter(x => x.id !== r.stokLogId);
+          returs = returs.filter(x => x.id !== r.id);
+        } else {
+          await deleteFromCloud("returs", r.id);
+        }
+      }
+
       renderTransaksiTable();
       renderKasTable();
       renderBriLinkTable();
@@ -5132,32 +5282,51 @@
       const validTx = transactions.filter(t => t.status !== 'DIBATALKAN');
       const rows = [];
       const totalDays = new Date(period.year, period.month, 0).getDate();
+
       for (let day = 1; day <= totalDays; day++) {
         const dayStr = String(day).padStart(2, '0');
         const isoDate = `${period.value}-${dayStr}`;
         const simpleDate = `${dayStr}/${String(period.month).padStart(2, '0')}/${period.year}`;
 
         const dayTx = validTx.filter(t => t.dateKey === isoDate);
-        const sVal = dayTx.reduce((acc, t) => acc + (t.total || 0), 0);
-        const lVal = dayTx.reduce((acc, t) => acc + (t.profit || 0), 0);
+        const sVal = dayTx.reduce((acc, t) => acc + (Number(t.total) || 0), 0);
+        const lVal = dayTx.reduce((acc, t) => acc + (Number(t.profit) || 0), 0);
 
-        const dayExp = pengeluarans.filter(p => p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko'));
-        const eVal = dayExp.reduce((acc, p) => acc + (p.nominal || 0), 0);
+        const dayExp = pengeluarans.filter(p =>
+          p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko')
+        );
+        const eVal = dayExp.reduce((acc, p) => acc + (Number(p.nominal) || 0), 0);
+
+        const dayInc = pemasukans.filter(p =>
+          p.dateKey === isoDate && p.source !== 'retur'
+        );
+        const iVal = dayInc.reduce((acc, p) => acc + (Number(p.nominal) || 0), 0);
+
+        const dayReturSupplier = returs.filter(r =>
+          r.dateKey === isoDate && r.type === 'supplier'
+        ).reduce((acc, r) => acc + (Number(r.nilai) || 0), 0);
+
+        const dayRefund = returs.filter(r =>
+          r.dateKey === isoDate && r.type === 'pelanggan'
+        ).reduce((acc, r) => acc + (Number(r.nilai) || 0), 0);
 
         rows.push({
           'Tanggal': simpleDate,
           'Penjualan Toko': sVal,
           'Laba Kotor': lVal,
+          'Pemasukan Lain': iVal,
+          'Retur Supplier / Pengembalian': dayReturSupplier,
           'Pengeluaran Toko': eVal,
-          'Laba Bersih': (lVal - eVal)
+          'Refund Retur Pelanggan': dayRefund,
+          'Hasil Bersih': (lVal + iVal + dayReturSupplier - eVal - dayRefund)
         });
       }
 
       const worksheet = XLSX.utils.json_to_sheet(rows);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Penjualan_Toko');
-      XLSX.writeFile(workbook, 'Laporan_Penjualan_Toko_Terpadu.xlsx');
-      showToast('Laporan Penjualan Toko diexport ke Excel');
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Laporan_Toko_Lengkap');
+      XLSX.writeFile(workbook, 'Laporan_Toko_Lengkap.xlsx');
+      showToast('Laporan Toko lengkap berhasil diexport ke Excel');
     }
 
     function exportLaporanBriLinkExcel() {
