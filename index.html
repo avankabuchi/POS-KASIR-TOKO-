@@ -1956,6 +1956,7 @@
             <option value="eceran">Harga Eceran</option>
             <option value="grosir">Harga Grosir</option>
             <option value="modal">Harga Modal</option>
+            <option value="barang">Retur Barang</option>
           </select>
         </div>
         <input type="text" id="retur-alasan" placeholder="Alasan retur barang..." class="w-full border rounded-xl p-2.5" required />
@@ -3842,9 +3843,11 @@
         document.getElementById('retur-total-preview').innerText = 'Rp0';
         return;
       }
-      const unitPrice = priceType === 'modal'
-        ? Number(prod.hModal || 0)
-        : (priceType === 'grosir' ? Number(prod.hGrosir || prod.hJual || 0) : Number(prod.hJual || 0));
+      const unitPrice = priceType === 'barang'
+        ? 0
+        : (priceType === 'modal'
+          ? Number(prod.hModal || 0)
+          : (priceType === 'grosir' ? Number(prod.hGrosir || prod.hJual || 0) : Number(prod.hJual || 0)));
       const total = unitPrice * qty;
       document.getElementById('retur-total-preview').innerText = 'Rp' + total.toLocaleString('id-ID');
     }
@@ -3885,10 +3888,13 @@
       const stokSebelum = Math.max(0, Number(prod.stok) || 0);
 
       // LOGIKA UTAMA RETUR:
-      // 1. Retur pelanggan: barang kembali ke toko => stok + qty.
-      // 2. Retur supplier: barang keluar dari toko => stok - qty.
+      // - Retur Pelanggan + nilai refund uang: stok bertambah.
+      // - Retur Supplier + nilai refund uang: stok berkurang.
+      // - Retur Barang: hanya mencatat retur, TIDAK mengubah stok.
       let stokSesudah;
-      if (type === 'pelanggan') {
+      if (priceType === 'barang') {
+        stokSesudah = stokSebelum;
+      } else if (type === 'pelanggan') {
         stokSesudah = stokSebelum + qty;
       } else {
         if (qty > stokSebelum) {
@@ -3898,7 +3904,7 @@
         stokSesudah = stokSebelum - qty;
       }
 
-      const priceType = priceTypeEl ? String(priceTypeEl.value || 'eceran') : 'eceran';
+      const priceType = priceTypeEl ? String(priceTypeEl.value || 'eceran').trim().toLowerCase() : 'eceran';
       const alasan = alasanEl ? String(alasanEl.value || '').trim() : '';
       if (!alasan) {
         showToast('Alasan retur wajib diisi');
@@ -3967,7 +3973,7 @@
       stokLogs.unshift(stokEntry);
 
       // Retur pelanggan = uang dikembalikan kepada pelanggan.
-      if (type === 'pelanggan') {
+      if (type === 'pelanggan' && priceType !== 'barang') {
         const expEntry = {
           id: 'EXP-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
           expenseType: 'toko',
@@ -3987,7 +3993,7 @@
       }
 
       // Retur supplier = supplier mengembalikan uang kepada toko.
-      if (type === 'supplier') {
+      if (type === 'supplier' && priceType !== 'barang') {
         const incomeEntry = {
           id: 'IN-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
           timestamp: Date.now(),
@@ -4029,9 +4035,11 @@
       if (form) form.reset();
 
       showToast(
-        type === 'pelanggan'
-          ? `Berhasil! Stok ${prod.nama} bertambah ${qty} (retur pelanggan).`
-          : `Berhasil! Stok ${prod.nama} berkurang ${qty} (retur supplier).`
+        priceType === 'barang'
+          ? `Retur barang ${prod.nama} berhasil dicatat. Stok tidak berubah.`
+          : (type === 'pelanggan'
+            ? `Berhasil! Stok ${prod.nama} bertambah ${qty} (retur pelanggan).`
+            : `Berhasil! Stok ${prod.nama} berkurang ${qty} (retur supplier).`)
       );
     }
 
