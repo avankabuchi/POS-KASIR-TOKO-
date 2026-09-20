@@ -1165,6 +1165,9 @@
   pointer-events: none !important;
 }
 </style>
+<style id="purchase-report-polish">
+#page-pembelian .bg-white,#page-laporan-produk .bg-white{box-shadow:0 6px 22px rgba(15,23,42,.05)}
+</style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
@@ -1292,6 +1295,10 @@
             <i data-lucide="shopping-cart" class="w-4 h-4"></i>
             <span>Kasir</span>
           </button>
+          <button onclick="navigate('pembelian')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="pembelian">
+            <i data-lucide="truck" class="w-4 h-4"></i>
+            <span>Pembelian Barang</span>
+          </button>
           <button onclick="navigate('barang')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="barang">
             <i data-lucide="boxes" class="w-4 h-4"></i>
             <span>Data Barang & Stok</span>
@@ -1323,6 +1330,10 @@
           <button onclick="navigate('laporan')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="laporan">
             <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
             <span>Laporan Terpadu</span>
+          </button>
+          <button onclick="navigate('laporan-produk')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="laporan-produk">
+            <i data-lucide="chart-no-axes-combined" class="w-4 h-4"></i>
+            <span>Laporan Produk</span>
           </button>
           <button onclick="navigate('aktivitas')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="aktivitas">
             <i data-lucide="clock" class="w-4 h-4"></i>
@@ -1743,7 +1754,33 @@
         </div>
       </section>
 
-      <!-- 4. MANAJEMEN MEMBER CLOUD -->
+      <!-- 4. PEMBELIAN BARANG -->
+      <section id="page-pembelian" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Pembelian Barang</h1>
+            <p class="text-xs text-gray-500 mt-0.5">Setiap pembelian yang disimpan otomatis menambah stok dan memperbarui harga modal rata-rata.</p>
+          </div>
+          <button onclick="openModalPembelian()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4"></i><span>Pembelian Baru</span>
+          </button>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm"><div class="text-[10px] text-gray-400 font-bold uppercase">Total Pembelian Periode</div><div id="pembelian-total" class="text-xl font-black text-blue-700 mt-1">Rp0</div></div>
+          <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm"><div class="text-[10px] text-gray-400 font-bold uppercase">Jumlah Dokumen</div><div id="pembelian-count" class="text-xl font-black text-gray-900 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm"><div class="text-[10px] text-gray-400 font-bold uppercase">Barang Masuk</div><div id="pembelian-total-qty" class="text-xl font-black text-emerald-700 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm"><div class="text-[10px] text-gray-400 font-bold uppercase">Supplier</div><div id="pembelian-supplier-count" class="text-xl font-black text-indigo-700 mt-1">0</div></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+          <div class="p-3 border-b border-gray-100 flex flex-wrap gap-2 items-center justify-between">
+            <input type="month" id="pembelian-period" onchange="renderPembelian()" class="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold" />
+            <input type="text" id="pembelian-search" oninput="renderPembelian()" placeholder="Cari supplier / faktur / barang..." class="border border-gray-200 rounded-xl px-3 py-2 text-xs w-full sm:w-72" />
+          </div>
+          <div class="overflow-x-auto"><table class="w-full text-xs min-w-[900px]"><thead class="bg-gray-50 text-gray-500 uppercase font-bold"><tr><th class="px-4 py-3 text-left">Tanggal</th><th class="px-4 py-3 text-left">Faktur</th><th class="px-4 py-3 text-left">Supplier</th><th class="px-4 py-3 text-left">Detail Barang</th><th class="px-4 py-3 text-right">Qty</th><th class="px-4 py-3 text-right">Total</th><th class="px-4 py-3 text-left">User</th><th class="px-4 py-3 text-right">Aksi</th></tr></thead><tbody id="table-pembelian-body" class="divide-y divide-gray-100"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- 5. MANAJEMEN MEMBER CLOUD -->
       <section id="page-member" class="page-content hidden space-y-4 sm:space-y-5">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
@@ -2041,7 +2078,25 @@
         </div>
       </section>
 
-      <!-- 10. LAPORAN TERPADU -->
+      <!-- 10. LAPORAN PRODUK -->
+      <section id="page-laporan-produk" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <div><h1 class="text-xl sm:text-2xl font-bold text-gray-900">Laporan Produk</h1><p class="text-xs text-gray-500 mt-0.5">Analisis produk terlaris dan laba berdasarkan transaksi penjualan yang tersimpan.</p></div>
+          <div class="flex gap-2"><input type="month" id="laporan-produk-period" onchange="renderLaporanProduk()" class="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold" /><button onclick="exportLaporanProdukExcel()" class="px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Export Excel</button></div>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="bg-white p-4 rounded-2xl border border-gray-200"><div class="text-[10px] text-gray-400 font-bold uppercase">Produk Terjual</div><div id="lp-total-qty" class="text-xl font-black text-blue-700">0</div></div>
+          <div class="bg-white p-4 rounded-2xl border border-gray-200"><div class="text-[10px] text-gray-400 font-bold uppercase">Omzet Produk</div><div id="lp-total-sales" class="text-xl font-black text-indigo-700">Rp0</div></div>
+          <div class="bg-white p-4 rounded-2xl border border-gray-200"><div class="text-[10px] text-gray-400 font-bold uppercase">HPP Terjual</div><div id="lp-total-cost" class="text-xl font-black text-orange-600">Rp0</div></div>
+          <div class="bg-white p-4 rounded-2xl border border-gray-200"><div class="text-[10px] text-gray-400 font-bold uppercase">Laba Produk</div><div id="lp-total-profit" class="text-xl font-black text-emerald-700">Rp0</div></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+          <div class="p-3 border-b border-gray-100 flex items-center justify-between"><h3 class="text-xs font-black">Produk Terlaris & Laba per Produk</h3><span class="text-[10px] text-gray-400">Diurutkan berdasarkan qty terjual</span></div>
+          <div class="overflow-x-auto"><table class="w-full text-xs min-w-[1050px]"><thead class="bg-gray-50 text-gray-500 uppercase font-bold"><tr><th class="px-4 py-3 text-center">#</th><th class="px-4 py-3 text-left">Kode</th><th class="px-4 py-3 text-left">Produk</th><th class="px-4 py-3 text-left">Kategori</th><th class="px-4 py-3 text-right">Qty Fisik</th><th class="px-4 py-3 text-right">Qty Bayar</th><th class="px-4 py-3 text-right">Omzet</th><th class="px-4 py-3 text-right">HPP</th><th class="px-4 py-3 text-right">Laba</th><th class="px-4 py-3 text-right">Margin</th></tr></thead><tbody id="table-laporan-produk-body" class="divide-y divide-gray-100"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- 11. LAPORAN TERPADU -->
       <section id="page-laporan" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
@@ -2553,6 +2608,32 @@
     </div>
   </div>
 
+  <!-- MODAL PEMBELIAN BARANG -->
+  <div id="modal-pembelian" class="fixed inset-0 z-[60] bg-black/50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full p-5 space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-3"><div><h3 class="font-black text-sm">Pembelian Barang Baru</h3><p class="text-[10px] text-gray-400 mt-0.5">Stok akan bertambah otomatis setelah disimpan.</p></div><button onclick="closeModal('modal-pembelian')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+      <form id="form-pembelian" onsubmit="savePembelian(event)" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2"><input id="pembelian-faktur" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="No. Faktur / Nota"><input id="pembelian-supplier" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Nama Supplier" required><input id="pembelian-tanggal" type="date" class="border rounded-xl p-2.5 text-xs font-bold" required></div>
+        <div class="bg-gray-50 rounded-xl p-3 border border-gray-200 space-y-2">
+          <div class="grid grid-cols-1 sm:grid-cols-6 gap-2">
+            <select id="pembelian-produk" onchange="syncPembelianHargaProduk()" class="border rounded-xl p-2.5 text-xs font-bold sm:col-span-2"></select>
+            <input id="pembelian-qty" type="number" min="1" step="1" inputmode="numeric" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Jumlah barang" value="1">
+            <input id="pembelian-harga" type="number" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Harga beli / modal (otomatis dari produk)">
+            <input id="pembelian-harga-eceran" type="number" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Harga eceran baru (opsional)">
+            <input id="pembelian-harga-grosir" type="number" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Harga grosir baru (opsional)">
+          </div>
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <p class="text-[10px] text-gray-500">Qty dapat diisi lebih dari 1. Harga beli/modal otomatis mengikuti data produk dan dapat diubah. Harga eceran/grosir boleh dikosongkan agar harga jual lama tetap.</p>
+            <button type="button" onclick="addPembelianItem()" class="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-xs">+ Tambah Barang</button>
+          </div>
+        </div>
+        <div class="overflow-x-auto border rounded-xl"><table class="w-full text-xs min-w-[980px]"><thead class="bg-gray-50"><tr><th class="p-2 text-left">Barang</th><th class="p-2 text-right">Qty</th><th class="p-2 text-right">Harga Beli / Modal</th><th class="p-2 text-right">Eceran Baru</th><th class="p-2 text-right">Grosir Baru</th><th class="p-2 text-right">Subtotal</th><th class="p-2 text-center">Aksi</th></tr></thead><tbody id="pembelian-items-body"></tbody></table></div>
+        <div class="flex items-center justify-between bg-blue-50 rounded-xl p-3"><span class="text-xs font-bold text-blue-800">Total Pembelian</span><strong id="pembelian-form-total" class="text-lg text-blue-800">Rp0</strong></div>
+        <div class="flex justify-end gap-2"><button type="button" onclick="closeModal('modal-pembelian')" class="px-4 py-2 border rounded-xl text-xs font-bold">Batal</button><button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold">Simpan Pembelian & Tambah Stok</button></div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL BARANG LENGKAP -->
   <div id="modal-barang" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-3 text-xs max-h-[90vh] overflow-y-auto custom-scrollbar">
@@ -2833,6 +2914,8 @@
       { id: 'M002', nama: 'Ibu Siti', phone: '6281234567890', alamat: 'Turonggo', poin: 8 }
     ];
     let transactions = [];
+    let purchases = [];
+    let pembelianItems = [];
     let stokLogs = [];
     let returs = [];
     let pemasukans = [];
@@ -2888,6 +2971,13 @@
         }
       }, err => console.error("Err members sync:", err));
 
+      db.collection("purchases").onSnapshot(snapshot => {
+        purchases = [];
+        snapshot.forEach(doc => purchases.push({ id: doc.id, ...doc.data() }));
+        purchases.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+        renderPembelian();
+      }, err => console.error("Err purchases sync:", err));
+
       db.collection("transactions").onSnapshot(snapshot => {
         transactions = [];
         snapshot.forEach(doc => transactions.push({ id: doc.id, ...doc.data() }));
@@ -2895,6 +2985,7 @@
         renderTransaksiTable();
         renderDashboard();
         renderLaporan();
+        renderLaporanProduk();
         renderKasTable();
       }, err => console.error("Err tx sync:", err));
 
@@ -4257,6 +4348,7 @@
       renderTransaksiTable();
       renderDashboard();
       renderLaporan();
+      renderLaporanProduk();
       renderKasTable();
       showToast('Selamat Transaksi Berhasil Silahkan Print Struk');
 
@@ -5261,6 +5353,253 @@
       };
     }
 
+    function getReportMonthValue(id) {
+      const el = document.getElementById(id);
+      return el?.value || getCurrentMonthISO();
+    }
+
+    function openModalPembelian() {
+      if (!currentUser || currentUser.role !== 'admin') return showToast('Hanya admin yang dapat membuat pembelian', 'error');
+      pembelianItems = [];
+      const form = document.getElementById('form-pembelian');
+      if (form) form.reset();
+      const t = document.getElementById('pembelian-tanggal'); if (t) t.value = getTodayISODate();
+      renderPembelianFormItems();
+      refreshPembelianProductSelect();
+      openModal('modal-pembelian');
+    }
+
+    function refreshPembelianProductSelect() {
+      const s = document.getElementById('pembelian-produk'); if (!s) return;
+      s.innerHTML = products.map(p => `<option value="${p.id}">${p.kode || ''} • ${p.nama} • stok ${Number(p.stok||0)} • modal Rp${Number(p.hModal||0).toLocaleString('id-ID')}</option>`).join('');
+      syncPembelianHargaProduk();
+    }
+
+    // Saat barang dipilih, harga beli/modal otomatis mengikuti harga modal yang tersimpan.
+    // Kasir/admin tetap bisa mengubahnya kapan saja untuk pembelian dengan harga baru.
+    function syncPembelianHargaProduk() {
+      const pid = document.getElementById('pembelian-produk')?.value;
+      const p = products.find(x => String(x.id) === String(pid));
+      const harga = document.getElementById('pembelian-harga');
+      if (!p || !harga) return;
+      harga.value = Number(p.hModal || 0);
+    }
+
+    function addPembelianItem() {
+      const pid = document.getElementById('pembelian-produk')?.value;
+      const qtyRaw = String(document.getElementById('pembelian-qty')?.value ?? '').trim();
+      const hargaRaw = String(document.getElementById('pembelian-harga')?.value ?? '').trim();
+      const ecerRaw = String(document.getElementById('pembelian-harga-eceran')?.value ?? '').trim();
+      const grosirRaw = String(document.getElementById('pembelian-harga-grosir')?.value ?? '').trim();
+      const p = products.find(x => String(x.id) === String(pid));
+      if (!p) return showToast('Pilih barang terlebih dahulu', 'error');
+
+      const qty = Number(qtyRaw);
+      // Jika harga beli dikosongkan, otomatis gunakan harga modal produk saat ini.
+      // Ini juga membuat alur tambah barang -> langsung simpan tetap valid.
+      const unitCost = hargaRaw === '' ? Number(p.hModal || 0) : Number(hargaRaw);
+      if (!qtyRaw || !Number.isFinite(qty) || qty < 1 || !Number.isInteger(qty)) {
+        return showToast('Jumlah barang harus berupa bilangan bulat minimal 1', 'error');
+      }
+      if (!Number.isFinite(unitCost) || unitCost < 0) {
+        return showToast('Harga beli/modal tidak valid', 'error');
+      }
+
+      const eceran = ecerRaw === '' ? null : Number(ecerRaw);
+      const grosir = grosirRaw === '' ? null : Number(grosirRaw);
+      if (eceran !== null && (!Number.isFinite(eceran) || eceran < 0)) return showToast('Harga eceran tidak valid', 'error');
+      if (grosir !== null && (!Number.isFinite(grosir) || grosir < 0)) return showToast('Harga grosir tidak valid', 'error');
+
+      const existing = pembelianItems.find(x => String(x.productId) === String(pid));
+      if (existing) {
+        existing.qty = Number(existing.qty || 0) + qty;
+        existing.unitCost = unitCost;
+        // Harga jual hanya diubah jika pada input baru memang diisi.
+        if (eceran !== null) existing.newHJual = eceran;
+        if (grosir !== null) existing.newHGrosir = grosir;
+      } else {
+        pembelianItems.push({
+          productId: p.id,
+          kode: p.kode,
+          nama: p.nama,
+          qty,
+          unitCost,
+          newHJual: eceran,
+          newHGrosir: grosir
+        });
+      }
+
+      document.getElementById('pembelian-qty').value = '1';
+      syncPembelianHargaProduk();
+      document.getElementById('pembelian-harga-eceran').value = '';
+      document.getElementById('pembelian-harga-grosir').value = '';
+      renderPembelianFormItems();
+      document.getElementById('pembelian-produk')?.focus();
+    }
+
+    function removePembelianItem(index) { pembelianItems.splice(index, 1); renderPembelianFormItems(); }
+
+    function renderPembelianFormItems() {
+      const body = document.getElementById('pembelian-items-body');
+      const totalEl = document.getElementById('pembelian-form-total');
+      if (!body) return;
+      const money = v => 'Rp' + Number(v || 0).toLocaleString('id-ID');
+      body.innerHTML = pembelianItems.length ? pembelianItems.map((it, i) => {
+        const ecer = it.newHJual === null || it.newHJual === undefined ? '<span class="text-gray-400">Tetap</span>' : money(it.newHJual);
+        const grosir = it.newHGrosir === null || it.newHGrosir === undefined ? '<span class="text-gray-400">Tetap</span>' : money(it.newHGrosir);
+        return `<tr>
+          <td class="p-2 font-bold">${it.kode || '-'} • ${it.nama}</td>
+          <td class="p-2 text-right font-black">${Number(it.qty).toLocaleString('id-ID')}</td>
+          <td class="p-2 text-right">${money(it.unitCost)}</td>
+          <td class="p-2 text-right">${ecer}</td>
+          <td class="p-2 text-right">${grosir}</td>
+          <td class="p-2 text-right font-black">${money(Number(it.qty) * Number(it.unitCost))}</td>
+          <td class="p-2 text-center"><button type="button" onclick="removePembelianItem(${i})" class="text-red-600 font-bold">Hapus</button></td>
+        </tr>`;
+      }).join('') : `<tr><td colspan="7" class="p-6 text-center text-gray-400">Belum ada barang pembelian</td></tr>`;
+      const total = pembelianItems.reduce((s, x) => s + (Number(x.qty) || 0) * (Number(x.unitCost) || 0), 0);
+      if (totalEl) totalEl.textContent = money(total);
+    }
+
+    async function savePembelian(e) {
+      e.preventDefault();
+      if (!pembelianItems.length) return showToast('Tambahkan minimal satu barang', 'error');
+      const supplier = document.getElementById('pembelian-supplier').value.trim();
+      const faktur = document.getElementById('pembelian-faktur').value.trim() || ('PB-' + Date.now());
+      const dateKey = document.getElementById('pembelian-tanggal').value || getTodayISODate();
+      if (!supplier) return showToast('Nama supplier wajib diisi', 'error');
+
+      const now = Date.now();
+      const waktu = new Date(`${dateKey}T${new Date().toTimeString().slice(0, 8)}`).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' WIB';
+      const purchaseId = 'PB-' + dateKey.replace(/-/g, '') + '-' + String(now).slice(-6);
+      const total = pembelianItems.reduce((s, x) => s + (Number(x.qty) || 0) * (Number(x.unitCost) || 0), 0);
+      const savedItems = [];
+
+      // Semua perubahan disimpan per item agar harga lama dapat diketahui jika dokumen dibatalkan.
+      for (const item of pembelianItems) {
+        const p = products.find(x => String(x.id) === String(item.productId));
+        if (!p) continue;
+
+        const oldStock = Number(p.stok) || 0;
+        const oldCost = Number(p.hModal) || 0;
+        const oldHJual = Number(p.hJual) || 0;
+        const oldHGrosir = Number(p.hGrosir) || 0;
+        const addQty = Number(item.qty) || 0;
+        if (!Number.isInteger(addQty) || addQty < 1) return showToast(`Qty ${p.nama} tidak valid`, 'error');
+
+        // Harga modal mengikuti harga beli yang baru diinput, BUKAN weighted average.
+        const newCost = Number(item.unitCost) || 0;
+        const newHJual = item.newHJual === null || item.newHJual === undefined ? oldHJual : Number(item.newHJual);
+        const newHGrosir = item.newHGrosir === null || item.newHGrosir === undefined ? oldHGrosir : Number(item.newHGrosir);
+
+        p.stok = oldStock + addQty;
+        p.hModal = newCost;
+        p.hJual = newHJual;
+        p.hGrosir = newHGrosir;
+
+        const saved = {
+          productId: p.id,
+          kode: p.kode,
+          nama: p.nama,
+          qty: addQty,
+          unitCost: newCost,
+          subtotal: addQty * newCost,
+          hargaModalSebelum: oldCost,
+          hargaModalSesudah: newCost,
+          hargaEceranSebelum: oldHJual,
+          hargaEceranSesudah: newHJual,
+          hargaGrosirSebelum: oldHGrosir,
+          hargaGrosirSesudah: newHGrosir
+        };
+        savedItems.push(saved);
+
+        const log = {
+          id: 'PUR-' + now + '-' + Math.random().toString(36).slice(2, 7),
+          timestamp: now,
+          dateKey,
+          waktu,
+          barang: p.nama,
+          productId: p.id,
+          tipe: 'PURCHASE',
+          qty: addQty,
+          sebelum: oldStock,
+          setelah: p.stok,
+          hargaBeli: newCost,
+          hargaModalSebelum: oldCost,
+          hargaModalSesudah: newCost,
+          hargaEceranSebelum: oldHJual,
+          hargaEceranSesudah: newHJual,
+          hargaGrosirSebelum: oldHGrosir,
+          hargaGrosirSesudah: newHGrosir,
+          supplier,
+          user: currentUser.name,
+          purchaseId
+        };
+        stokLogs.unshift(log);
+
+        if (isFirebaseReady) {
+          await syncToCloud('products', p.id, p);
+          await syncToCloud('stokLogs', log.id, log);
+        }
+      }
+
+      const purchase = {
+        id: purchaseId,
+        timestamp: now,
+        dateKey,
+        waktu,
+        faktur,
+        supplier,
+        total,
+        qtyTotal: savedItems.reduce((s, x) => s + Number(x.qty || 0), 0),
+        items: savedItems,
+        user: currentUser.name,
+        status: 'SELESAI'
+      };
+      purchases.unshift(purchase);
+      if (isFirebaseReady) await syncToCloud('purchases', purchase.id, purchase);
+      addLog('PURCHASE', `Pembelian ${faktur} dari ${supplier} Rp${total.toLocaleString('id-ID')}`);
+      closeModal('modal-pembelian');
+      renderPembelian(); renderProductsTable(); renderStokTable(); renderDashboard(); renderLaporan(); renderLaporanProduk();
+      showToast(`Pembelian berhasil. ${purchase.qtyTotal.toLocaleString('id-ID')} unit ditambahkan ke stok.`);
+    }
+
+    function renderPembelian() {
+      const body=document.getElementById('table-pembelian-body'); if(!body) return;
+      const period=getReportMonthValue('pembelian-period'); const q=(document.getElementById('pembelian-search')?.value||'').toLowerCase().trim();
+      const rows=purchases.filter(p=>String(p.dateKey||'').startsWith(period)).filter(p=>!q || JSON.stringify(p).toLowerCase().includes(q));
+      const total=rows.reduce((s,p)=>s+Number(p.total||0),0), qty=rows.reduce((s,p)=>s+Number(p.qtyTotal||0),0), suppliers=new Set(rows.map(p=>p.supplier).filter(Boolean));
+      const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
+      set('pembelian-total','Rp'+total.toLocaleString('id-ID'));set('pembelian-count',rows.length.toLocaleString('id-ID'));set('pembelian-total-qty',qty.toLocaleString('id-ID'));set('pembelian-supplier-count',suppliers.size.toLocaleString('id-ID'));
+      body.innerHTML=rows.length?rows.map(p=>`<tr><td class="px-4 py-3 whitespace-nowrap">${p.dateKey||'-'}</td><td class="px-4 py-3 font-bold">${p.faktur||p.id}</td><td class="px-4 py-3 font-semibold">${p.supplier||'-'}</td><td class="px-4 py-3">${(p.items||[]).map(i=>`${i.nama} (${i.qty})`).join(', ')}</td><td class="px-4 py-3 text-right font-bold">${Number(p.qtyTotal||0).toLocaleString('id-ID')}</td><td class="px-4 py-3 text-right font-black">Rp${Number(p.total||0).toLocaleString('id-ID')}</td><td class="px-4 py-3">${p.user||'-'}</td><td class="px-4 py-3 text-right"><button onclick="deletePembelian('${p.id}')" class="text-red-600 font-bold">Hapus</button></td></tr>`).join(''):`<tr><td colspan="8" class="p-8 text-center text-gray-400">Belum ada pembelian pada periode ini.</td></tr>`;
+      lucide.createIcons();
+    }
+
+    async function deletePembelian(id) {
+      const p=purchases.find(x=>String(x.id)===String(id)); if(!p) return;
+      if(!confirm('Hapus dokumen pembelian ini? Stok yang sudah masuk akan dikurangi kembali sesuai item pembelian.')) return;
+      for(const item of (p.items||[])) { const prod=products.find(x=>String(x.id)===String(item.productId)); if(!prod) continue; const before=Number(prod.stok)||0; const qty=Number(item.qty)||0; if(before<qty) return showToast(`Stok ${prod.nama} sudah terpakai; pembelian tidak aman untuk dibatalkan.`,'error'); prod.stok=before-qty; if (item.hargaModalSebelum !== undefined) prod.hModal=Number(item.hargaModalSebelum)||0; if (item.hargaEceranSebelum !== undefined) prod.hJual=Number(item.hargaEceranSebelum)||0; if (item.hargaGrosirSebelum !== undefined) prod.hGrosir=Number(item.hargaGrosirSebelum)||0; if(isFirebaseReady) await syncToCloud('products',prod.id,prod); }
+      purchases=purchases.filter(x=>String(x.id)!==String(id)); if(isFirebaseReady) await deleteFromCloud('purchases',id); else {}
+      renderPembelian();renderProductsTable();renderDashboard();showToast('Dokumen pembelian dihapus dan stok dikembalikan.');
+    }
+
+    function renderLaporanProduk() {
+      const period=getReportMonthValue('laporan-produk-period'); const map=new Map();
+      const txs=transactions.filter(t=>t.status!=='DIBATALKAN' && String(t.dateKey||'').startsWith(period));
+      for(const tx of txs) for(const item of (tx.items||[])) {
+        const key=String(item.id||item.productId||item.kode||item.nama); const qty=Number(item.qty)||0; const paidQty=Number(item.paidQty ?? qty)||0; const revenue=Number(item.lineTotal ?? item.total ?? ((Number(item.currentPrice||item.hJual)||0)*paidQty))||0; const unitCost=Number(item.hModal||item.hargaModal||0); const cost=qty*unitCost; const old=map.get(key)||{id:item.id,kode:item.kode,nama:item.nama,kategori:item.kategori,qty:0,paidQty:0,revenue:0,cost:0}; old.qty+=qty;old.paidQty+=paidQty;old.revenue+=revenue;old.cost+=cost;map.set(key,old);
+      }
+      const rows=[...map.values()].map(x=>({...x,profit:x.revenue-x.cost,margin:x.revenue?((x.revenue-x.cost)/x.revenue)*100:0})).sort((a,b)=>b.qty-a.qty || b.profit-a.profit);
+      const money=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent='Rp'+Number(v).toLocaleString('id-ID')}; const text=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=Number(v).toLocaleString('id-ID')};
+      text('lp-total-qty',rows.reduce((s,x)=>s+x.qty,0));money('lp-total-sales',rows.reduce((s,x)=>s+x.revenue,0));money('lp-total-cost',rows.reduce((s,x)=>s+x.cost,0));money('lp-total-profit',rows.reduce((s,x)=>s+x.profit,0));
+      const body=document.getElementById('table-laporan-produk-body'); if(!body)return; body.innerHTML=rows.length?rows.map((x,i)=>`<tr><td class="px-4 py-3 text-center font-black">${i+1}</td><td class="px-4 py-3 font-bold">${x.kode||'-'}</td><td class="px-4 py-3 font-bold">${x.nama||'-'}</td><td class="px-4 py-3">${x.kategori||'-'}</td><td class="px-4 py-3 text-right font-bold">${x.qty.toLocaleString('id-ID')}</td><td class="px-4 py-3 text-right">${x.paidQty.toLocaleString('id-ID')}</td><td class="px-4 py-3 text-right">Rp${x.revenue.toLocaleString('id-ID')}</td><td class="px-4 py-3 text-right text-orange-600">Rp${x.cost.toLocaleString('id-ID')}</td><td class="px-4 py-3 text-right font-black ${x.profit>=0?'text-emerald-700':'text-red-600'}">Rp${x.profit.toLocaleString('id-ID')}</td><td class="px-4 py-3 text-right font-bold">${x.margin.toFixed(2)}%</td></tr>`).join(''):`<tr><td colspan="10" class="p-8 text-center text-gray-400">Belum ada data penjualan pada periode ini.</td></tr>`; lucide.createIcons();
+    }
+
+    function exportLaporanProdukExcel(){
+      const period=getReportMonthValue('laporan-produk-period'); const rows=[...document.querySelectorAll('#table-laporan-produk-body tr')].map(tr=>[...tr.children].map(td=>td.innerText));
+      if(!rows.length)return showToast('Tidak ada data untuk diekspor','error'); const data=[['No','Kode','Produk','Kategori','Qty Fisik','Qty Bayar','Omzet','HPP','Laba','Margin'],...rows]; const ws=XLSX.utils.aoa_to_sheet(data); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Laporan Produk'); XLSX.writeFile(wb,`laporan-produk-${period}.xlsx`);
+    }
+
     function renderLaporan() {
       const period = getLaporanPeriod();
       const { year, month, label } = period;
@@ -5924,6 +6263,8 @@
       lucide.createIcons();
       closeMobileSidebar();
 
+      if (pageId === 'pembelian') { renderPembelian(); }
+      if (pageId === 'laporan-produk') { renderLaporanProduk(); }
       if (pageId === 'kasir') {
         setTimeout(() => {
           const scanInput = document.getElementById('kasir-search');
@@ -6633,6 +6974,10 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      const month = getCurrentMonthISO();
+      const pp = document.getElementById('pembelian-period'); if (pp) pp.value = month;
+      const lp = document.getElementById('laporan-produk-period'); if (lp) lp.value = month;
+      const pt = document.getElementById('laporan-period'); if (pt && !pt.value) pt.value = month;
       lucide.createIcons();
       initRealtimeListeners();
     });
