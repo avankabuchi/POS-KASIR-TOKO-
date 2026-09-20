@@ -138,9 +138,9 @@
     .classic-pos-table tbody tr:hover td{background:#f8fafc}
     .classic-pos-table tbody tr.active-cart-row td{background:#dcfce7!important;border-top:2px solid #16a34a;border-bottom:2px solid #16a34a}
     .classic-pos-table .col-no{width:48px}.classic-pos-table .col-code{width:175px}.classic-pos-table .col-name{width:300px}
-    .classic-pos-table .col-price-type{width:110px}.classic-pos-table .col-price{width:135px}.classic-pos-table .col-qty{width:88px}
-    .classic-pos-table .col-subtotal{width:155px}.classic-pos-table .col-delete{width:48px}
-    .classic-pos-table th:nth-child(4),.classic-pos-table td:nth-child(4),.classic-pos-table th:nth-child(5),.classic-pos-table td:nth-child(5),.classic-pos-table th:nth-child(7),.classic-pos-table td:nth-child(7){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .classic-pos-table .col-price-type{width:110px}.classic-pos-table .col-price{width:135px}.classic-pos-table .col-qty{width:88px}.classic-pos-table .col-discount{width:122px}
+    .classic-pos-table .col-subtotal{width:155px}.classic-pos-table .col-delete{width:58px}
+    .classic-pos-table th:nth-child(4),.classic-pos-table td:nth-child(4),.classic-pos-table th:nth-child(5),.classic-pos-table td:nth-child(5),.classic-pos-table th:nth-child(7),.classic-pos-table td:nth-child(7),.classic-pos-table th:nth-child(8),.classic-pos-table td:nth-child(8){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .classic-cell-input{width:100%;height:30px;border:1px solid transparent;background:transparent;border-radius:2px;padding:3px 5px;font-family:'Courier Prime',monospace;font-size:12px;font-weight:700;outline:none}
     .classic-cell-input:focus{background:#fff;border:2px solid #166534;box-shadow:inset 0 0 0 1px #bbf7d0}
     .classic-qty-input{text-align:center;font-size:14px;border:1px solid #9ca3af;background:#fff;font-weight:700}
@@ -589,6 +589,260 @@
 #modal-retur{z-index:9999!important}
 #modal-retur button[type="submit"]{cursor:pointer}
 
+
+/* ===== RAPIKAN RINGKASAN ASET ===== */
+.asset-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  margin:4px 0 16px;
+}
+.asset-card{
+  position:relative;
+  min-width:0;
+  padding:18px 20px;
+  background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%);
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  box-shadow:0 4px 14px rgba(15,23,42,.06);
+  overflow:hidden;
+}
+.asset-card::after{
+  content:"";
+  position:absolute;
+  width:90px;height:90px;
+  right:-30px;top:-30px;
+  border-radius:50%;
+  background:rgba(59,130,246,.06);
+  pointer-events:none;
+}
+.asset-card-label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:20px;
+  color:#64748b;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.025em;
+  text-transform:uppercase;
+}
+.asset-card-label svg{flex:none}
+.asset-card-value{
+  margin-top:8px;
+  color:#0f172a;
+  font-size:clamp(20px,2vw,27px);
+  line-height:1.15;
+  font-weight:900;
+  letter-spacing:-.025em;
+  overflow-wrap:anywhere;
+}
+.asset-card-sub{
+  margin-top:7px;
+  color:#94a3b8;
+  font-size:10px;
+  line-height:1.45;
+}
+.asset-stock{
+  background:linear-gradient(135deg,#ffffff 0%,#f0fdf4 100%);
+}
+.asset-stock .asset-card-label{color:#047857}
+.asset-stock .asset-card-value{color:#065f46}
+.asset-value{
+  background:linear-gradient(135deg,#ffffff 0%,#eff6ff 100%);
+}
+.asset-value .asset-card-label{color:#2563eb}
+.asset-value .asset-card-value{color:#1d4ed8}
+@media (max-width:900px){
+  .asset-summary-grid{grid-template-columns:1fr 1fr}
+  .asset-card:last-child{grid-column:1/-1}
+}
+@media (max-width:640px){
+  .asset-summary-grid{grid-template-columns:1fr;gap:10px}
+  .asset-card:last-child{grid-column:auto}
+  .asset-card{padding:15px 16px;border-radius:14px}
+  .asset-card-value{font-size:22px}
+}
+
+/* ===== TABEL KASIR ===== */
+.classic-pos-table{
+  width:100%;
+  min-width:1120px;
+  table-layout:fixed;
+}
+.classic-pos-table th,
+.classic-pos-table td{
+  vertical-align:middle;
+}
+.classic-pos-table th{
+  white-space:nowrap;
+}
+.classic-pos-table td{
+  overflow:hidden;
+}
+.classic-pos-table .cart-product-name{
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.35;
+}
+.classic-pos-table .cart-price-input{
+  width:100%;
+  min-width:105px;
+  height:36px;
+  padding:0 9px;
+  border:1px solid #dbe3ef;
+  border-radius:9px;
+  background:#fff;
+  color:#0f172a;
+  font-size:12px;
+  font-weight:800;
+  text-align:right;
+  outline:none;
+  transition:.15s ease;
+}
+.classic-pos-table .cart-price-input:focus{
+  border-color:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,.12);
+}
+.classic-pos-table .cart-qty-input{
+  min-width:62px;
+}
+.cart-discount-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-width:82px;
+  min-height:34px;
+  padding:7px 9px;
+  border:1px solid #dbeafe;
+  border-radius:9px;
+  background:#eff6ff;
+  color:#2563eb;
+  font-size:10px;
+  font-weight:800;
+  line-height:1.2;
+  transition:.15s ease;
+}
+.cart-discount-btn:hover{
+  background:#dbeafe;
+  border-color:#93c5fd;
+  transform:translateY(-1px);
+}
+.cart-discount-btn.is-active{
+  background:#fff7ed;
+  color:#c2410c;
+  border-color:#fed7aa;
+}
+
+/* ===== MODAL DISKON ===== */
+.discount-modal-card{
+  width:min(100%,460px);
+  max-height:min(88vh,620px);
+  overflow:auto;
+  padding:20px;
+  border:1px solid #e2e8f0;
+  border-radius:20px;
+  box-shadow:0 24px 70px rgba(15,23,42,.22);
+}
+.discount-type-btn{
+  min-height:42px;
+  border-color:#e2e8f0;
+  background:#fff;
+  color:#475569;
+  transition:.15s ease;
+}
+.discount-type-btn:hover{
+  background:#f8fafc;
+  border-color:#cbd5e1;
+}
+.discount-type-btn.active{
+  background:#2563eb;
+  color:#fff;
+  border-color:#2563eb;
+  box-shadow:0 4px 10px rgba(37,99,235,.2);
+}
+.discount-preview{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.discount-preview > div{
+  padding:10px;
+  border:1px solid #e2e8f0;
+  border-radius:11px;
+  background:#f8fafc;
+}
+@media (max-width:560px){
+  .discount-preview{grid-template-columns:1fr}
+  .discount-modal-card{padding:16px;border-radius:16px}
+}
+
+
+/* ===== FINAL POLISH TABEL KASIR: KOLOM DISKON SEJAJAR DENGAN HEADER ===== */
+.classic-pos-table{
+  min-width:1240px !important;
+  table-layout:fixed !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+}
+.classic-pos-table th{
+  height:44px;
+  padding:8px 7px !important;
+  font-size:11px !important;
+  letter-spacing:.02em;
+}
+.classic-pos-table td{
+  height:58px;
+  padding:6px 7px !important;
+  box-sizing:border-box;
+}
+.classic-pos-table .col-no{width:48px !important}
+.classic-pos-table .col-code{width:175px !important}
+.classic-pos-table .col-name{width:300px !important}
+.classic-pos-table .col-price-type{width:110px !important}
+.classic-pos-table .col-price{width:135px !important}
+.classic-pos-table .col-qty{width:88px !important}
+.classic-pos-table .col-discount{width:122px !important}
+.classic-pos-table .col-subtotal{width:155px !important}
+.classic-pos-table .col-delete{width:70px !important}
+.classic-pos-table .cart-price-input,
+.classic-pos-table .classic-qty-input,
+.classic-pos-table .cart-discount-btn,
+.classic-pos-table .classic-price-toggle{
+  box-sizing:border-box;
+  min-height:38px;
+}
+.classic-pos-table .cart-discount-btn{
+  width:100%;
+  min-width:0;
+  padding:6px 7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  border-radius:10px;
+  font-size:10px;
+  line-height:1.1;
+}
+.classic-pos-table .classic-qty-input{
+  width:100%;
+  min-width:0;
+}
+.classic-pos-table td:nth-child(7),
+.classic-pos-table th:nth-child(7){text-align:center}
+.classic-pos-table td:nth-child(8),
+.classic-pos-table th:nth-child(8){text-align:right}
+.classic-pos-table .classic-delete-cell button{
+  min-width:52px;
+  height:38px;
+  border-radius:10px;
+}
+@media (max-width:700px){
+  .classic-pos-table{min-width:1180px !important}
+  .classic-pos-table .col-code{width:160px !important}
+  .classic-pos-table .col-name{width:260px !important}
+  .classic-pos-table .col-discount{width:112px !important}
+}
 </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
@@ -848,13 +1102,14 @@
                   <th class="col-price-type">HARGA</th>
                   <th class="col-price">HARGA SATUAN</th>
                   <th class="col-qty">QTY</th>
+                  <th class="col-discount">DISKON</th>
                   <th class="col-subtotal">SUBTOTAL</th>
                   <th class="col-delete">DEL</th>
                 </tr>
               </thead>
               <tbody id="cart-table-body">
                 <tr class="classic-empty-row">
-                  <td colspan="8">Belum ada barang. Fokuskan BARCODE lalu scan/ketik barang.</td>
+                  <td colspan="9">Belum ada barang. Fokuskan BARCODE lalu scan/ketik barang.</td>
                 </tr>
               </tbody>
             </table>
@@ -1038,6 +1293,25 @@
             </button>
           </div>
         </div>
+
+        <div class="asset-summary-grid">
+          <div class="asset-card">
+            <div class="asset-card-label"><i data-lucide="package" class="w-4 h-4"></i><span>Total Jenis Barang</span></div>
+            <div id="asset-total-products" class="asset-card-value">0</div>
+            <div class="asset-card-sub">Jumlah SKU/barang terdaftar</div>
+          </div>
+          <div class="asset-card asset-stock">
+            <div class="asset-card-label"><i data-lucide="boxes" class="w-4 h-4"></i><span>Total Stok</span></div>
+            <div id="asset-total-stock" class="asset-card-value">0</div>
+            <div class="asset-card-sub">Jumlah seluruh unit barang di toko</div>
+          </div>
+          <div class="asset-card asset-value">
+            <div class="asset-card-label"><i data-lucide="wallet" class="w-4 h-4"></i><span>Total Aset Persediaan</span></div>
+            <div id="asset-total-value" class="asset-card-value">Rp0</div>
+            <div class="asset-card-sub">Dihitung dari Harga Modal × Stok setiap barang</div>
+          </div>
+        </div>
+
 
         <div class="flex border-b border-gray-200 space-x-4 text-xs font-bold">
           <button id="tab-sub-barang" onclick="switchBarangSubTab('katalog')" class="pb-2 text-emerald-600 border-b-2 border-emerald-600 flex items-center space-x-1.5">
@@ -1810,11 +2084,69 @@
   </div>
 
   <!-- MODAL CHECKOUT -->
+  <!-- MODAL DISKON BARANG KASIR -->
+  <div id="modal-cart-discount" class="fixed inset-0 z-[60] bg-black/50 hidden flex items-center justify-center p-4 no-print">
+    <div class="discount-modal-card bg-white rounded-2xl shadow-2xl w-full max-w-md p-5 space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div>
+          <h3 class="font-bold text-base text-gray-900">Diskon Barang</h3>
+          <p id="discount-product-name" class="text-xs text-gray-500 mt-0.5">-</p>
+        </div>
+        <button type="button" onclick="closeModal('modal-cart-discount')" class="text-gray-400 hover:text-gray-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" id="discount-type-none" onclick="setDiscountTypeUI('none')" class="discount-type-btn py-2.5 border rounded-xl font-bold text-xs">Tanpa Diskon</button>
+        <button type="button" id="discount-type-free" onclick="setDiscountTypeUI('free')" class="discount-type-btn py-2.5 border rounded-xl font-bold text-xs">Gratis Barang</button>
+        <button type="button" id="discount-type-percent" onclick="setDiscountTypeUI('percent')" class="discount-type-btn py-2.5 border rounded-xl font-bold text-xs">Diskon %</button>
+      </div>
+
+      <div id="discount-free-fields" class="hidden p-3 bg-orange-50 border border-orange-200 rounded-xl space-y-3">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-gray-600 mb-1">Jumlah Barang</label>
+            <input id="discount-free-every" type="number" min="2" step="1" value="3" oninput="updateDiscountPreview()" class="w-full border border-orange-200 rounded-xl p-2.5 font-bold">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-gray-600 mb-1">Gratis</label>
+            <input id="discount-free-count" type="number" min="1" step="1" value="1" oninput="updateDiscountPreview()" class="w-full border border-orange-200 rounded-xl p-2.5 font-bold">
+          </div>
+        </div>
+        <p class="text-[10px] text-orange-700 font-semibold">Contoh: 3 barang, gratis 1 → 3 stok fisik berkurang, 2 barang yang dibayar.</p>
+      </div>
+
+      <div id="discount-percent-fields" class="hidden p-3 bg-blue-50 border border-blue-200 rounded-xl">
+        <label class="block text-[10px] font-bold text-gray-600 mb-1">Persentase Diskon</label>
+        <div class="flex items-center gap-2">
+          <input id="discount-percent" type="number" min="0" max="100" step="0.01" value="10" oninput="updateDiscountPreview()" class="w-full border border-blue-200 rounded-xl p-2.5 font-bold text-base">
+          <span class="font-black text-blue-700">%</span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+        <div class="flex justify-between"><span>Barang fisik:</span><b id="discount-preview-qty">0</b></div>
+        <div class="flex justify-between mt-1"><span>Barang dibayar:</span><b id="discount-preview-paid">0</b></div>
+        <div class="flex justify-between mt-1"><span>Potongan:</span><b id="discount-preview-amount" class="text-orange-600">Rp0</b></div>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button type="button" onclick="closeModal('modal-cart-discount')" class="flex-1 py-2.5 border border-gray-200 rounded-xl font-bold text-xs">Batal</button>
+        <button type="button" onclick="saveCartDiscount()" class="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700">Terapkan Diskon</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-checkout" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3 text-xs">
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="font-bold text-sm">Pembayaran Transaksi</h3>
         <button onclick="closeModal('modal-checkout')"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="flex justify-between text-xs font-bold text-orange-600">
+        <span>Total Diskon:</span>
+        <span id="checkout-discount">Rp0</span>
       </div>
       <div class="flex justify-between font-bold text-sm">
         <span>Total Tagihan:</span>
@@ -2148,6 +2480,8 @@
     let activePengeluaranTab = 'semua';
     let selectedProductIds = new Set();
     let lastActiveTxForReceipt = null;
+    let activeDiscountProductId = null;
+    let activeDiscountType = 'none';
 
     // REALTIME DATABASE SYNC
     function initRealtimeListeners() {
@@ -2452,6 +2786,7 @@
       if (e.key === 'F4') { e.preventDefault(); setAllPriceMode('eceran'); return; }
       if (e.key === 'F5') { e.preventDefault(); setAllPriceMode('grosir'); return; }
       if (e.key === 'F6') { e.preventDefault(); clearCart(); focusKasirSearch(); return; }
+      if (e.key === 'F7') { e.preventDefault(); openCartDiscountModal(); return; }
       if (e.key === 'F8') { e.preventDefault(); navigate('member'); return; }
       if (e.key === 'F9') {
         e.preventDefault(); openCheckoutModal(); return;
@@ -2745,7 +3080,7 @@
         if (item.qty >= Number(prod.stok) && requestedQty > 0) showToast(`Stok maksimal ${prod.stok}`);
       } else {
         const qty = Math.min(requestedQty, Number(prod.stok));
-        cart.push({...prod, qty, priceMode:'eceran', currentPrice:Number(prod.hJual)||0});
+        cart.push({...prod, qty, priceMode:'eceran', currentPrice:Number(prod.hJual)||0, customPrice:false, discountType:'none', discountEvery:0, discountFree:0, discountPercent:0});
         if (requestedQty > qty) showToast(`Jumlah dibatasi stok ${prod.stok}`);
       }
 
@@ -2844,16 +3179,18 @@
 
       // Perbarui total tanpa mengganti HTML input QTY.
       const totalItems = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-      const totalPrice = cart.reduce((sum, item) => sum + (Number(item.qty || 0) * Number(item.currentPrice || 0)), 0);
+      const totalPrice = getCartTotal();
       const formattedTotal = 'Rp' + totalPrice.toLocaleString('id-ID');
       const countEl = document.getElementById('cart-count');
       const subtotalEl = document.getElementById('subtotal-val');
       const totalEl = document.getElementById('total-val');
+      const discountEl = document.getElementById('cart-discount-val');
       const classicTotal = document.getElementById('classic-total-display');
       const classicSub = document.getElementById('classic-kasir-sub');
       if (countEl) countEl.innerText = totalItems;
       if (subtotalEl) subtotalEl.innerText = formattedTotal;
       if (totalEl) totalEl.innerText = formattedTotal;
+      if (discountEl) discountEl.innerText = 'Rp' + getCartDiscountTotal().toLocaleString('id-ID');
       if (classicTotal) classicTotal.innerText = formattedTotal;
       if (classicSub) classicSub.innerText = `${totalItems} Barang di Kasir`;
     }
@@ -2881,38 +3218,198 @@
       updateCartView();
     }
 
-    function updateCartView() {
-      const tbody = document.getElementById('cart-table-body');
+
+    // ============================================================
+    // DISKON BARANG
+    // ============================================================
+    function getCartItemPricing(item) {
+      const qty = Math.max(0, Number(item.qty) || 0);
+      const price = Math.max(0, Number(item.currentPrice) || 0);
+      const gross = qty * price;
+      const type = item.discountType || 'none';
+
+      if (type === 'free') {
+        const every = Math.max(2, parseInt(item.discountEvery, 10) || 3);
+        const freeEach = Math.max(1, parseInt(item.discountFree, 10) || 1);
+        const freeQty = Math.min(qty, Math.floor(qty / every) * freeEach);
+        const paidQty = Math.max(0, qty - freeQty);
+        return {
+          qty, price, gross, freeQty, paidQty,
+          discountAmount: freeQty * price,
+          total: paidQty * price
+        };
+      }
+
+      if (type === 'percent') {
+        const percent = Math.min(100, Math.max(0, Number(item.discountPercent) || 0));
+        const discountAmount = gross * percent / 100;
+        return {
+          qty, price, gross, freeQty: 0, paidQty: qty,
+          discountAmount, total: Math.max(0, gross - discountAmount)
+        };
+      }
+
+      return { qty, price, gross, freeQty: 0, paidQty: qty, discountAmount: 0, total: gross };
+    }
+
+    function getCartTotal() {
+      return cart.reduce((sum, item) => sum + getCartItemPricing(item).total, 0);
+    }
+
+    function getCartDiscountTotal() {
+      return cart.reduce((sum, item) => sum + getCartItemPricing(item).discountAmount, 0);
+    }
+
+    function getDiscountLabel(item) {
+      const p = getCartItemPricing(item);
+      if ((item.discountType || 'none') === 'free') {
+        return `GRATIS ${p.freeQty} (${item.discountEvery || 3}+${item.discountFree || 1})`;
+      }
+      if ((item.discountType || 'none') === 'percent') {
+        return `-${Number(item.discountPercent || 0)}%`;
+      }
+      return 'DISKON';
+    }
+
+    function openCartDiscountModal(productId = null) {
+      const targetId = productId || activeCartItemId || (cart[activeCartRowIndex]?.id);
+      const item = cart.find(c => String(c.id) === String(targetId));
+      if (!item) {
+        showToast('Pilih barang di keranjang terlebih dahulu');
+        return;
+      }
+
+      activeDiscountProductId = item.id;
+      activeDiscountType = item.discountType || 'none';
+
+      document.getElementById('discount-product-name').innerText = `${item.nama} • QTY ${item.qty}`;
+      document.getElementById('discount-free-every').value = item.discountEvery || 3;
+      document.getElementById('discount-free-count').value = item.discountFree || 1;
+      document.getElementById('discount-percent').value = item.discountPercent ?? 10;
+
+      setDiscountTypeUI(activeDiscountType);
+      openModal('modal-cart-discount');
+      updateDiscountPreview();
+      lucide.createIcons();
+    }
+
+    function setDiscountTypeUI(type) {
+      activeDiscountType = type;
+      ['none','free','percent'].forEach(t => {
+        const btn = document.getElementById(`discount-type-${t}`);
+        if (!btn) return;
+        btn.className = `discount-type-btn py-2.5 border rounded-xl font-bold text-xs ${t === type ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-700 border-gray-200'}`;
+      });
+      document.getElementById('discount-free-fields')?.classList.toggle('hidden', type !== 'free');
+      document.getElementById('discount-percent-fields')?.classList.toggle('hidden', type !== 'percent');
+      updateDiscountPreview();
+    }
+
+    function updateDiscountPreview() {
+      const item = cart.find(c => String(c.id) === String(activeDiscountProductId));
+      if (!item) return;
+
+      const temp = {...item, discountType: activeDiscountType};
+      if (activeDiscountType === 'free') {
+        temp.discountEvery = Math.max(2, parseInt(document.getElementById('discount-free-every')?.value,10) || 3);
+        temp.discountFree = Math.max(1, parseInt(document.getElementById('discount-free-count')?.value,10) || 1);
+      }
+      if (activeDiscountType === 'percent') {
+        temp.discountPercent = Math.min(100, Math.max(0, Number(document.getElementById('discount-percent')?.value) || 0));
+      }
+
+      const pricing = getCartItemPricing(temp);
+      document.getElementById('discount-preview-qty').innerText = pricing.qty;
+      document.getElementById('discount-preview-paid').innerText = pricing.paidQty;
+      document.getElementById('discount-preview-amount').innerText = 'Rp' + pricing.discountAmount.toLocaleString('id-ID');
+    }
+
+    function saveCartDiscount() {
+      const item = cart.find(c => String(c.id) === String(activeDiscountProductId));
+      if (!item) return;
+
+      item.discountType = activeDiscountType;
+      if (activeDiscountType === 'free') {
+        item.discountEvery = Math.max(2, parseInt(document.getElementById('discount-free-every').value,10) || 3);
+        item.discountFree = Math.max(1, parseInt(document.getElementById('discount-free-count').value,10) || 1);
+        item.discountPercent = 0;
+      } else if (activeDiscountType === 'percent') {
+        item.discountPercent = Math.min(100, Math.max(0, Number(document.getElementById('discount-percent').value) || 0));
+        item.discountEvery = 0;
+        item.discountFree = 0;
+      } else {
+        item.discountPercent = 0;
+        item.discountEvery = 0;
+        item.discountFree = 0;
+      }
+
+      closeModal('modal-cart-discount');
+      updateCartView();
+      activeCartRowIndex = cart.findIndex(c => String(c.id) === String(item.id));
+      syncActiveCartRow();
+      showToast(activeDiscountType === 'none' ? 'Diskon dihapus' : 'Diskon barang diterapkan');
+    }
+
+    function updateCartPriceFromInput(productId, input) {
+      const item = cart.find(c => String(c.id) === String(productId));
+      if (!item) return;
+      const value = Number(String(input.value).replace(/[^\d.-]/g, ''));
+      if (!Number.isFinite(value) || value < 0) return;
+      item.currentPrice = Math.round(value);
+      item.customPrice = true;
+
+      const pricing = getCartItemPricing(item);
+      const row = input.closest('tr');
+      const subtotal = row?.querySelector('[data-cart-subtotal]');
+      if (subtotal) subtotal.innerText = 'Rp' + pricing.total.toLocaleString('id-ID');
+      updateCartTotalsOnly();
+    }
+
+    function normalizeCartPriceInput(productId, input) {
+      const item = cart.find(c => String(c.id) === String(productId));
+      if (!item) return;
+      let value = Number(String(input.value).replace(/[^\d.-]/g, ''));
+      if (!Number.isFinite(value) || value < 0) value = Number(item.currentPrice) || 0;
+      item.currentPrice = Math.round(value);
+      input.value = String(item.currentPrice);
+      updateCartTotalsOnly();
+    }
+
+    function updateCartTotalsOnly() {
+      const totalItems = cart.reduce((sum,item) => sum + Number(item.qty||0), 0);
+      const totalPrice = getCartTotal();
+      const formattedTotal = 'Rp' + totalPrice.toLocaleString('id-ID');
       const countEl = document.getElementById('cart-count');
       const subtotalEl = document.getElementById('subtotal-val');
       const totalEl = document.getElementById('total-val');
       const classicTotal = document.getElementById('classic-total-display');
       const classicSub = document.getElementById('classic-kasir-sub');
-      const userName = document.getElementById('classic-kasir-name');
-
-      if (userName) userName.innerText = currentUser?.name || '-';
-
-      const totalItems = cart.reduce((sum,item) => sum + Number(item.qty||0), 0);
-      const totalPrice = cart.reduce((sum,item) => sum + (Number(item.qty||0) * Number(item.currentPrice||0)), 0);
-      const formattedTotal = 'Rp' + totalPrice.toLocaleString('id-ID');
-
       if (countEl) countEl.innerText = totalItems;
       if (subtotalEl) subtotalEl.innerText = formattedTotal;
       if (totalEl) totalEl.innerText = formattedTotal;
       if (classicTotal) classicTotal.innerText = formattedTotal;
       if (classicSub) classicSub.innerText = `${totalItems} Barang di Kasir`;
+    }
 
+    function updateCartView() {
+      const tbody = document.getElementById('cart-table-body');
+      const userName = document.getElementById('classic-kasir-name');
+      if (userName) userName.innerText = currentUser?.name || '-';
+
+      updateCartTotalsOnly();
       if (!tbody) return;
 
       if (!cart.length) {
-        tbody.innerHTML = `<tr class="classic-empty-row"><td colspan="8">Belum ada barang. Fokuskan BARCODE lalu scan/ketik barang.</td></tr>`;
+        tbody.innerHTML = `<tr class="classic-empty-row"><td colspan="9">Belum ada barang. Fokuskan BARCODE lalu scan/ketik barang.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = cart.map((item,index) => {
-        const itemTotal = Number(item.qty||0) * Number(item.currentPrice||0);
+        const pricing = getCartItemPricing(item);
         const active = index === activeCartRowIndex;
         const mode = item.priceMode === 'grosir' ? 'grosir' : 'eceran';
+        const hasDiscount = (item.discountType || 'none') !== 'none';
+        const discountLabel = getDiscountLabel(item);
         return `
           <tr data-cart-index="${index}" data-product-id="${item.id}" class="${active ? 'active-cart-row' : ''}" onclick="setActiveCartRow(${index}, false)">
             <td class="text-center font-bold">${index + 1}</td>
@@ -2930,7 +3427,15 @@
                 ${mode === 'grosir' ? 'GROSIR' : 'ECER'}
               </button>
             </td>
-            <td class="text-right font-bold">Rp${Number(item.currentPrice||0).toLocaleString('id-ID')}</td>
+            <td>
+              <input id="cart-price-${item.id}" type="number" min="0" step="1" value="${Math.round(Number(item.currentPrice)||0)}"
+                class="cart-price-input" inputmode="numeric" autocomplete="off" aria-label="Harga ${item.nama}"
+                onclick="event.stopPropagation(); setActiveCartRow(${index}, false)"
+                onfocus="activeCartItemId='${item.id}'; activeCartRowIndex=${index}; this.select(); syncActiveCartRow()"
+                oninput="updateCartPriceFromInput('${item.id}',this)"
+                onblur="normalizeCartPriceInput('${item.id}',this)"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();focusCartQty('${item.id}')}">
+            </td>
             <td>
               <input id="cart-qty-${item.id}" data-qty-input="true" type="number" min="1" max="${item.stok || 1}" step="1"
                 value="${item.qty}" inputmode="numeric" autocomplete="off"
@@ -2940,7 +3445,14 @@
                 onblur="normalizeCartQtyInput('${item.id}',this)"
                 onkeydown="handleCartQtyKeydown(event,'${item.id}')">
             </td>
-            <td class="text-right font-bold">Rp${itemTotal.toLocaleString('id-ID')}</td>
+            <td>
+              <button type="button" class="cart-discount-btn ${hasDiscount ? 'has-discount' : ''}"
+                onclick="event.stopPropagation(); openCartDiscountModal('${item.id}')"
+                title="Atur diskon barang">
+                ${hasDiscount ? discountLabel : 'TANPA DISKON'}
+              </button>
+            </td>
+            <td class="text-right font-bold" data-cart-subtotal>Rp${pricing.total.toLocaleString('id-ID')}</td>
             <td class="classic-delete-cell">
               <button type="button" onclick="event.stopPropagation(); removeCartItem('${item.id}'); focusKasirSearch()" title="Hapus">DEL</button>
             </td>
@@ -2972,7 +3484,24 @@
       lucide.createIcons();
     }
 
+    function updateAssetSummary() {
+      const totalProducts = products.length;
+      const totalStock = products.reduce((sum, p) => sum + (Number(p.stok) || 0), 0);
+      const totalAsset = products.reduce((sum, p) => {
+        return sum + ((Number(p.hModal) || 0) * (Number(p.stok) || 0));
+      }, 0);
+
+      const elProducts = document.getElementById('asset-total-products');
+      const elStock = document.getElementById('asset-total-stock');
+      const elValue = document.getElementById('asset-total-value');
+
+      if (elProducts) elProducts.textContent = totalProducts.toLocaleString('id-ID');
+      if (elStock) elStock.textContent = totalStock.toLocaleString('id-ID');
+      if (elValue) elValue.textContent = 'Rp' + totalAsset.toLocaleString('id-ID');
+    }
+
     function renderProductsTable() {
+      updateAssetSummary();
       const tbody = document.getElementById('table-barang-body');
       const search = (document.getElementById('filter-barang-search')?.value || '').toLowerCase();
       const kat = document.getElementById('filter-barang-kategori')?.value || 'semua';
@@ -3089,12 +3618,14 @@
 
       const itemsContainer = document.getElementById('rcpt-items');
       itemsContainer.innerHTML = (tx.items || []).map(item => {
-        const price = item.currentPrice || item.harga || item.hJual;
+        const price = Number(item.currentPrice || item.harga || item.hJual || 0);
+        const pricing = getCartItemPricing(item);
         const modeLabel = item.priceMode === 'grosir' ? '(G)' : '';
+        const promoLabel = pricing.freeQty > 0 ? ` • Gratis ${pricing.freeQty}` : ((item.discountType === 'percent' && item.discountPercent) ? ` • -${item.discountPercent}%` : '');
         return `
-          <div class="flex justify-between items-start text-[10px]">
-            <span class="truncate max-w-[140px]">${item.nama} ${modeLabel}</span>
-            <span class="shrink-0 text-right">${item.qty} x Rp${price.toLocaleString('id-ID')}</span>
+          <div class="flex justify-between items-start text-[10px] gap-2">
+            <span class="truncate max-w-[150px]">${item.nama} ${modeLabel}${promoLabel}</span>
+            <span class="shrink-0 text-right">${item.qty} fisik / ${pricing.paidQty} bayar<br>Rp${pricing.total.toLocaleString('id-ID')}</span>
           </div>
         `;
       }).join('');
@@ -3135,8 +3666,10 @@
       if (targetPhone.startsWith('8')) targetPhone = '62' + targetPhone;
 
       let rincianBarang = (tx.items || []).map((it, idx) => {
-        const p = it.currentPrice || it.harga || it.hJual;
-        return `   ${idx + 1}. ${it.nama} (${it.qty}x) = Rp${(it.qty * p).toLocaleString('id-ID')}`;
+        const p = Number(it.currentPrice || it.harga || it.hJual || 0);
+        const pricing = getCartItemPricing(it);
+        const promo = pricing.freeQty > 0 ? ` [Gratis ${pricing.freeQty}]` : ((it.discountType === 'percent' && it.discountPercent) ? ` [-${it.discountPercent}%]` : '');
+        return `   ${idx + 1}. ${it.nama} (${it.qty} fisik / ${pricing.paidQty} bayar)${promo} = Rp${pricing.total.toLocaleString('id-ID')}`;
       }).join('\n');
 
       const pesan = `*TOKO BUNG EDI*\nJalan Turonggo Karangturi\nWhatsApp: 0851327958234\n--------------------------------\n*STRUK PEMBAYARAN RESMI*\nNo Transaksi : ${tx.id}\nWaktu        : ${tx.waktu}\nKasir        : ${tx.kasir}\nPelanggan    : ${tx.customerName || 'Umum'}\nMetode       : ${tx.metode}\n--------------------------------\n*DETAIL PEMBELIAN:*\n${rincianBarang}\n--------------------------------\n*TOTAL TAGIHAN : Rp${tx.total.toLocaleString('id-ID')}*\nBayar         : Rp${(tx.bayar || tx.total).toLocaleString('id-ID')}\nKembalian     : Rp${(tx.kembali || 0).toLocaleString('id-ID')}\n--------------------------------\nTerima kasih telah berbelanja di Toko Bung Edi!`;
@@ -3168,8 +3701,11 @@
         alert('Keranjang belanja masih kosong!');
         return;
       }
-      const total = cart.reduce((s, i) => s + (i.qty * i.currentPrice), 0);
+      const total = getCartTotal();
+      const discount = getCartDiscountTotal();
       document.getElementById('checkout-total-bill').innerText = 'Rp' + total.toLocaleString('id-ID');
+      const checkoutDiscount = document.getElementById('checkout-discount');
+      if (checkoutDiscount) checkoutDiscount.innerText = 'Rp' + discount.toLocaleString('id-ID');
 
       const bayarInput = document.getElementById('checkout-bayar');
       bayarInput.value = 0;
@@ -3180,7 +3716,7 @@
     }
 
     function setNominalPas() {
-      const total = cart.reduce((s, i) => s + (i.qty * i.currentPrice), 0);
+      const total = getCartTotal();
       document.getElementById('checkout-bayar').value = total;
       hitungKembalian();
     }
@@ -3192,14 +3728,14 @@
     }
 
     function hitungKembalian() {
-      const total = cart.reduce((s, i) => s + (i.qty * i.currentPrice), 0);
+      const total = getCartTotal();
       const bayar = parseInt(document.getElementById('checkout-bayar').value) || 0;
       const kembalian = Math.max(0, bayar - total);
       document.getElementById('checkout-kembalian').innerText = 'Rp' + kembalian.toLocaleString('id-ID');
     }
 
     async function confirmCheckout() {
-      const total = cart.reduce((s, i) => s + (i.qty * i.currentPrice), 0);
+      const total = getCartTotal();
       const totalModal = cart.reduce((s, i) => s + (i.qty * (i.hModal || 0)), 0);
       const profit = total - totalModal;
       const bayar = parseInt(document.getElementById('checkout-bayar').value) || 0;
@@ -3274,7 +3810,10 @@
         total: total,
         profit: profit,
         status: 'SUKSES',
-        items: JSON.parse(JSON.stringify(cart))
+        items: JSON.parse(JSON.stringify(cart)).map(item => {
+          const pricing = getCartItemPricing(item);
+          return {...item, paidQty: pricing.paidQty, freeQty: pricing.freeQty, discountAmount: pricing.discountAmount, lineTotal: pricing.total};
+        })
       };
 
       if (!isFirebaseReady) {
