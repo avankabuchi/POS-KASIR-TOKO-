@@ -859,6 +859,20 @@
 }
 </style>
 
+<style id="product-code-edit-polish">
+  #barang-kode:not([readonly]){
+    border-color:#93c5fd;
+    background:#eff6ff;
+    color:#1d4ed8;
+    letter-spacing:.04em;
+  }
+  #barang-kode:not([readonly]):focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    outline:none;
+  }
+</style>
+
 <style id="compact-cart-polish">
 .classic-pos-table-wrap{width:100%;overflow-x:auto;overflow-y:visible;border-radius:12px}
 .classic-pos-table{width:100%;min-width:900px!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:0 5px!important}
@@ -2645,8 +2659,8 @@
         <input type="hidden" id="barang-id" />
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-[10px] text-gray-500 mb-0.5">Kode Barang</label>
-            <input type="text" id="barang-kode" readonly placeholder="P001" class="border rounded-xl p-2.5 w-full font-bold" required />
+            <label class="block text-[10px] text-gray-500 mb-0.5">Kode Barang</label><p id="barang-kode-hint" class="text-[9px] text-blue-600 mb-1">Kode mengikuti urutan P001, P002, P003, ...</p>
+            <input type="text" id="barang-kode" placeholder="P001" class="border rounded-xl p-2.5 w-full font-bold uppercase" maxlength="12" required />
           </div>
           <div>
             <label class="block text-[10px] text-gray-500 mb-0.5">Barcode Scan (Auto Detect)</label>
@@ -2904,11 +2918,11 @@
     }
 
     // STATE LOKAL
-    let products = [
-      { id: '1', kode: 'P001', barcode: '8998866200225', nama: 'Indomie Goreng Spesial', kategori: 'Sembako', hModal: 2600, hJual: 3500, hGrosir: 3100, stok: 65 },
-      { id: '2', kode: 'P002', barcode: '8992775311029', nama: 'Aqua Botol 600ml', kategori: 'Minuman', hModal: 2000, hJual: 3000, hGrosir: 2500, stok: 48 },
-      { id: '3', kode: 'P003', barcode: '8993175538059', nama: 'Teh Pucuk Harum 350ml', kategori: 'Minuman', hModal: 2800, hJual: 4000, hGrosir: 3300, stok: 35 }
-    ];
+    // Firestore adalah SATU-SATUNYA sumber data barang.
+    // JANGAN menyediakan data contoh/fallback produk di HTML.
+    // Jika Cloud gagal dibaca, daftar barang harus tetap kosong agar
+    // barang lama tidak pernah muncul kembali setelah refresh.
+    let products = [];
     let members = [
       { id: 'M001', nama: 'Pak Joko', phone: '62851327958234', alamat: 'Karangturi', poin: 15 },
       { id: 'M002', nama: 'Ibu Siti', phone: '6281234567890', alamat: 'Turonggo', poin: 8 }
@@ -2947,18 +2961,36 @@
       if (!isFirebaseReady || !db) return;
 
       db.collection("products").onSnapshot(snapshot => {
-        if (!snapshot.empty) {
-          products = [];
-          snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
-          renderProductsTable();
-          renderKasirCategoryPills();
-          renderDashboard();
-          renderPopupBarangList();
-          refreshProductCategories();
-        } else {
-          products.forEach(p => syncToCloud("products", p.id, p));
-        }
-      }, err => console.error("Err products sync:", err));
+        // Firestore adalah sumber kebenaran. Jangan pernah upload ulang
+        // products dari state lokal ketika snapshot kosong.
+        const cloudProducts = [];
+
+        snapshot.forEach(doc => {
+          cloudProducts.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+
+        products = sortProductsByCode(cloudProducts);
+
+        // Buang pilihan yang dokumennya sudah tidak ada di Cloud.
+        const cloudIds = new Set(products.map(p => String(p.id)));
+        [...selectedProductIds].forEach(id => {
+          if (!cloudIds.has(String(id))) selectedProductIds.delete(String(id));
+        });
+
+        renderProductsTable();
+        renderKasirCategoryPills();
+        renderDashboard();
+        renderPopupBarangList();
+        refreshProductCategories();
+        updateAssetSummary();
+        updateBulkDeleteUI();
+      }, err => {
+        console.error("Err products sync:", err);
+        showToast('Gagal membaca data barang dari Cloud. Data lokal tidak digunakan kembali.', 'error');
+      });
 
       db.collection("members").onSnapshot(snapshot => {
         if (!snapshot.empty) {
@@ -4040,7 +4072,7 @@
       }
 
       tbody.innerHTML = filtered.map(p => {
-        const isChecked = selectedProductIds.has(p.id);
+        const isChecked = selectedProductIds.has(String(p.id));
         const grosirPrice = p.hGrosir || Math.round(p.hJual * 0.9);
         return `
           <tr class="hover:bg-gray-50/60 transition ${isChecked ? 'bg-emerald-50/40' : ''}">
@@ -4411,11 +4443,22 @@
     function openModalBarang(editId = null) {
       const form = document.getElementById('form-barang');
       form.reset();
+
+      const kodeInput = document.getElementById('barang-kode');
+      const hint = document.getElementById('barang-kode-hint');
+
       if (editId) {
         const prod = products.find(p => String(p.id) === String(editId));
+        if (!prod) return;
+
         document.getElementById('modal-barang-title').innerText = 'Edit Barang';
         document.getElementById('barang-id').value = prod.id;
-        document.getElementById('barang-kode').value = prod.kode;
+        kodeInput.value = String(prod.kode || '').toUpperCase();
+        kodeInput.readOnly = false;
+        kodeInput.classList.remove('bg-gray-100', 'text-gray-500');
+        kodeInput.classList.add('bg-white');
+        if (hint) hint.textContent = `Boleh diubah. Nomor harus 1–${products.length} dan sistem akan menjaga urutan tanpa double/kosong.`;
+
         document.getElementById('barang-barcode').value = prod.barcode || '';
         document.getElementById('barang-nama').value = prod.nama;
         document.getElementById('barang-kategori').value = prod.kategori;
@@ -4426,9 +4469,14 @@
       } else {
         document.getElementById('modal-barang-title').innerText = 'Tambah Barang Baru';
         document.getElementById('barang-id').value = '';
-        document.getElementById('barang-kode').value = getNextProductCode();
+        kodeInput.value = getNextProductCode();
+        kodeInput.readOnly = true;
+        kodeInput.classList.add('bg-gray-100', 'text-gray-500');
+        kodeInput.classList.remove('bg-white');
+        if (hint) hint.textContent = 'Kode baru dibuat otomatis pada nomor berikutnya yang tersedia.';
         generateRandomBarcode();
       }
+
       openModal('modal-barang');
       setupEnterStepNavigation();
       setTimeout(() => document.getElementById('barang-nama').focus(), 150);
@@ -4486,14 +4534,12 @@
 
     async function saveProduct(e) {
       e.preventDefault();
+
       const existingId = document.getElementById('barang-id').value.trim();
       const id = existingId || String(Date.now());
-      // Kode barang dikendalikan sistem agar selalu berurutan. Saat edit,
-      // kode lama dipertahankan; saat tambah baru, sistem mengambil nomor
-      // terkecil yang masih kosong (P001, P002, P003, ...).
-      const existingProduct = existingId ? products.find(p => String(p.id) === String(existingId)) : null;
-      const kode = existingProduct?.kode || getNextProductCode();
-      const barcode = document.getElementById('barang-barcode').value.trim() || kode;
+
+      const rawKode = document.getElementById('barang-kode').value.trim().toUpperCase();
+      const barcode = document.getElementById('barang-barcode').value.trim() || rawKode;
       const nama = document.getElementById('barang-nama').value.trim();
       const kategori = document.getElementById('barang-kategori').value;
       const hModal = parseInt(document.getElementById('barang-modal').value) || 0;
@@ -4501,11 +4547,54 @@
       const hGrosir = parseInt(document.getElementById('barang-grosir').value) || 0;
       const stok = parseInt(document.getElementById('barang-stok').value) || 0;
 
-      const prodData = { id, kode, barcode, nama, kategori, hModal, hJual, hGrosir, stok };
+      if (!nama) {
+        showToast('Nama barang wajib diisi.', 'error');
+        return;
+      }
 
-      // Mencegah barang baru memakai barcode/kode yang sudah dimiliki barang lain.
-      // Saat EDIT, ID barang yang sedang diedit dikecualikan dari pemeriksaan.
-      const duplicate = findDuplicateProduct(prodData, id);
+      // Kode harus berbentuk P001/P002/P003 dan nomor harus berada
+      // dalam rentang data yang tersedia. Untuk barang baru, kode tetap
+      // ditentukan sistem agar tidak terjadi bentrok.
+      let requestedNumber = null;
+      if (existingId) {
+        const match = rawKode.match(/^P(\d+)$/i);
+        if (!match) {
+          showToast('Kode barang harus berformat P001, P002, P003, dan seterusnya.', 'error');
+          return;
+        }
+
+        requestedNumber = parseInt(match[1], 10);
+        if (!Number.isInteger(requestedNumber) || requestedNumber < 1 || requestedNumber > products.length) {
+          showToast(`Nomor kode harus berada antara P001 sampai P${String(products.length).padStart(3, '0')}.`, 'error');
+          return;
+        }
+      }
+
+      const existingProduct = existingId
+        ? products.find(p => String(p.id) === String(existingId))
+        : null;
+
+      const kode = existingProduct?.kode || getNextProductCode();
+
+      const prodData = {
+        id,
+        kode,
+        barcode,
+        nama,
+        kategori,
+        hModal,
+        hJual,
+        hGrosir,
+        stok
+      };
+
+      // Barcode tetap wajib unik. Kode ditangani terpisah karena pengguna
+      // memang diperbolehkan mengubah nomor urut ketika edit.
+      const duplicate = findDuplicateProduct(
+        { ...prodData, kode: existingProduct?.kode || kode },
+        id
+      );
+
       if (duplicate) {
         const duplicateKey = normalizeProductIdentity(barcode) === normalizeProductIdentity(duplicate.barcode)
           ? `barcode ${duplicate.barcode}`
@@ -4514,20 +4603,47 @@
         return;
       }
 
-      if (!isFirebaseReady) {
-        const idx = products.findIndex(p => String(p.id) === String(id));
-        if (idx >= 0) products[idx] = prodData;
-        else products.push(prodData);
-      } else {
-        await syncToCloud("products", id, prodData);
-      }
+      try {
+        if (!isFirebaseReady) {
+          const idx = products.findIndex(p => String(p.id) === String(id));
+          if (idx >= 0) products[idx] = { ...products[idx], ...prodData };
+          else products.push(prodData);
+        } else {
+          // Optimistic local update supaya UI langsung responsif.
+          const idx = products.findIndex(p => String(p.id) === String(id));
+          if (idx >= 0) products[idx] = { ...products[idx], ...prodData };
+          else products.push(prodData);
 
-      addLog('SAVE_PRODUCT', `Barang ${nama} (${kode}) disimpan ke Cloud`);
-      clearExecutedForm('form-barang');
-      closeModal('modal-barang');
-      renderProductsTable();
-      renderPopupBarangList();
-      showToast('Barang berhasil disimpan di Cloud!');
+          await syncToCloud("products", id, prodData);
+        }
+
+        // Jika edit kode, pindahkan barang ke posisi nomor yang diminta,
+        // lalu geser nomor lain. Hasil akhirnya selalu P001..PN tanpa
+        // duplikat dan tanpa nomor kosong.
+        if (existingId && requestedNumber !== null) {
+          const ordered = sortProductsByCode(products);
+          const currentIndex = ordered.findIndex(p => String(p.id) === String(id));
+          const targetIndex = requestedNumber - 1;
+
+          if (currentIndex >= 0 && targetIndex >= 0 && targetIndex < ordered.length) {
+            const [moved] = ordered.splice(currentIndex, 1);
+            ordered.splice(targetIndex, 0, moved);
+            products = ordered;
+          }
+        }
+
+        await normalizeProductCodes(true);
+
+        addLog('SAVE_PRODUCT', `Barang ${nama} (${products.find(p => String(p.id) === String(id))?.kode || kode}) disimpan`);
+        clearExecutedForm('form-barang');
+        closeModal('modal-barang');
+        renderProductsTable();
+        renderPopupBarangList();
+        showToast(existingId ? 'Barang berhasil diperbarui. Urutan kode sudah dirapikan.' : 'Barang berhasil disimpan di Cloud!');
+      } catch (err) {
+        console.error('Gagal menyimpan barang:', err);
+        showToast('Gagal menyimpan barang. Silakan coba lagi.', 'error');
+      }
     }
 
     function openModalMember(editId = null) {
@@ -6335,25 +6451,35 @@
       else printCustomArea('printable-laporan-brilink');
     }
 
+    // ============================================================
+    // SELEKSI + PENGHAPUSAN BARANG
+    // ============================================================
+    // Semua ID dinormalisasi menjadi string agar checkbox, Set, dan
+    // Firestore doc ID selalu cocok.
     function toggleSelectProduct(id, checkbox) {
-      if (checkbox.checked) selectedProductIds.add(id);
-      else selectedProductIds.delete(id);
+      const key = String(id);
+      if (checkbox && checkbox.checked) {
+        selectedProductIds.add(key);
+      } else {
+        selectedProductIds.delete(key);
+      }
       updateBulkDeleteUI();
     }
 
+    function getAllProductIds() {
+      return products.map(p => String(p.id));
+    }
+
     function toggleSelectAllProducts(masterCheckbox) {
-      const search = (document.getElementById('filter-barang-search')?.value || '').toLowerCase();
-      const kat = document.getElementById('filter-barang-kategori')?.value || 'semua';
+      if (!masterCheckbox) return;
 
-      const visibleProducts = products.filter(p => {
-        const matchSearch = p.nama.toLowerCase().includes(search) || p.kode.toLowerCase().includes(search) || (p.barcode && p.barcode.includes(search));
-        const matchKat = kat === 'semua' || p.kategori === kat;
-        const matchMenipis = !filterMenipisOnly || p.stok <= 5;
-        return matchSearch && matchKat && matchMenipis;
-      });
-
-      if (masterCheckbox.checked) visibleProducts.forEach(p => selectedProductIds.add(p.id));
-      else visibleProducts.forEach(p => selectedProductIds.delete(p.id));
+      // "Pilih semua" = SEMUA data barang yang ada di Cloud/local state,
+      // bukan hanya baris yang sedang terlihat karena filter.
+      if (masterCheckbox.checked) {
+        getAllProductIds().forEach(id => selectedProductIds.add(id));
+      } else {
+        selectedProductIds.clear();
+      }
 
       renderProductsTable();
       updateBulkDeleteUI();
@@ -6361,8 +6487,13 @@
 
     function unselectAllProducts() {
       selectedProductIds.clear();
+
       const master = document.getElementById('select-all-products');
-      if (master) master.checked = false;
+      if (master) {
+        master.checked = false;
+        master.indeterminate = false;
+      }
+
       renderProductsTable();
       updateBulkDeleteUI();
     }
@@ -6370,44 +6501,180 @@
     function updateBulkDeleteUI() {
       const bar = document.getElementById('bulk-delete-bar');
       const countEl = document.getElementById('selected-product-count');
+      const master = document.getElementById('select-all-products');
+
+      // Buang ID yang sudah tidak ada di products agar counter selalu benar.
+      const validIds = new Set(getAllProductIds());
+      [...selectedProductIds].forEach(id => {
+        if (!validIds.has(String(id))) selectedProductIds.delete(String(id));
+      });
+
       const totalSelected = selectedProductIds.size;
-      if (totalSelected > 0) {
-        bar.classList.remove('hidden');
-        countEl.innerText = totalSelected;
-      } else {
-        bar.classList.add('hidden');
+
+      if (bar && countEl) {
+        bar.classList.toggle('hidden', totalSelected === 0);
+        countEl.textContent = String(totalSelected);
+      }
+
+      if (master) {
+        const total = products.length;
+        master.checked = total > 0 && totalSelected === total;
+        master.indeterminate = totalSelected > 0 && totalSelected < total;
+      }
+    }
+
+    // Hapus satu dokumen secara berurutan.
+    // Tidak menggunakan writeBatch dan tidak menggunakan Promise.all.
+    async function deleteProductsFromCloudOneByOne(ids, onProgress = null) {
+      if (!ids || ids.length === 0) return;
+
+      if (!isFirebaseReady || !db) {
+        throw new Error('Firebase/Firestore belum siap. Penghapusan Cloud dibatalkan.');
+      }
+
+      for (let i = 0; i < ids.length; i++) {
+        const id = String(ids[i]);
+
+        await db.collection('products').doc(id).delete();
+
+        // Verifikasi langsung bahwa dokumen target benar-benar sudah hilang.
+        const check = await db.collection('products').doc(id).get({ source: 'server' });
+        if (check.exists) {
+          throw new Error(`Dokumen ${id} masih ada di Cloud setelah proses delete.`);
+        }
+
+        if (typeof onProgress === 'function') {
+          onProgress(i + 1, ids.length, id);
+        }
       }
     }
 
     async function bulkDeleteSelectedProducts() {
-      const total = selectedProductIds.size;
-      if (total === 0 || !confirm(`Hapus ${total} barang terpilih?`)) return;
+      const ids = [...selectedProductIds].map(String);
+      const total = ids.length;
 
-      for (const id of selectedProductIds) {
-        if (!isFirebaseReady) products = products.filter(p => String(p.id) !== String(id));
-        else await deleteFromCloud("products", id);
+      if (!total) {
+        showToast('Belum ada barang yang dipilih.', 'error');
+        return;
       }
 
-      addLog('BULK_DELETE_PRODUCT', `Hapus massal ${total} barang`);
-      selectedProductIds.clear();
-      unselectAllProducts();
-      renderProductsTable();
-      renderPopupBarangList();
-      showToast(`Sukses menghapus ${total} barang dari Cloud!`);
+      if (!isFirebaseReady || !db) {
+        showToast('Cloud Firestore belum siap. Data tidak dihapus.', 'error');
+        return;
+      }
+
+      if (!confirm(
+        `Hapus ${total} barang terpilih?\n\n` +
+        `Setiap barang akan dihapus satu per satu langsung dari database Cloud.`
+      )) {
+        return;
+      }
+
+      let successCount = 0;
+
+      try {
+        // Hapus satu per satu. Tidak ada batch / Promise.all.
+        for (const id of ids) {
+          await db.collection('products').doc(id).delete();
+
+          // Pastikan dokumen benar-benar hilang dari server.
+          const verify = await db.collection('products').doc(id).get({ source: 'server' });
+          if (verify.exists) {
+            throw new Error(`Data ${id} gagal diverifikasi sebagai terhapus.`);
+          }
+
+          products = products.filter(p => String(p.id) !== id);
+          selectedProductIds.delete(id);
+          successCount++;
+
+          renderProductsTable();
+          renderPopupBarangList();
+          updateAssetSummary();
+          updateBulkDeleteUI();
+
+          showToast(`Menghapus ${successCount} dari ${total} barang...`);
+        }
+
+        selectedProductIds.clear();
+
+        // Rapikan nomor barang yang tersisa. Hanya dokumen yang MASIH ADA
+        // yang ditulis kembali, sehingga barang terhapus tidak dapat muncul lagi.
+        await normalizeProductCodes(true);
+
+        renderProductsTable();
+        renderPopupBarangList();
+        updateAssetSummary();
+        updateBulkDeleteUI();
+
+        addLog(
+          'BULK_DELETE_PRODUCT',
+          `Hapus ${total} barang satu per satu dari Cloud`
+        );
+
+        showToast(`Berhasil. ${total} barang telah dihapus dari database Cloud.`);
+      } catch (err) {
+        console.error('Penghapusan barang berhenti:', err);
+
+        // Jangan pernah mengembalikan data yang sudah berhasil dihapus.
+        selectedProductIds.clear();
+        renderProductsTable();
+        renderPopupBarangList();
+        updateAssetSummary();
+        updateBulkDeleteUI();
+
+        showToast(
+          `Penghapusan berhenti pada ${successCount}/${total}. ` +
+          `${successCount} barang sudah terhapus dari Cloud. ` +
+          `${err?.message || 'Terjadi kesalahan Cloud.'}`,
+          'error'
+        );
+      }
     }
 
     async function deleteProduct(id) {
-      const prod = products.find(p => String(p.id) === String(id));
-      if (!prod || !confirm(`Hapus barang "${prod.nama}" (${prod.kode})?`)) return;
+      const key = String(id);
+      const prod = products.find(p => String(p.id) === key);
+      if (!prod) return;
 
-      if (!isFirebaseReady) products = products.filter(p => String(p.id) !== String(id));
-      else await deleteFromCloud("products", id);
+      if (!isFirebaseReady || !db) {
+        showToast('Cloud Firestore belum siap. Data tidak dihapus.', 'error');
+        return;
+      }
 
-      selectedProductIds.delete(id);
-      addLog('DELETE_PRODUCT', `Hapus barang ${prod.nama}`);
-      renderProductsTable();
-      renderPopupBarangList();
-      showToast(`Barang "${prod.nama}" dihapus dari Cloud`);
+      if (!confirm(`Hapus barang "${prod.nama}" (${prod.kode})?`)) return;
+
+      try {
+        await db.collection('products').doc(key).delete();
+
+        // Verifikasi ke server sebelum menghapus dari UI.
+        const verify = await db.collection('products').doc(key).get({ source: 'server' });
+        if (verify.exists) {
+          throw new Error('Dokumen masih ada di database Cloud.');
+        }
+
+        products = products.filter(p => String(p.id) !== key);
+        selectedProductIds.delete(key);
+
+        await normalizeProductCodes(true);
+
+        renderProductsTable();
+        renderPopupBarangList();
+        updateAssetSummary();
+        updateBulkDeleteUI();
+
+        addLog('DELETE_PRODUCT', `Hapus barang ${prod.nama}`);
+        showToast(`Barang "${prod.nama}" berhasil dihapus permanen dari Cloud.`);
+      } catch (err) {
+        console.error('Gagal menghapus barang:', err);
+        renderProductsTable();
+        renderPopupBarangList();
+        updateBulkDeleteUI();
+
+        showToast(
+          `Barang tidak dihapus: ${err?.message || 'gagal menghapus dari Cloud.'}`,
+          'error'
+        );
+      }
     }
 
     function toggleFilterMenipis() {
@@ -6457,9 +6724,12 @@
       }) || null;
     }
 
-    // Kode barang selalu menggunakan urutan P001, P002, P003, dst.
-    // Nomor yang kosong dipakai terlebih dahulu agar tidak terjadi loncatan
-    // hanya karena ada barang yang sebelumnya dihapus.
+    // ============================================================
+    // SISTEM KODE BARANG TERURUT
+    // ============================================================
+    // Seluruh data barang selalu dinormalisasi menjadi:
+    // P001, P002, P003, ... P(N)
+    // Tidak boleh ada kode double dan tidak boleh ada nomor yang kosong.
     function getNextProductCode(extraProducts = []) {
       const allProducts = [...products, ...extraProducts];
       const usedNumbers = new Set();
@@ -6479,116 +6749,622 @@
 
     function sortProductsByCode(list) {
       return [...list].sort((a, b) => {
-        const ma = String(a.kode || '').match(/^P(\d+)$/i);
-        const mb = String(b.kode || '').match(/^P(\d+)$/i);
-        if (ma && mb) return parseInt(ma[1], 10) - parseInt(mb[1], 10);
-        if (ma) return -1;
-        if (mb) return 1;
-        return String(a.kode || '').localeCompare(String(b.kode || ''), 'id', { numeric: true });
+        // Prioritas utama: nomor kode P001, P002, P003, dst.
+        // Jadi urutan TIDAK pernah ditentukan oleh barcode.
+        const ma = String(a.kode || '').trim().match(/^P(\d+)$/i);
+        const mb = String(b.kode || '').trim().match(/^P(\d+)$/i);
+
+        if (ma && mb) {
+          const diff = parseInt(ma[1], 10) - parseInt(mb[1], 10);
+          if (diff !== 0) return diff;
+        } else if (ma) {
+          return -1;
+        } else if (mb) {
+          return 1;
+        }
+
+        // Fallback hanya untuk data lama yang belum mempunyai kode P-number.
+        const ua = Number(a.kodeUrut);
+        const ub = Number(b.kodeUrut);
+        if (Number.isFinite(ua) && Number.isFinite(ub) && ua !== ub) return ua - ub;
+        if (Number.isFinite(ua) && !Number.isFinite(ub)) return -1;
+        if (!Number.isFinite(ua) && Number.isFinite(ub)) return 1;
+
+        const nameDiff = String(a.nama || '').localeCompare(String(b.nama || ''), 'id');
+        if (nameDiff !== 0) return nameDiff;
+        return String(a.id).localeCompare(String(b.id));
       });
     }
 
-    function handleExcelImport(e) {
+    async function normalizeProductCodes(persistCloud = true) {
+      const ordered = sortProductsByCode(products);
+      const updates = [];
+
+      ordered.forEach((p, index) => {
+        const nextKode = 'P' + String(index + 1).padStart(3, '0');
+        if (String(p.kode || '') !== nextKode) {
+          p.kode = nextKode;
+          updates.push({ id: String(p.id), kode: nextKode });
+        }
+      });
+
+      products = ordered;
+
+      // Hemat WRITE: jangan menulis ulang dokumen yang kodenya sudah benar.
+      // Gunakan batch agar proses jauh lebih cepat dan stabil.
+      if (!persistCloud || !isFirebaseReady || !db || updates.length === 0) return;
+
+      const productsRef = db.collection('products');
+      for (let start = 0; start < updates.length; start += 450) {
+        const chunk = updates.slice(start, start + 450);
+        const batch = db.batch();
+        chunk.forEach(item => {
+          batch.update(productsRef.doc(item.id), { kode: item.kode });
+        });
+        await batch.commit();
+      }
+    }
+
+    function getVisibleProductsForSelection() {
+      // "Pilih keseluruhan data" berarti seluruh barang, bukan hanya hasil
+      // pencarian/filter yang sedang terlihat.
+      return [...products];
+    }
+
+    function toggleSelectProduct(id, checkbox) {
+      const key = String(id);
+      if (checkbox.checked) selectedProductIds.add(key);
+      else selectedProductIds.delete(key);
+      updateBulkDeleteUI();
+    }
+
+    function toggleSelectAllProducts(masterCheckbox) {
+      const allProducts = getVisibleProductsForSelection();
+
+      if (masterCheckbox.checked) {
+        allProducts.forEach(p => selectedProductIds.add(String(p.id)));
+      } else {
+        selectedProductIds.clear();
+      }
+
+      renderProductsTable();
+      updateBulkDeleteUI();
+    }
+
+    function unselectAllProducts() {
+      selectedProductIds.clear();
+      const master = document.getElementById('select-all-products');
+      if (master) master.checked = false;
+      renderProductsTable();
+      updateBulkDeleteUI();
+    }
+
+    function updateBulkDeleteUI() {
+      const bar = document.getElementById('bulk-delete-bar');
+      const countEl = document.getElementById('selected-product-count');
+      const master = document.getElementById('select-all-products');
+      const totalSelected = selectedProductIds.size;
+
+      if (bar && countEl) {
+        if (totalSelected > 0) {
+          bar.classList.remove('hidden');
+          countEl.innerText = totalSelected;
+        } else {
+          bar.classList.add('hidden');
+          countEl.innerText = '0';
+        }
+      }
+
+      if (master) {
+        const total = products.length;
+        master.checked = total > 0 && totalSelected === total;
+        master.indeterminate = totalSelected > 0 && totalSelected < total;
+      }
+    }
+
+    // DELETE PRODUK HEMAT KUOTA
+    // Tidak melakukan GET/verifikasi setelah DELETE karena delete() sudah
+    // mengembalikan Promise yang gagal jika Firestore menolak operasi.
+    async function deleteProductsFromCloudOneByOne(ids, onProgress = null) {
+      if (!ids || ids.length === 0) return;
+      if (!isFirebaseReady || !db) {
+        throw new Error('Firebase/Firestore belum siap. Penghapusan Cloud dibatalkan.');
+      }
+
+      const productsRef = db.collection('products');
+      for (let start = 0; start < ids.length; start += 450) {
+        const chunk = ids.slice(start, start + 450);
+        const batch = db.batch();
+        chunk.forEach(id => batch.delete(productsRef.doc(String(id))));
+        await batch.commit();
+
+        if (typeof onProgress === 'function') {
+          onProgress(Math.min(start + chunk.length, ids.length), ids.length, chunk[chunk.length - 1]);
+        }
+      }
+    }
+
+    async function bulkDeleteSelectedProducts() {
+      const ids = [...selectedProductIds].map(String).filter(Boolean);
+      const total = ids.length;
+
+      if (!total) {
+        showToast('Belum ada barang yang dipilih.', 'error');
+        return;
+      }
+      if (!isFirebaseReady || !db) {
+        showToast('Cloud Firestore belum siap. Data tidak dihapus.', 'error');
+        return;
+      }
+      if (!confirm(`Hapus ${total} barang terpilih?\n\nData akan dihapus langsung dari database Cloud.`)) return;
+
+      const selectedSet = new Set(ids);
+      try {
+        // Satu/few batch, tanpa GET verifikasi dan tanpa render per dokumen.
+        await deleteProductsFromCloudOneByOne(ids);
+
+        products = products.filter(p => !selectedSet.has(String(p.id)));
+        selectedProductIds.clear();
+
+        // Tetap pertahankan nomor P001, P002, dst. tetapi hanya WRITE kode
+        // yang benar-benar berubah, menggunakan batch.
+        await normalizeProductCodes(true);
+
+        renderProductsTable();
+        renderPopupBarangList();
+        updateAssetSummary();
+        updateBulkDeleteUI();
+        renderStokTable();
+        renderKasirCategoryPills();
+        renderDashboard();
+        refreshProductCategories();
+
+        addLog('BULK_DELETE_PRODUCT', `Hapus ${total} barang dari Cloud`);
+        showToast(`Berhasil. ${total} barang telah dihapus dari database Cloud.`);
+      } catch (err) {
+        console.error('Penghapusan barang gagal:', err);
+        selectedProductIds.clear();
+        renderProductsTable();
+        updateBulkDeleteUI();
+        showToast(`Penghapusan gagal: ${err?.message || 'terjadi kesalahan Cloud.'}`, 'error');
+      }
+    }
+
+    async function deleteProduct(id) {
+      const key = String(id);
+      const prod = products.find(p => String(p.id) === key);
+      if (!prod) return;
+
+      if (!isFirebaseReady || !db) {
+        showToast('Cloud Firestore belum siap. Data tidak dihapus.', 'error');
+        return;
+      }
+      if (!confirm(`Hapus barang "${prod.nama}" (${prod.kode})?`)) return;
+
+      try {
+        // Tidak ada GET setelah DELETE.
+        await db.collection('products').doc(key).delete();
+
+        products = products.filter(p => String(p.id) !== key);
+        selectedProductIds.delete(key);
+
+        await normalizeProductCodes(true);
+
+        renderProductsTable();
+        renderPopupBarangList();
+        updateAssetSummary();
+        updateBulkDeleteUI();
+
+        addLog('DELETE_PRODUCT', `Hapus barang ${prod.nama}`);
+        showToast(`Barang "${prod.nama}" berhasil dihapus permanen dari Cloud.`);
+      } catch (err) {
+        console.error('Gagal menghapus barang:', err);
+        showToast(`Barang tidak dihapus: ${err?.message || 'gagal menghapus dari Cloud.'}`, 'error');
+      }
+    }
+
+    function toggleFilterMenipis() {
+      filterMenipisOnly = !filterMenipisOnly;
+      const btn = document.getElementById('btn-filter-menipis');
+      if (filterMenipisOnly) btn.classList.add('bg-amber-100', 'text-amber-800', 'font-bold');
+      else btn.classList.remove('bg-amber-100', 'text-amber-800', 'font-bold');
+      renderProductsTable();
+    }
+
+    // NORMALISASI IDENTITAS BARANG
+    function normalizeProductIdentity(value) {
+      return String(value ?? '').trim().toLowerCase().replace(/\s+/g, '');
+    }
+
+    function normalizeProductName(value) {
+      return String(value ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function findDuplicateProduct(product, ignoreId = null, sourceProducts = products) {
+      const barcode = normalizeProductIdentity(product.barcode);
+      const nama = normalizeProductName(product.nama);
+
+      return sourceProducts.find(existing => {
+        if (ignoreId !== null && String(existing.id) === String(ignoreId)) return false;
+
+        const existingBarcode = normalizeProductIdentity(existing.barcode);
+        const existingNama = normalizeProductName(existing.nama);
+
+        // BARCODE adalah identitas utama. Jika barcode tersedia, kode Excel
+        // TIDAK dipakai sebagai identitas karena kode akan dibuat ulang oleh
+        // sistem agar selalu berurutan sesuai urutan baris Excel.
+        if (barcode && existingBarcode && barcode === existingBarcode) return true;
+
+        // Jika tidak ada barcode, gunakan nama barang yang dinormalisasi.
+        // Ini mencegah baris tanpa barcode masuk berulang kali.
+        if (!barcode && !existingBarcode && nama && nama === existingNama) return true;
+
+        return false;
+      }) || null;
+    }
+
+    async function handleExcelImport(e) {
       const file = e.target.files[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = async function(evt) {
-        try {
-          const data = new Uint8Array(evt.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+      if (window.__productImportRunning) {
+        showToast('Proses import data barang masih berjalan. Tunggu sampai selesai.', 'error');
+        e.target.value = '';
+        return;
+      }
 
-          if (jsonData.length === 0) {
-            showToast('File Excel tidak berisi data barang', 'error');
-            return;
+      window.__productImportRunning = true;
+      const input = e.target;
+      let addedCount = 0;
+      let skippedCount = 0;
+      let repairedCount = 0;
+      const skippedNames = [];
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        // sheet_to_json mempertahankan urutan baris Excel.
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+        if (!jsonData.length) {
+          showToast('File Excel tidak berisi data barang', 'error');
+          return;
+        }
+
+        /*
+         * ATURAN IMPORT BARU
+         * ------------------
+         * 1. URUTAN BARIS EXCEL = sumber urutan barang.
+         * 2. Barcode/Nama hanya untuk mencari barang yang sudah ada.
+         * 3. Kode P001, P002, P003, ... dibuat SETELAH seluruh baris Excel
+         *    selesai diproses, berdasarkan urutan Excel.
+         * 4. Barang yang sudah ada TIDAK dibuat sebagai dokumen baru.
+         *    Jika kodenya salah akibat import lama, hanya kode/urutan yang
+         *    diperbaiki.
+         * 5. Barang lama yang tidak ada di Excel ditempatkan setelah seluruh
+         *    barang dari Excel, berdasarkan kode lamanya.
+         *
+         * Dengan cara ini:
+         * Excel: A, B, C, D
+         * DB hanya: B, D
+         * Import -> A=P001, B=P002, C=P003, D=P004
+         *
+         * Jadi menghapus sebagian barang lalu mengimpor kembali tidak akan
+         * membuat barang baru masuk ke urutan paling belakang.
+         */
+
+        const workingProducts = [...products];
+        const pendingNewProducts = [];
+        const pendingProductUpdates = [];
+        const pendingNewIds = new Set();
+
+        // Index barang yang sudah ada.
+        // Barcode adalah identitas utama. Jika barcode kosong, gunakan nama.
+        const existingByBarcode = new Map();
+        const existingByNameNoBarcode = new Map();
+
+        workingProducts.forEach(p => {
+          const barcodeKey = normalizeProductIdentity(p.barcode);
+          const nameKey = normalizeProductName(p.nama);
+
+          if (barcodeKey && !existingByBarcode.has(barcodeKey)) {
+            existingByBarcode.set(barcodeKey, p);
+          } else if (!barcodeKey && nameKey && !existingByNameNoBarcode.has(nameKey)) {
+            existingByNameNoBarcode.set(nameKey, p);
+          }
+        });
+
+        // Mencegah baris duplikat di dalam file Excel sendiri.
+        const seenExcelBarcodes = new Set();
+        const seenExcelNamesNoBarcode = new Set();
+
+        // Produk yang ditemukan dalam urutan Excel.
+        const excelOrderedProducts = [];
+
+        for (let i = 0; i < jsonData.length; i++) {
+          const row = jsonData[i] || {};
+
+          const barcode = String(
+            row['Barcode'] ?? row['barcode'] ?? row['BARCODE'] ?? ''
+          ).trim();
+
+          const nama = String(
+            row['Nama Barang'] ?? row['Nama'] ?? row['nama'] ?? ''
+          ).trim();
+
+          const namaFinal = nama || `Barang ${i + 1}`;
+          const kategori = String(
+            row['Kategori'] ?? row['kategori'] ?? 'Umum'
+          ).trim() || 'Umum';
+
+          const hModal = parseInt(
+            row['Harga Modal'] ?? row['H. Modal'] ?? row['hModal'] ?? 0
+          ) || 0;
+
+          const hJual = parseInt(
+            row['Harga Eceran'] ?? row['Harga Jual'] ?? row['H. Jual'] ?? row['hJual'] ?? 0
+          ) || 0;
+
+          let hGrosir = parseInt(
+            row['Harga Grosir'] ?? row['H. Grosir'] ?? row['hGrosir'] ?? 0
+          ) || 0;
+
+          if (!hGrosir || hGrosir >= hJual) {
+            hGrosir = Math.round(hJual * 0.9);
           }
 
-          let addedCount = 0;
-          let skippedCount = 0;
-          const skippedNames = [];
-          // Menampung barang yang berhasil masuk selama import agar duplikat
-          // antarbaris dalam file Excel yang sama juga tidak ikut masuk.
-          const importedProducts = [];
+          const stok = parseInt(
+            row['Stok'] ?? row['stok'] ?? 0
+          ) || 0;
 
-          for (let i = 0; i < jsonData.length; i++) {
-            const row = jsonData[i];
-            const kodeRaw = row['Kode'] || row['kode'] || '';
-            const barcodeRaw = row['Barcode'] || row['barcode'] || '';
-            const nama = String(row['Nama'] || row['nama'] || row['Nama Barang'] || '').trim();
-            const kategori = row['Kategori'] || row['kategori'] || 'Umum';
-            const hModal = parseInt(row['Harga Modal'] || row['H. Modal'] || row['hModal'] || 0) || 0;
-            const hJual = parseInt(row['Harga Eceran'] || row['Harga Jual'] || row['H. Jual'] || row['hJual'] || 0) || 0;
-            let hGrosir = parseInt(row['Harga Grosir'] || row['H. Grosir'] || row['hGrosir'] || 0) || 0;
-            if (!hGrosir || hGrosir >= hJual) hGrosir = Math.round(hJual * 0.9);
-            const stok = parseInt(row['Stok'] || row['stok'] || 0) || 0;
+          const barcodeKey = normalizeProductIdentity(barcode);
+          const nameKey = normalizeProductName(namaFinal);
 
-            const sourceKode = String(kodeRaw).trim();
-            // Kode dari Excel dipakai hanya untuk mendeteksi duplikat. Kode yang
-            // disimpan selalu dibuat oleh sistem agar urut dan tidak acak.
-            const barcode = String(barcodeRaw).trim();
-            const identityData = {
-              kode: sourceKode,
-              barcode,
-              nama: nama || `Barang ${i + 1}`
-            };
-            const duplicate = findDuplicateProduct(identityData, null, [...products, ...importedProducts]);
-            if (duplicate) {
+          // Duplikat di dalam Excel -> hanya baris pertama yang dipakai.
+          if (barcodeKey) {
+            if (seenExcelBarcodes.has(barcodeKey)) {
               skippedCount++;
-              skippedNames.push(identityData.nama);
+              skippedNames.push(namaFinal);
               continue;
             }
+            seenExcelBarcodes.add(barcodeKey);
+          } else {
+            if (seenExcelNamesNoBarcode.has(nameKey)) {
+              skippedCount++;
+              skippedNames.push(namaFinal);
+              continue;
+            }
+            seenExcelNamesNoBarcode.add(nameKey);
+          }
 
-            const kode = getNextProductCode([...importedProducts]);
+          // Cari barang yang sudah ada di database.
+          let existing = null;
+          if (barcodeKey) {
+            existing = existingByBarcode.get(barcodeKey) || null;
+          } else {
+            existing = existingByNameNoBarcode.get(nameKey) || null;
+          }
+
+          const excelOrder = i + 1;
+
+          if (existing) {
+            /*
+             * Barang sudah ada:
+             * Excel menjadi sumber data untuk BARIS tersebut.
+             * Jadi barcode hanya untuk mencocokkan barang; setelah cocok,
+             * nama, kategori, harga, dan TERUTAMA STOK disinkronkan
+             * mengikuti nilai yang ada di Excel.
+             * Tidak membuat dokumen baru dan tidak menambah stok lama.
+             */
+            existing.barcode = barcode;
+            existing.nama = namaFinal;
+            existing.kategori = kategori;
+            existing.hModal = hModal;
+            existing.hJual = hJual;
+            existing.hGrosir = hGrosir;
+            existing.stok = stok;
+            existing.excelUrutan = excelOrder;
+            excelOrderedProducts.push(existing);
+          } else {
+            // Barang benar-benar baru -> simpan sesuai urutan Excel.
+            const prodId = `IMP-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 8)}`;
+
             const prodData = {
-              id: String(Date.now()) + '-' + i,
-              kode,
+              id: prodId,
+              kode: '',
+              kodeUrut: excelOrder,
+              excelUrutan: excelOrder,
               barcode,
-              nama: nama || `Barang ${i + 1}`,
-              kategori: String(kategori).trim() || 'Umum',
+              nama: namaFinal,
+              kategori,
               hModal,
               hJual,
               hGrosir,
               stok
             };
 
-            if (!isFirebaseReady) {
-              products.push(prodData);
-            } else {
-              await syncToCloud("products", prodData.id, prodData);
-            }
-
-            importedProducts.push(prodData);
+            pendingNewProducts.push(prodData);
+            pendingNewIds.add(String(prodId));
+            excelOrderedProducts.push(prodData);
             addedCount++;
+
+            // Supaya baris berikutnya dengan barcode sama tidak membuat
+            // dokumen kedua.
+            if (barcodeKey) {
+              existingByBarcode.set(barcodeKey, prodData);
+            } else {
+              existingByNameNoBarcode.set(nameKey, prodData);
+            }
           }
-
-          renderProductsTable();
-          renderPopupBarangList();
-          refreshProductCategories();
-
-          addLog('IMPORT_XLSX', `Import ${addedCount} barang, lewati ${skippedCount} duplikat`);
-
-          if (addedCount > 0 && skippedCount > 0) {
-            showToast(`Import selesai: ${addedCount} barang ditambahkan, ${skippedCount} duplikat dilewati.`);
-          } else if (addedCount > 0) {
-            showToast(`Berhasil import ${addedCount} barang. Tidak ada duplikat.`);
-          } else if (skippedCount > 0) {
-            showToast(`Semua ${skippedCount} barang sudah ada. Tidak ada data yang ditambahkan.`);
-          } else {
-            showToast('Tidak ada data barang yang dapat diimport', 'error');
-          }
-
-          if (skippedNames.length > 0) {
-            console.info('Barang yang dilewati karena duplikat:', skippedNames);
-          }
-        } catch (err) {
-          console.error('Gagal import Excel:', err);
-          alert('Gagal membaca file Excel! Pastikan format kolom sesuai dengan template data barang.');
         }
-        e.target.value = '';
-      };
-      reader.readAsArrayBuffer(file);
+
+        /*
+         * Tambahkan barang lama yang tidak terdapat di Excel setelah semua
+         * barang Excel. Urutan barang lama tetap berdasarkan kode yang sudah
+         * ada. Ini mencegah data lain hilang hanya karena tidak ada di file.
+         */
+        const excelIds = new Set(excelOrderedProducts.map(p => String(p.id)));
+
+        const oldProductsNotInExcel = workingProducts
+          .filter(p => !excelIds.has(String(p.id)))
+          .sort((a, b) => {
+            const ma = String(a.kode || '').match(/^P(\d+)$/i);
+            const mb = String(b.kode || '').match(/^P(\d+)$/i);
+            const na = ma ? parseInt(ma[1], 10) : Number.MAX_SAFE_INTEGER;
+            const nb = mb ? parseInt(mb[1], 10) : Number.MAX_SAFE_INTEGER;
+            if (na !== nb) return na - nb;
+            return String(a.nama || '').localeCompare(String(b.nama || ''), 'id');
+          });
+
+        const finalOrder = [...excelOrderedProducts, ...oldProductsNotInExcel];
+
+        /*
+         * Sekarang BARU dibuat kode P001, P002, P003, ...
+         * berdasarkan posisi finalOrder.
+         *
+         * Untuk barang lama yang ditemukan dari Excel, perubahan data
+         * (termasuk STOK) juga disiapkan untuk ditulis kembali ke Firestore.
+         */
+        finalOrder.forEach((product, index) => {
+          const nextNumber = index + 1;
+          const nextKode = 'P' + String(nextNumber).padStart(3, '0');
+          const isNew = pendingNewIds.has(String(product.id));
+
+          const updateData = {
+            kode: nextKode,
+            kodeUrut: nextNumber
+          };
+
+          // Untuk produk yang berasal dari baris Excel, semua nilai utama
+          // harus mengikuti Excel, termasuk stok.
+          if (Number.isFinite(Number(product.excelUrutan))) {
+            updateData.excelUrutan = Number(product.excelUrutan);
+            updateData.barcode = product.barcode || '';
+            updateData.nama = product.nama || '';
+            updateData.kategori = product.kategori || 'Umum';
+            updateData.hModal = Number(product.hModal) || 0;
+            updateData.hJual = Number(product.hJual) || 0;
+            updateData.hGrosir = Number(product.hGrosir) || 0;
+            updateData.stok = Number(product.stok) || 0;
+          }
+
+          if (!isNew) {
+            const oldKode = String(product.kode || '').toUpperCase();
+            const changed =
+              oldKode !== nextKode ||
+              Number(product.kodeUrut) !== nextNumber ||
+              (Number.isFinite(Number(product.excelUrutan)) && (
+                String(product.barcode || '') !== String(updateData.barcode || '') ||
+                String(product.nama || '') !== String(updateData.nama || '') ||
+                String(product.kategori || '') !== String(updateData.kategori || '') ||
+                Number(product.hModal) !== Number(updateData.hModal) ||
+                Number(product.hJual) !== Number(updateData.hJual) ||
+                Number(product.hGrosir) !== Number(updateData.hGrosir) ||
+                Number(product.stok) !== Number(updateData.stok)
+              ));
+
+            if (changed) {
+              pendingProductUpdates.push({ id: String(product.id), data: updateData });
+              if (oldKode !== nextKode) repairedCount++;
+            }
+          }
+
+          // Terapkan kode final ke state lokal supaya tabel langsung sesuai.
+          product.kode = nextKode;
+          product.kodeUrut = nextNumber;
+        });
+
+        // Tulis barang BARU.
+        if (isFirebaseReady && db && pendingNewProducts.length) {
+          const productsRef = db.collection('products');
+
+          for (let start = 0; start < pendingNewProducts.length; start += 450) {
+            const chunk = pendingNewProducts.slice(start, start + 450);
+            const batch = db.batch();
+
+            chunk.forEach(product => {
+              batch.set(
+                productsRef.doc(String(product.id)),
+                product,
+                { merge: false }
+              );
+            });
+
+            await batch.commit();
+          }
+        }
+
+        // Sinkronkan barang lama yang ditemukan di Excel.
+        // Ini termasuk STOK: nilai database diganti dengan nilai Excel,
+        // bukan ditambah dengan stok lama.
+        if (isFirebaseReady && db && pendingProductUpdates.length) {
+          const productsRef = db.collection('products');
+
+          for (let start = 0; start < pendingProductUpdates.length; start += 450) {
+            const chunk = pendingProductUpdates.slice(start, start + 450);
+            const batch = db.batch();
+
+            chunk.forEach(item => {
+              batch.update(productsRef.doc(String(item.id)), item.data);
+            });
+
+            await batch.commit();
+          }
+        }
+
+        // Render berdasarkan kode yang baru dibentuk.
+        products = sortProductsByCode(finalOrder);
+
+        renderProductsTable();
+        renderPopupBarangList();
+        updateAssetSummary();
+        await refreshProductCategories();
+
+        if (addedCount) {
+          addLog(
+            'IMPORT_XLSX',
+            `Import ${addedCount} barang baru dari Excel, ${skippedCount} duplikat dilewati`
+          );
+        }
+
+        if (addedCount && repairedCount) {
+          showToast(
+            `Import selesai. ${addedCount} barang baru ditambahkan; data dan stok barang yang cocok disinkronkan mengikuti Excel. ${repairedCount} kode diperbaiki.`
+          );
+        } else if (addedCount) {
+          showToast(
+            `Berhasil import ${addedCount} barang. Kode dan stok mengikuti urutan serta nilai pada Excel.`
+          );
+        } else if (repairedCount) {
+          showToast(
+            `Data barang disinkronkan dengan Excel. ${repairedCount} kode disesuaikan dan stok barang yang cocok diperbarui.`
+          );
+        } else {
+          showToast(
+            `Tidak ada barang baru. ${skippedCount} duplikat dilewati; barang yang cocok tetap disinkronkan termasuk stok dari Excel.`
+          );
+        }
+
+        if (skippedNames.length) {
+          console.info(
+            'Data Excel yang dilewati karena duplikat:',
+            skippedNames
+          );
+        }
+      } catch (err) {
+        console.error('Gagal import Excel:', err);
+        renderProductsTable();
+        renderPopupBarangList();
+        showToast(
+          `Import gagal: ${err?.message || 'terjadi kesalahan Cloud.'}`,
+          'error'
+        );
+      } finally {
+        window.__productImportRunning = false;
+        input.value = '';
+      }
     }
 
     function exportBarangExcel() {
