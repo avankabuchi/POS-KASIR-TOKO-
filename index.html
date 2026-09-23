@@ -1217,6 +1217,64 @@
 <style id="purchase-report-polish">
 #page-pembelian .bg-white,#page-laporan-produk .bg-white{box-shadow:0 6px 22px rgba(15,23,42,.05)}
 </style>
+
+<style id="final-cart-button-alignment">
+.classic-pos-table .cart-mode-unit-cell{
+  text-align:center!important;
+  vertical-align:middle!important;
+  padding:6px 5px!important;
+}
+.classic-pos-table .cart-mode-unit-cell{
+  display:table-cell;
+}
+.classic-pos-table .cart-mode-unit-cell .cart-dynamic-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  vertical-align:middle!important;
+  box-sizing:border-box!important;
+  height:31px!important;
+  min-height:31px!important;
+  border-radius:8px!important;
+  padding:0 9px!important;
+  margin:0 2px!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  letter-spacing:.02em!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+  transition:transform .15s ease,box-shadow .15s ease,background .15s ease!important;
+}
+.classic-pos-table .cart-mode-unit-cell .cart-dynamic-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(15,23,42,.10);
+}
+.classic-pos-table .cart-mode-unit-cell .cart-dynamic-btn:active{
+  transform:translateY(0) scale(.97);
+}
+.classic-pos-table .cart-mode-unit-cell .cart-dynamic-btn-label{
+  display:block!important;
+  width:100%!important;
+  text-align:center!important;
+}
+.classic-pos-table .cart-mode-unit-cell .cart-unit-conversion{
+  display:none!important;
+}
+.classic-pos-table th.col-price-type,.classic-pos-table th.col-price{
+  text-align:center!important;
+  vertical-align:middle!important;
+}
+.classic-pos-table .cart-unit-prices-cell{
+  text-align:center!important;
+}
+@media(max-width:700px){
+  .classic-pos-table .cart-mode-unit-cell .cart-dynamic-btn{
+    min-width:52px!important;
+    padding:0 7px!important;
+  }
+}
+</style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
@@ -1480,8 +1538,8 @@
                   <th class="col-no">NO</th>
                   <th class="col-code">KODE / BARCODE</th>
                   <th class="col-name">NAMA BARANG</th>
-                  <th class="col-price-type">HARGA</th>
-                  <th class="col-price">HARGA SATUAN</th>
+                  <th class="col-price-type text-center">MODE / SATUAN</th>
+                  <th class="col-price text-center">HARGA UNIT</th>
                   <th class="col-qty">QTY</th>
                   <th class="col-discount">DISKON</th>
                   <th class="col-subtotal">SUBTOTAL</th>
@@ -3888,6 +3946,19 @@
       return setCartUnitByRow(index,unitName);
     }
 
+    function cycleCartUnitByRow(rowIndex){
+      const item=getCartItemByRow(rowIndex); if(!item) return;
+      const order=['PCS','PACK','DUS'];
+      const productUnits=getProductUnits(item);
+      const available=order.filter(name=>productUnits.some(u=>String(u.name).toUpperCase()===name));
+      if(!available.length) return;
+      const current=String(item.unitName||available[0]).toUpperCase();
+      let pos=available.indexOf(current);
+      if(pos<0) pos=-1;
+      const nextName=available[(pos+1)%available.length];
+      setCartUnitByRow(rowIndex,nextName);
+    }
+
     function setCartUnitByRow(rowIndex, unitName){
       const item=getCartItemByRow(rowIndex); if(!item) return;
       const u=getProductUnit(item,unitName); if(!u) return;
@@ -4096,26 +4167,59 @@
       tbody.innerHTML=cart.map((item,index)=>{
         const pricing=getCartItemPricing(item), active=index===activeCartRowIndex, mode=item.priceMode==='grosir'?'grosir':'eceran';
         const hasDiscount=(item.discountType||'none')!=='none', discountLabel=getDiscountLabel(item), maxQty=Math.max(1,getCartRowAvailableQty(item,index));
+        const unitOrder=['PCS','PACK','DUS'];
+        const units=getProductUnits(item);
+        const findUnit=(name)=>units.find(u=>String(u.name).toUpperCase()===name) || null;
+        const unitPrices=unitOrder.map(name=>{
+          const u=findUnit(name);
+          const ecer=Number(u?.hJual ?? 0);
+          const grosir=Number(u?.hGrosir ?? Math.round(ecer*0.9));
+          return {name, ecer, grosir, exists:!!u};
+        });
+        const currentUnit=String(item.unitName||'PCS').toUpperCase();
+        const nextUnitIndex=(unitOrder.indexOf(currentUnit)+1)%unitOrder.length;
+        const nextUnit=unitOrder[nextUnitIndex];
+        const currentModeLabel=mode==='grosir'?'GROSIR':'ECER';
+        const nextModeLabel=mode==='grosir'?'ECER':'GROSIR';
+        const currentUnitPrice=Number(item.currentPrice||0);
+
         return `<tr data-cart-index="${index}" data-product-id="${item.id}" class="${active?'active-cart-row':''}" onclick="setActiveCartRow(${index},false)">
           <td class="text-center font-bold">${index+1}</td>
           <td><input class="classic-cell-input" value="${item.barcode||item.kode||''}" readonly tabindex="-1" aria-label="Barcode ${item.nama}"></td>
           <td title="${item.nama}"><input class="classic-cell-input" value="${String(item.nama).replace(/"/g,'&quot;')}" readonly tabindex="-1" aria-label="Nama ${item.nama}"></td>
-          <td>
-            <div class="cart-price-mode-wrap" onclick="event.stopPropagation()">
-              <button type="button" class="cart-price-mode-btn ${mode==='eceran'?'active-ecer':''}" onclick="togglePriceModeByRow(${index},'eceran')">ECER</button>
-              <button type="button" class="cart-price-mode-btn ${mode==='grosir'?'active-grosir':''}" onclick="togglePriceModeByRow(${index},'grosir')">GROSIR</button>
-            </div>
-            <div class="cart-unit-select-wrap" onclick="event.stopPropagation()"><span class="cart-unit-label">SATUAN</span>
-              <select class="unit-select" onchange="setCartUnitByRow(${index},this.value)" aria-label="Satuan ${item.nama}">
-                ${getProductUnits(item).map(u=>`<option value="${String(u.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" ${String(u.name).toUpperCase()===String(item.unitName||'PCS').toUpperCase()?'selected':''}>${u.name} • ×${u.conversion}</option>`).join('')}
-              </select>
-            </div>
-            <div class="cart-unit-meta">${mode==='grosir'?'HARGA GROSIR':'HARGA ECER'} • ${item.unitName||'PCS'} • ×${Number(item.unitConversion||1)}</div>
+
+          <td class="cart-mode-unit-cell" onclick="event.stopPropagation()">
+            <button type="button"
+              class="cart-dynamic-btn cart-mode-dynamic ${mode==='grosir'?'is-grosir':'is-ecer'}"
+              onclick="togglePriceModeByRow(${index},'${nextModeLabel.toLowerCase()}')"
+              title="Klik untuk berganti ${nextModeLabel}">
+              <span class="cart-dynamic-btn-label">${currentModeLabel}</span>
+            </button>
+            <button type="button"
+              class="cart-dynamic-btn cart-unit-dynamic unit-${currentUnit.toLowerCase()}"
+              onclick="cycleCartUnitByRow(${index})"
+              title="Klik berurutan: PCS → PACK → DUS">
+              <span class="cart-dynamic-btn-label">${currentUnit}</span>
+            </button>
+            <div class="cart-unit-conversion">×${Number(item.unitConversion||1)} PCS</div>
           </td>
-          <td><input id="cart-price-${index}" type="number" min="0" step="1" value="${Math.round(Number(item.currentPrice)||0)}" class="cart-price-input" inputmode="numeric" autocomplete="off" aria-label="Harga ${item.nama}"
-            onclick="event.stopPropagation();setActiveCartRow(${index},false)" onfocus="activeCartRowIndex=${index};activeCartItemId=cart[${index}]?.cartKey;this.select();syncActiveCartRow()" oninput="updateCartPriceFromInput(${index},this)" onblur="normalizeCartPriceInput(${index},this)" onkeydown="if(event.key==='Enter'){event.preventDefault();focusCartQty(${index})}"></td>
+
+          <td class="cart-unit-prices-cell">
+            <input id="cart-price-${index}" type="number" min="0" step="1"
+              value="${Math.round(currentUnitPrice)}"
+              class="cart-price-input cart-active-price-input"
+              inputmode="numeric" autocomplete="off"
+              aria-label="Harga aktif ${item.nama}"
+              onclick="event.stopPropagation();setActiveCartRow(${index},false)"
+              onfocus="activeCartRowIndex=${index};activeCartItemId=cart[${index}]?.cartKey;this.select();syncActiveCartRow()"
+              oninput="updateCartPriceFromInput(${index},this)"
+              onblur="normalizeCartPriceInput(${index},this)"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();focusCartQty(${index})}">
+          </td>
+
           <td><input id="cart-qty-${index}" data-qty-input="true" type="number" min="1" max="${maxQty}" step="1" value="${item.qty}" inputmode="numeric" autocomplete="off" class="classic-cell-input classic-qty-input"
             onfocus="activeCartItemId=cart[${index}]?.cartKey;activeCartRowIndex=${index};syncActiveCartRow();this.select()" oninput="updateCartQtyFromInput(${index},this)" onblur="normalizeCartQtyInput(${index},this)" onkeydown="handleCartQtyKeydown(event,${index})"></td>
+
           <td><button type="button" class="cart-discount-btn ${hasDiscount?'has-discount '+(item.discountType==='free'?'discount-free':'discount-percent'):'discount-none'}" onclick="event.stopPropagation();openCartDiscountModal(${index})" title="${hasDiscount?discountLabel:'Atur diskon barang'}" aria-label="${hasDiscount?discountLabel:'Atur diskon barang'}"><i data-lucide="${getDiscountIcon(item)}" aria-hidden="true"></i></button></td>
           <td class="text-right font-bold" data-cart-subtotal>Rp${pricing.total.toLocaleString('id-ID')}</td>
           <td class="classic-delete-cell"><button type="button" class="cart-delete-btn" onclick="event.stopPropagation();removeCartItem('${item.cartKey}')" title="Hapus barang" aria-label="Hapus ${String(item.nama).replace(/"/g,'&quot;')}"><i data-lucide="trash-2" aria-hidden="true"></i></button></td>
@@ -8185,5 +8289,316 @@
 #classic-pos-table td:nth-child(9) { width: 38px !important; min-width:38px !important; }
 #classic-pos-table { table-layout: fixed !important; }
 </style>
+
+<style id="dynamic-unit-price-modern">
+/* ===== MODERN DYNAMIC MODE + UNIT + MULTI PRICE ===== */
+#classic-pos-table .cart-mode-unit-cell{
+  width:100%;
+  min-width:150px;
+  padding:5px 4px !important;
+}
+#classic-pos-table .cart-mode-unit-cell{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:5px;
+  align-items:center;
+}
+#classic-pos-table .cart-dynamic-btn{
+  width:100%;
+  min-width:0;
+  min-height:31px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:5px;
+  padding:0 8px;
+  margin:0;
+  border:1px solid #dbe2ea;
+  border-radius:10px !important;
+  background:#fff;
+  color:#334155;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.02em;
+  cursor:pointer;
+  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+}
+#classic-pos-table .cart-dynamic-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 5px 12px rgba(15,23,42,.10);
+}
+#classic-pos-table .cart-dynamic-btn-arrow{
+  width:18px;
+  height:18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  font-size:12px;
+  line-height:1;
+  background:rgba(255,255,255,.72);
+}
+#classic-pos-table .cart-mode-dynamic.is-ecer{
+  background:linear-gradient(135deg,#eff6ff,#dbeafe);
+  border-color:#93c5fd;
+  color:#1d4ed8;
+}
+#classic-pos-table .cart-mode-dynamic.is-grosir{
+  background:linear-gradient(135deg,#ecfdf5,#d1fae5);
+  border-color:#86efac;
+  color:#047857;
+}
+#classic-pos-table .cart-unit-dynamic{
+  font-weight:900;
+}
+#classic-pos-table .cart-unit-dynamic.unit-pcs{
+  background:linear-gradient(135deg,#eff6ff,#dbeafe);
+  border-color:#60a5fa;
+  color:#1d4ed8;
+}
+#classic-pos-table .cart-unit-dynamic.unit-pack{
+  background:linear-gradient(135deg,#fff7ed,#fed7aa);
+  border-color:#fb923c;
+  color:#c2410c;
+}
+#classic-pos-table .cart-unit-dynamic.unit-dus{
+  background:linear-gradient(135deg,#f5f3ff,#ddd6fe);
+  border-color:#8b5cf6;
+  color:#6d28d9;
+}
+#classic-pos-table .cart-unit-conversion{
+  grid-column:1 / -1;
+  text-align:center;
+  color:#94a3b8;
+  font-size:8px;
+  font-weight:800;
+  line-height:1.1;
+  margin-top:1px;
+}
+#classic-pos-table .cart-unit-prices-cell{
+  overflow:visible !important;
+  padding:4px 5px !important;
+}
+#classic-pos-table .cart-unit-price-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:4px;
+  width:100%;
+}
+#classic-pos-table .cart-unit-price-item{
+  min-width:0;
+  padding:5px 4px;
+  border:1px solid #e2e8f0;
+  border-radius:9px;
+  background:#f8fafc;
+  text-align:center;
+  line-height:1.05;
+}
+#classic-pos-table .cart-unit-price-item.is-current{
+  background:#f0fdf4;
+  border-color:#86efac;
+  box-shadow:inset 0 0 0 1px rgba(34,197,94,.08);
+}
+#classic-pos-table .cart-unit-price-item.is-unavailable{
+  opacity:.48;
+}
+#classic-pos-table .cart-unit-price-name{
+  display:block;
+  color:#64748b;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.03em;
+}
+#classic-pos-table .cart-unit-price-item.is-current .cart-unit-price-name{
+  color:#047857;
+}
+#classic-pos-table .cart-unit-price-value{
+  display:block;
+  margin-top:3px;
+  color:#0f172a;
+  font-size:9px;
+  font-weight:900;
+  white-space:nowrap;
+}
+#classic-pos-table .cart-current-price{
+  margin-top:4px;
+  color:#64748b;
+  font-size:8px;
+  font-weight:700;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#classic-pos-table .cart-current-price b{
+  color:#0f172a;
+  font-weight:900;
+}
+@media(max-width:900px){
+  #classic-pos-table .cart-unit-price-grid{gap:3px}
+  #classic-pos-table .cart-unit-price-value{font-size:8px}
+}
+</style>
+
+
+<style id="dynamic-unit-price-input-polish">
+#classic-pos-table .cart-active-price-input{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:30px !important;
+  margin-top:4px !important;
+  padding:0 7px !important;
+  border:1px solid #dbe2ea !important;
+  border-radius:9px !important;
+  background:#fff !important;
+  color:#0f172a !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  box-sizing:border-box !important;
+}
+#classic-pos-table .cart-active-price-input:focus{
+  border-color:#60a5fa !important;
+  box-shadow:0 0 0 3px rgba(59,130,246,.12) !important;
+  outline:none !important;
+}
+</style>
+
+
+<style id="final-cart-layout-clean-v3">
+/* ===== FINAL CLEAN LAYOUT KASIR: MODE/SATUAN ===== */
+#classic-pos-table{
+  width:100% !important;
+  min-width:900px !important;
+  table-layout:fixed !important;
+}
+
+/* Kolom dibuat sesuai isi sebenarnya agar tidak saling bertabrakan. */
+#classic-pos-table th.col-no,
+#classic-pos-table td:nth-child(1){width:38px !important; min-width:38px !important; max-width:38px !important;}
+#classic-pos-table th.col-code,
+#classic-pos-table td:nth-child(2){width:105px !important; min-width:105px !important; max-width:105px !important;}
+#classic-pos-table th.col-name,
+#classic-pos-table td:nth-child(3){width:145px !important; min-width:145px !important; max-width:145px !important;}
+#classic-pos-table th.col-price-type,
+#classic-pos-table td:nth-child(4){width:155px !important; min-width:155px !important; max-width:155px !important;}
+#classic-pos-table th.col-price,
+#classic-pos-table td:nth-child(5){width:210px !important; min-width:210px !important; max-width:210px !important;}
+#classic-pos-table th.col-qty,
+#classic-pos-table td:nth-child(6){width:50px !important; min-width:50px !important; max-width:50px !important;}
+#classic-pos-table th.col-discount,
+#classic-pos-table td:nth-child(7){width:48px !important; min-width:48px !important; max-width:48px !important;}
+#classic-pos-table th.col-subtotal,
+#classic-pos-table td:nth-child(8){width:96px !important; min-width:96px !important; max-width:96px !important;}
+#classic-pos-table th.col-delete,
+#classic-pos-table td:nth-child(9){width:38px !important; min-width:38px !important; max-width:38px !important;}
+
+/* Semua judul header benar-benar berada di tengah. */
+#classic-pos-table thead th{
+  text-align:center !important;
+  vertical-align:middle !important;
+  padding:7px 4px !important;
+  white-space:nowrap !important;
+}
+
+/* Area dua tombol dibuat sederhana: satu baris, ukuran sama, dan simetris. */
+#classic-pos-table td.cart-mode-unit-cell{
+  display:table-cell !important;
+  width:155px !important;
+  min-width:155px !important;
+  max-width:155px !important;
+  padding:5px 4px !important;
+  text-align:center !important;
+  vertical-align:middle !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+}
+
+#classic-pos-table td.cart-mode-unit-cell > .cart-dynamic-btn{
+  display:inline-flex !important;
+  width:68px !important;
+  min-width:68px !important;
+  max-width:68px !important;
+  height:32px !important;
+  min-height:32px !important;
+  max-height:32px !important;
+  margin:0 2px !important;
+  padding:0 6px !important;
+  box-sizing:border-box !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:8px !important;
+  line-height:1 !important;
+  text-align:center !important;
+  vertical-align:middle !important;
+  overflow:hidden !important;
+}
+#classic-pos-table td.cart-mode-unit-cell > .cart-dynamic-btn .cart-dynamic-btn-label{
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+/* Hilangkan semua elemen tambahan di bawah tombol agar sel tetap bersih. */
+#classic-pos-table td.cart-mode-unit-cell .cart-unit-conversion{
+  display:none !important;
+}
+#classic-pos-table td.cart-mode-unit-cell .cart-dynamic-btn-arrow,
+#classic-pos-table td.cart-mode-unit-cell .cart-dynamic-btn svg,
+#classic-pos-table td.cart-mode-unit-cell .cart-dynamic-btn i{
+  display:none !important;
+}
+
+/* Harga aktif tetap berada tepat di tengah kolomnya. */
+#classic-pos-table td.cart-unit-prices-cell{
+  width:210px !important;
+  min-width:210px !important;
+  max-width:210px !important;
+  padding:5px 6px !important;
+  text-align:center !important;
+  vertical-align:middle !important;
+  overflow:hidden !important;
+}
+#classic-pos-table td.cart-unit-prices-cell .cart-active-price-input{
+  display:block !important;
+  width:198px !important;
+  min-width:198px !important;
+  max-width:198px !important;
+  height:34px !important;
+  margin:0 auto !important;
+  box-sizing:border-box !important;
+  text-align:center !important;
+}
+
+/* QTY, diskon, subtotal, dan hapus tetap presisi di tengah. */
+#classic-pos-table td:nth-child(6),
+#classic-pos-table td:nth-child(7),
+#classic-pos-table td:nth-child(8),
+#classic-pos-table td:nth-child(9){
+  text-align:center !important;
+  vertical-align:middle !important;
+}
+#classic-pos-table td:nth-child(8){white-space:nowrap !important;}
+
+@media (max-width:700px){
+  #classic-pos-table{min-width:900px !important;}
+  #classic-pos-table th.col-price-type,
+  #classic-pos-table td:nth-child(4){width:155px !important; min-width:155px !important; max-width:155px !important;}
+  #classic-pos-table td.cart-mode-unit-cell > .cart-dynamic-btn{width:68px !important; min-width:68px !important; max-width:68px !important;}
+}
+</style>
 </body>
 </hhtml>
+<style id="dynamic-unit-button-responsive">
+@media (max-width: 640px){
+  #classic-pos-table .cart-mode-unit-cell{min-width:132px;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;}
+  #classic-pos-table .cart-dynamic-btn{font-size:9px;padding:0 6px;min-height:29px;}
+}
+</style>
