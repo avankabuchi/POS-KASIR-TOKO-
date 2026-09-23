@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<hhtml lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -185,6 +185,9 @@
     #modal-product-actions .product-action-btn.action-edit .action-icon{background:#dbeafe;color:#1d4ed8;}
     #modal-product-actions .product-action-btn.action-delete{color:#be123c;border-color:#fecdd3;background:#fff1f2;}
     #modal-product-actions .product-action-btn.action-delete .action-icon{background:#ffe4e6;color:#be123c;}
+
+    #modal-product-actions .product-action-btn.action-units{color:#7c3aed;border-color:#ddd6fe;background:#f5f3ff;}
+    #modal-product-actions .product-action-btn.action-units .action-icon{background:#ede9fe;color:#7c3aed;}
     #modal-product-actions .product-action-btn.action-barcode{color:#475569;border-color:#cbd5e1;background:#f8fafc;}
     #modal-product-actions .product-action-btn.action-barcode .action-icon{background:#e2e8f0;color:#475569;}
     @media (max-width:767px){
@@ -857,6 +860,38 @@
   .classic-pos-table .col-name{width:260px !important}
   .classic-pos-table .col-discount{width:112px !important}
 }
+
+/* ============================================================
+   MULTI-SATUAN BARANG — UI
+   ============================================================ */
+.unit-manager{border:1px solid #dbeafe;background:linear-gradient(135deg,#f8fbff,#ffffff);border-radius:18px;padding:14px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+.unit-manager-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+.unit-manager-title{font-weight:900;color:#0f172a;font-size:13px;display:flex;align-items:center;gap:7px}
+.unit-manager-sub{font-size:10px;color:#64748b;margin-top:3px;line-height:1.5}
+.unit-row{display:grid;grid-template-columns:1.05fr .8fr 1fr 1fr 38px;gap:7px;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:13px;padding:8px;margin-top:7px}
+.unit-row input{width:100%;border:1px solid #dbe2ea;border-radius:10px;padding:8px 9px;font-size:11px;font-weight:700;outline:none;background:#fff}
+.unit-row input:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.10)}
+.unit-row .unit-base-badge{display:flex;align-items:center;justify-content:center;height:34px;border-radius:10px;background:#ecfdf5;color:#047857;font-size:10px;font-weight:900;border:1px solid #a7f3d0}
+.unit-row .unit-remove{height:34px;width:34px;border-radius:10px;border:1px solid #fecdd3;background:#fff1f2;color:#e11d48;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.unit-row .unit-remove:hover{background:#ffe4e6}
+.unit-head{display:grid;grid-template-columns:1.05fr .8fr 1fr 1fr 38px;gap:7px;padding:0 8px;color:#64748b;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.unit-hint{font-size:10px;color:#475569;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;padding:9px;margin-top:9px}
+.unit-select{width:100%;height:30px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;padding:3px 5px;font-size:10px;font-weight:900;color:#0f172a;outline:none}
+.unit-select:focus{border-color:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,.10)}
+.cart-price-mode-wrap{display:flex;gap:4px;align-items:center;justify-content:center;margin-bottom:4px}
+.cart-price-mode-btn{border:1px solid #cbd5e1;background:#f8fafc;color:#64748b;border-radius:7px;padding:4px 7px;font-size:9px;font-weight:900;line-height:1;cursor:pointer;min-width:48px}
+.cart-price-mode-btn:hover{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8}
+.cart-price-mode-btn.active-ecer{background:#dbeafe;border-color:#60a5fa;color:#1d4ed8}
+.cart-price-mode-btn.active-grosir{background:#e0e7ff;border-color:#818cf8;color:#3730a3}
+.cart-unit-select-wrap{display:flex;gap:4px;align-items:center}
+.cart-unit-select-wrap .unit-select{flex:1;min-width:0}
+.cart-unit-label{font-size:8px;font-weight:900;color:#64748b;white-space:nowrap}
+.cart-unit-meta{font-size:9px;color:#64748b;margin-top:2px;white-space:nowrap}
+.unit-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:999px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;font-size:9px;font-weight:900}
+.multiunit-summary{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.multiunit-summary .unit-pill.stock{background:#ecfdf5;color:#047857;border-color:#a7f3d0}
+@media(max-width:640px){.unit-head,.unit-row{grid-template-columns:1fr 1fr}.unit-head{display:none}.unit-row .unit-remove{grid-column:2;justify-self:end}.unit-row .unit-base-badge{grid-column:1}.unit-manager{padding:11px}}
+
 </style>
 
 <style id="product-code-edit-polish">
@@ -1649,7 +1684,7 @@
           <div class="asset-card asset-stock">
             <div class="asset-card-label"><i data-lucide="boxes" class="w-4 h-4"></i><span>Total Stok</span></div>
             <div id="asset-total-stock" class="asset-card-value">0</div>
-            <div class="asset-card-sub">Jumlah seluruh unit barang di toko</div>
+            <div class="asset-card-sub">Jumlah seluruh stok dalam satuan dasar (PCS)</div>
           </div>
           <div class="asset-card asset-value">
             <div class="asset-card-label"><i data-lucide="wallet" class="w-4 h-4"></i><span>Total Aset Persediaan</span></div>
@@ -2608,6 +2643,10 @@
             <span class="action-icon"><i data-lucide="pencil" class="w-5 h-5"></i></span>
             <span><b class="block text-xs">Edit Barang</b><small class="block text-[10px] opacity-75 mt-0.5">Ubah data, harga, kategori, atau stok</small></span>
           </button>
+          <button type="button" onclick="productAction('units')" class="product-action-btn action-units">
+            <span class="action-icon"><i data-lucide="boxes" class="w-5 h-5"></i></span>
+            <span><b class="block text-xs">Multi Satuan & Harga</b><small class="block text-[10px] opacity-75 mt-0.5">Atur satuan dan harga tanpa edit data barang</small></span>
+          </button>
           <button type="button" onclick="productAction('delete')" class="product-action-btn action-delete">
             <span class="action-icon"><i data-lucide="trash-2" class="w-5 h-5"></i></span>
             <span><b class="block text-xs">Hapus Barang</b><small class="block text-[10px] opacity-75 mt-0.5">Hapus barang dari daftar</small></span>
@@ -2622,6 +2661,38 @@
     </div>
   </div>
 
+  <!-- MODAL MULTI SATUAN & HARGA -->
+  <div id="modal-product-units" class="fixed inset-0 z-[58] bg-slate-950/45 backdrop-blur-[2px] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-5 space-y-4 max-h-[92vh] overflow-y-auto shadow-2xl">
+      <div class="flex items-start justify-between gap-3 border-b pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600 text-white"><i data-lucide="boxes" class="w-4 h-4"></i></span>
+            <div><h3 class="font-black text-sm sm:text-base">Multi Satuan & Harga</h3><p class="text-[10px] text-gray-500 mt-0.5">Atur satuan, isi dasar, harga ecer, dan harga grosir tanpa membuka Edit Barang.</p></div>
+          </div>
+          <div class="mt-3 rounded-xl bg-blue-50 border border-blue-100 px-3 py-2.5">
+            <div id="product-units-name" class="font-extrabold text-gray-900 truncate">-</div>
+            <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[10px] text-gray-500"><span>Kode: <b id="product-units-code" class="text-gray-700">-</b></span><span>Stok dasar: <b id="product-units-stock" class="text-indigo-700">0</b></span></div>
+          </div>
+        </div>
+        <button type="button" onclick="closeModal('modal-product-units')" class="shrink-0 w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 text-gray-500 flex items-center justify-center"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="unit-manager">
+        <div class="unit-manager-head">
+          <div><div class="unit-manager-title"><i data-lucide="layers" class="w-4 h-4 text-blue-600"></i> Daftar Satuan</div><div class="unit-manager-sub">Satuan pertama harus PCS dengan isi dasar 1. Satuan lain dapat menggunakan konversi seperti PACK 5 atau DUS 24.</div></div>
+          <button type="button" onclick="addProductUnitRow()" class="px-3 py-2 rounded-xl bg-blue-600 text-white text-[10px] font-black hover:bg-blue-700 shadow-sm">+ Tambah Satuan</button>
+        </div>
+        <div class="unit-head"><span>Nama Satuan</span><span>Isi Dasar</span><span>Harga Ecer</span><span>Harga Grosir</span><span></span></div>
+        <div id="product-units-manager-editor"></div>
+        <div class="unit-hint"><b>Contoh:</b> Aqua → PCS isi 1, DUS isi 24. Indomie → PCS isi 1, PACK isi 5, DUS isi 40.</div>
+      </div>
+      <div class="flex justify-end gap-2 border-t pt-3">
+        <button type="button" onclick="closeModal('modal-product-units')" class="px-4 py-2 border rounded-xl font-medium">Batal</button>
+        <button type="button" onclick="saveProductUnits()" class="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700"><i data-lucide="save" class="w-4 h-4 inline mr-1"></i>Simpan Multi Satuan & Harga</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL PEMBELIAN BARANG -->
   <div id="modal-pembelian" class="fixed inset-0 z-[60] bg-black/50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-4xl w-full p-5 space-y-4 max-h-[92vh] overflow-y-auto">
@@ -2630,14 +2701,15 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2"><input id="pembelian-faktur" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="No. Faktur / Nota"><input id="pembelian-supplier" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Nama Supplier" required><input id="pembelian-tanggal" type="date" class="border rounded-xl p-2.5 text-xs font-bold" required></div>
         <div class="bg-gray-50 rounded-xl p-3 border border-gray-200 space-y-2">
           <div class="grid grid-cols-1 sm:grid-cols-6 gap-2">
-            <select id="pembelian-produk" onchange="syncPembelianHargaProduk()" class="border rounded-xl p-2.5 text-xs font-bold sm:col-span-2"></select>
+            <select id="pembelian-produk" onchange="refreshPembelianUnitSelect(); syncPembelianHargaProduk()" class="border rounded-xl p-2.5 text-xs font-bold sm:col-span-2"></select>
+            <select id="pembelian-satuan" onchange="syncPembelianHargaProduk()" class="border rounded-xl p-2.5 text-xs font-bold"></select>
             <input id="pembelian-qty" type="number" min="1" step="1" inputmode="numeric" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Jumlah barang" value="1">
             <input id="pembelian-harga" type="number" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Harga beli / modal (otomatis dari produk)">
             <input id="pembelian-harga-eceran" type="number" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Harga eceran baru (opsional)">
             <input id="pembelian-harga-grosir" type="number" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2.5 text-xs font-bold" placeholder="Harga grosir baru (opsional)">
           </div>
           <div class="flex items-center justify-between gap-2 flex-wrap">
-            <p class="text-[10px] text-gray-500">Qty dapat diisi lebih dari 1. Harga beli/modal otomatis mengikuti data produk dan dapat diubah. Harga eceran/grosir boleh dikosongkan agar harga jual lama tetap.</p>
+            <p class="text-[10px] text-gray-500">Pilih satuan pembelian (PCS/PACK/DUS). Qty akan dikonversi otomatis ke stok dasar. Harga beli adalah harga per satuan yang dipilih.</p>
             <button type="button" onclick="addPembelianItem()" class="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-xs">+ Tambah Barang</button>
           </div>
         </div>
@@ -2659,7 +2731,7 @@
         <input type="hidden" id="barang-id" />
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-[10px] text-gray-500 mb-0.5">Kode Barang</label><p id="barang-kode-hint" class="text-[9px] text-blue-600 mb-1">Kode mengikuti urutan P001, P002, P003, ...</p>
+            <label class="block text-[10px] text-gray-500 mb-0.5">Kode Barang</label>
             <input type="text" id="barang-kode" placeholder="P001" class="border rounded-xl p-2.5 w-full font-bold uppercase" maxlength="12" required />
           </div>
           <div>
@@ -2689,24 +2761,19 @@
           </div>
           <p class="text-[10px] text-gray-400 mt-1">Tambahkan kategori baru tanpa harus menutup form barang.</p>
         </div>
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-[10px] text-gray-500 mb-0.5">H. Modal</label>
+            <label class="block text-[10px] text-gray-500 mb-0.5">H. Modal / PCS Dasar</label>
             <input type="number" id="barang-modal" class="border rounded-xl p-2 w-full font-bold" required />
+            <p class="text-[9px] text-gray-400 mt-1">Modal disimpan per satuan dasar untuk perhitungan stok/laba.</p>
           </div>
           <div>
-            <label class="block text-[10px] text-gray-900 font-bold mb-0.5">H. Eceran</label>
-            <input type="number" id="barang-jual" class="border rounded-xl p-2 w-full font-bold text-gray-900" required />
-          </div>
-          <div>
-            <label class="block text-[10px] text-emerald-700 font-bold mb-0.5">H. Grosir</label>
-            <input type="number" id="barang-grosir" class="border border-emerald-300 rounded-xl p-2 w-full font-bold text-emerald-700" required />
+            <label class="block text-[10px] text-gray-500 mb-0.5">Stok Awal (PCS Dasar)</label>
+            <input type="number" id="barang-stok" class="border rounded-xl p-2 w-full font-bold" required />
           </div>
         </div>
-        <div>
-          <label class="block text-[10px] text-gray-500 mb-0.5">Stok Awal</label>
-          <input type="number" id="barang-stok" class="border rounded-xl p-2.5 w-full font-bold" required />
-        </div>
+        <input type="hidden" id="barang-jual" value="0" />
+        <input type="hidden" id="barang-grosir" value="0" />
         <div class="flex justify-end space-x-2 pt-2 border-t">
           <button type="button" onclick="closeModal('modal-barang')" class="px-4 py-2 border rounded-xl font-medium">Batal</button>
           <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700">Simpan Barang</button>
@@ -3220,47 +3287,19 @@
       setActiveCartRow(activeCartRowIndex >= 0 ? activeCartRowIndex : 0, true);
     }
 
-    function handleClassicTableKey(event, productId, rowIndex) {
-      const item = cart.find(c => String(c.id) === String(productId));
-      if (!item) return;
-
-      activeCartRowIndex = rowIndex;
-      activeCartItemId = productId;
-
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        const rows = [...document.querySelectorAll('#cart-table-body tr[data-cart-index]')];
-        if (rowIndex < rows.length - 1) {
-          setActiveCartRow(rowIndex + 1, true);
-        } else {
-          focusKasirSearch();
-        }
-        return;
-      }
-
-      if (event.key === 'ArrowDown') { event.preventDefault(); moveActiveCartRow(1); return; }
-      if (event.key === 'ArrowUp') { event.preventDefault(); moveActiveCartRow(-1); return; }
-
-      if (event.key === 'Delete' || (event.ctrlKey && event.key === 'Backspace')) {
-        event.preventDefault();
-        removeCartItem(productId);
-        const nextIndex = Math.min(rowIndex, cart.length - 1);
-        activeCartRowIndex = nextIndex;
-        syncActiveCartRow();
-        focusKasirSearch();
-        return;
-      }
-
-      if (!event.ctrlKey && !event.altKey && !event.metaKey && (event.key === 'e' || event.key === 'E')) {
-        event.preventDefault(); togglePriceMode(productId, 'eceran'); return;
-      }
-      if (!event.ctrlKey && !event.altKey && !event.metaKey && (event.key === 'g' || event.key === 'G')) {
-        event.preventDefault(); togglePriceMode(productId, 'grosir'); return;
-      }
+    function handleClassicTableKey(event, rowIndex) {
+      const index=Number(rowIndex), item=cart[index]; if(!item)return;
+      activeCartRowIndex=index; activeCartItemId=item.cartKey;
+      if(event.key==='Enter'){event.preventDefault();const rows=[...document.querySelectorAll('#cart-table-body tr[data-cart-index]')];if(index<rows.length-1)setActiveCartRow(index+1,true);else focusKasirSearch();return;}
+      if(event.key==='ArrowDown'){event.preventDefault();moveActiveCartRow(1);return;}
+      if(event.key==='ArrowUp'){event.preventDefault();moveActiveCartRow(-1);return;}
+      if(event.key==='Delete'||(event.ctrlKey&&event.key==='Backspace')){event.preventDefault();removeCartItem(item.cartKey);const nextIndex=Math.min(index,cart.length-1);activeCartRowIndex=nextIndex;syncActiveCartRow();focusKasirSearch();return;}
+      if(!event.ctrlKey&&!event.altKey&&!event.metaKey&&(event.key==='e'||event.key==='E')){event.preventDefault();togglePriceModeByRow(index,'eceran');return;}
+      if(!event.ctrlKey&&!event.altKey&&!event.metaKey&&(event.key==='g'||event.key==='G')){event.preventDefault();togglePriceModeByRow(index,'grosir');return;}
     }
 
-    function handleQtyKeydown(event, productId, rowIndex) {
-      handleClassicTableKey(event, productId, rowIndex);
+    function handleQtyKeydown(event, rowIndex) {
+      handleClassicTableKey(event, rowIndex);
     }
 
     window.addEventListener("keydown", function(e) {
@@ -3398,7 +3437,7 @@
         const s = document.getElementById('kasir-search');
         if (s) s.value = '';
         showToast(`+${requestedQty} ${matched.nama}`);
-        focusCartQtyWhenReady(matched.id);
+        focusCartQtyWhenReady(cart.findIndex(c=>String(c.id)===String(matched.id)));
         return;
       }
 
@@ -3409,7 +3448,7 @@
         const s = document.getElementById('kasir-search');
         if (s) s.value = '';
         showToast(`+${requestedQty} ${byName[0].nama}`);
-        focusCartQtyWhenReady(byName[0].id);
+        focusCartQtyWhenReady(cart.findIndex(c=>String(c.id)===String(byName[0].id)));
       } else {
         showToast(byName.length > 1 ? 'Banyak hasil. Tekan F2/F3 untuk daftar barang.' : `Barang tidak ditemukan: ${bcode}`);
         document.getElementById('kasir-search')?.select();
@@ -3514,26 +3553,28 @@
 
       activePopupIndex = Math.min(activePopupIndex, filtered.length - 1);
       container.innerHTML = filtered.map((p,index) => {
+        const units=getProductUnits(p);
         const grosir = p.hGrosir || Math.round((p.hJual || 0) * 0.9);
         const disabled = Number(p.stok) <= 0;
+        const unitOptions=units.map(u=>`<option value="${String(u.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${u.name} • ×${u.conversion}</option>`).join('');
         return `
           <div class="classic-popup-row ${index===activePopupIndex ? 'active-popup-row' : ''} ${disabled ? 'opacity-50' : ''}"
                data-product-id="${p.id}"
-               onclick="${disabled ? '' : `selectProductFromPopup('${p.id}')`}"
-               title="${disabled ? 'Stok habis' : 'Enter untuk memilih'}">
+               onclick="${disabled ? '' : `selectProductFromPopup('${p.id}', document.getElementById('popup-unit-${index}')?.value || '${String(units[0]?.name||'PCS').replace(/'/g,"\\'")}')`}">
             <div class="p-code">${p.barcode || p.kode}</div>
             <div class="p-name">${p.nama}</div>
-            <div class="p-price">Rp${Number(p.hJual||0).toLocaleString('id-ID')}</div>
-            <div class="p-price-grosir">Rp${Number(grosir||0).toLocaleString('id-ID')}</div>
+            <div class="p-price">Rp${Number(units[0]?.hJual||p.hJual||0).toLocaleString('id-ID')}</div>
+            <div class="p-price-grosir">Rp${Number(units[0]?.hGrosir||grosir||0).toLocaleString('id-ID')}</div>
             <div class="p-stock">${p.stok}</div>
-            <div class="p-price">${disabled ? 'HABIS' : 'PILIH'}</div>
-          </div>
-        `;
+            <div class="p-price" onclick="event.stopPropagation()">
+              ${disabled ? 'HABIS' : `<select id="popup-unit-${index}" class="unit-select" onclick="event.stopPropagation()" onchange="event.stopPropagation()" title="Pilih satuan sebelum Enter"><option value="">Satuan</option>${unitOptions}</select>`}
+            </div>
+          </div>`;
       }).join('');
     }
 
     // Memilih produk dari popup: tambah ke keranjang lalu tutup popup otomatis.
-    function selectProductFromPopup(productId) {
+    function selectProductFromPopup(productId, unitName = null) {
       const prod = products.find(p => String(p.id) === String(productId));
 
       if (!prod || Number(prod.stok) <= 0) {
@@ -3541,7 +3582,7 @@
         return;
       }
 
-      addToCart(productId, {focusQty:true});
+      addToCart(productId, {focusQty:true, unitName:unitName || null});
 
       // Bersihkan pencarian setelah barang masuk ke keranjang.
       const input = document.getElementById('popup-barang-search');
@@ -3549,8 +3590,6 @@
       renderPopupBarangList();
 
       closeModal('modal-katalog-barang');
-      // Jaminan kedua: setelah popup tertutup, QTY tetap menjadi fokus aktif.
-      focusCartQtyWhenReady(productId);
     }
 
     function renderKasirCategoryPills() {
@@ -3567,179 +3606,150 @@
     // ============================================================
     // CART
     // ============================================================
+    function getCartRowKey(productId, unitName, priceMode='eceran') {
+      return `${String(productId)}::${String(unitName || 'PCS').toUpperCase()}::${priceMode === 'grosir' ? 'grosir' : 'eceran'}`;
+    }
+
+    function getCartItemByRow(rowIndex) {
+      return cart[Number(rowIndex)] || null;
+    }
+
+    function getProductCartBaseQty(productId, excludeRowIndex=-1) {
+      return cart.reduce((sum, item, idx) => {
+        if (idx === Number(excludeRowIndex)) return sum;
+        if (String(item.id) !== String(productId)) return sum;
+        return sum + getCartBaseQty(item);
+      }, 0);
+    }
+
+    function getCartRowAvailableQty(item, rowIndex=-1, unit= null) {
+      const prod = products.find(p => String(p.id) === String(item.id)) || item;
+      const u = unit || getCartUnit(item);
+      const otherBase = getProductCartBaseQty(item.id, rowIndex);
+      const availableBase = Math.max(0, Number(prod.stok || 0) - otherBase);
+      return Math.floor(availableBase / Math.max(1, Number(u?.conversion || 1)));
+    }
+
     function addToCart(productId, options = {}) {
       const focusQtyAfterAdd = options.focusQty !== false;
       const prod = products.find(p => String(p.id) === String(productId));
-      if (!prod || Number(prod.stok) <= 0) {
-        showToast('Stok barang fisik habis!');
-        return;
-      }
-
+      if (!prod || Number(prod.stok) <= 0) { showToast('Stok barang fisik habis!','error'); return; }
+      const units = getProductUnits(prod);
+      const selectedUnit = getProductUnit(prod, options.unitName || units[0].name);
+      const priceMode = options.priceMode === 'grosir' ? 'grosir' : 'eceran';
       const requestedQty = Math.max(1, parseInt(options.requestedQty, 10) || 1);
-      const item = cart.find(c => String(c.id) === String(productId));
+      const key = getCartRowKey(productId, selectedUnit.name, priceMode);
+      const existingIndex = cart.findIndex(c => c.cartKey === key);
+      const existing = existingIndex >= 0 ? cart[existingIndex] : null;
+      const otherBase = getProductCartBaseQty(productId, existingIndex);
+      const availableBase = Math.max(0, Number(prod.stok || 0) - otherBase);
+      const maxQty = Math.floor(availableBase / Math.max(1, selectedUnit.conversion));
+      if (maxQty < 1 && !existing) { showToast(`Stok belum cukup untuk 1 ${selectedUnit.name}`,'error'); return; }
 
-      if (item) {
-        item.qty = Math.min(Number(prod.stok), item.qty + requestedQty);
-        if (item.qty >= Number(prod.stok) && requestedQty > 0) showToast(`Stok maksimal ${prod.stok}`);
+      if (existing) {
+        const oldQty = Number(existing.qty || 0);
+        const nextQty = Math.min(oldQty + maxQty, oldQty + requestedQty);
+        existing.qty = nextQty;
+        existing.unitName = selectedUnit.name;
+        existing.unitConversion = selectedUnit.conversion;
+        if (!existing.customPrice) existing.currentPrice = priceMode === 'grosir' ? selectedUnit.hGrosir : selectedUnit.hJual;
+        if (nextQty < oldQty + requestedQty) showToast(`Jumlah ${selectedUnit.name} dibatasi stok yang tersisa`,'error');
       } else {
-        const qty = Math.min(requestedQty, Number(prod.stok));
-        cart.push({...prod, qty, priceMode:'eceran', currentPrice:Number(prod.hJual)||0, customPrice:false, discountType:'none', discountEvery:0, discountFree:0, discountPercent:0});
-        if (requestedQty > qty) showToast(`Jumlah dibatasi stok ${prod.stok}`);
+        const qty = Math.min(requestedQty, maxQty);
+        cart.push({...prod, units, qty, cartKey:key, unitName:selectedUnit.name, unitConversion:selectedUnit.conversion,
+          priceMode, currentPrice:Number(priceMode === 'grosir' ? selectedUnit.hGrosir : selectedUnit.hJual)||0, customPrice:false,
+          discountType:'none', discountEvery:0, discountFree:0, discountPercent:0});
+        if (requestedQty > qty) showToast(`Jumlah ${selectedUnit.name} dibatasi stok ${prod.stok} PCS`,'error');
       }
-
-      activeCartItemId = productId;
-      activeCartRowIndex = cart.findIndex(c => String(c.id) === String(productId));
+      activeCartRowIndex = cart.findIndex(c => c.cartKey === key);
+      activeCartItemId = activeCartRowIndex >= 0 ? cart[activeCartRowIndex].cartKey : null;
       updateCartView();
-
-      // Setelah barang dipilih/di-scan, QTY WAJIB langsung aktif.
-      // Jangan kembalikan fokus ke barcode/search pada alur ini.
-      if (focusQtyAfterAdd) {
-        focusCartQtyWhenReady(productId);
-      } else {
-        setTimeout(() => focusKasirSearch(), 0);
-      }
+      if(focusQtyAfterAdd) focusCartQtyWhenReady(activeCartRowIndex); else setTimeout(()=>focusKasirSearch(),0);
     }
 
     function togglePriceMode(productId, mode) {
-      const item = cart.find(c => String(c.id) === String(productId));
-      if (!item) return;
-      activeCartItemId = productId;
-      activeCartRowIndex = cart.findIndex(c => String(c.id) === String(productId));
-      item.priceMode = mode;
-      item.currentPrice = mode === 'grosir' ? Number(item.hGrosir || Math.round((item.hJual||0)*0.9)) : Number(item.hJual||0);
-      updateCartView();
-      focusCartQty(productId);
+      const index = cart.findIndex(c => c.cartKey === productId || String(c.id) === String(productId));
+      return togglePriceModeByRow(index, mode);
+    }
+
+    function togglePriceModeByRow(rowIndex, mode) {
+      const item = getCartItemByRow(rowIndex); if(!item) return;
+      const u=getCartUnit(item); const newMode=mode==='grosir'?'grosir':'eceran';
+      const key=getCartRowKey(item.id,u.name,newMode);
+      const duplicateIndex=cart.findIndex((c,i)=>i!==Number(rowIndex) && c.cartKey===key);
+      if (duplicateIndex >= 0) {
+        const dup=cart[duplicateIndex];
+        const available=getCartRowAvailableQty(dup, duplicateIndex, u);
+        const moveQty=Math.min(Number(item.qty||0), available);
+        if (moveQty>0) dup.qty += moveQty;
+        if (moveQty < Number(item.qty||0)) item.qty -= moveQty;
+        else cart.splice(Number(rowIndex),1);
+        activeCartRowIndex=Math.min(duplicateIndex,cart.length-1);
+        activeCartItemId=cart[activeCartRowIndex]?.cartKey || null;
+      } else {
+        item.priceMode=newMode; item.cartKey=key; item.currentPrice=newMode==='grosir'?u.hGrosir:u.hJual; item.customPrice=false;
+        activeCartRowIndex=Number(rowIndex); activeCartItemId=item.cartKey;
+      }
+      updateCartView(); focusCartQtyWhenReady(activeCartRowIndex);
     }
 
     function setAllPriceMode(mode) {
-      if (!cart.length) { showToast('Keranjang masih kosong'); return; }
-      cart.forEach(item => {
-        item.priceMode = mode;
-        item.currentPrice = mode === 'grosir' ? Number(item.hGrosir || Math.round((item.hJual||0)*0.9)) : Number(item.hJual||0);
-      });
-      updateCartView();
-      showToast(`Semua harga ${mode === 'grosir' ? 'GROSIR' : 'ECERAN'}`);
-      focusKasirSearch();
+      if(!cart.length){showToast('Keranjang masih kosong','error');return;}
+      cart.forEach(item=>{ const u=getCartUnit(item); item.priceMode=mode; item.currentPrice=mode==='grosir'?u.hGrosir:u.hJual; item.customPrice=false; item.cartKey=getCartRowKey(item.id,u.name,mode); });
+      updateCartView(); showToast(`Semua harga ${mode==='grosir'?'GROSIR':'ECERAN'}`); focusKasirSearch();
     }
 
     function setCartQty(productId, value) {
-      const item = cart.find(c => String(c.id) === String(productId));
-      if (!item) return;
-      let qty = parseInt(value, 10);
-      if (!Number.isFinite(qty)) return;
-      qty = Math.max(1, qty);
-      const maxStock = Number(item.stok) || 0;
-      if (maxStock > 0 && qty > maxStock) {
-        qty = maxStock;
-        showToast(`QTY dibatasi stok ${maxStock}`);
-      }
-      item.qty = qty;
-      activeCartItemId = productId;
-      activeCartRowIndex = cart.findIndex(c => String(c.id) === String(productId));
-      updateCartView();
+      const index = cart.findIndex(c => c.cartKey === productId || String(c.id) === String(productId));
+      const item = getCartItemByRow(index); if(!item) return;
+      let qty=parseInt(value,10); if(!Number.isFinite(qty)) return; qty=Math.max(1,qty);
+      const maxQty=getCartRowAvailableQty(item,index);
+      if(maxQty<1){showToast(`Stok tidak cukup untuk 1 ${item.unitName}`,'error');return;}
+      if(qty>maxQty){qty=maxQty;showToast(`Maksimal ${maxQty} ${item.unitName} berdasarkan stok yang tersisa`,'error');}
+      item.qty=qty; activeCartItemId=item.cartKey; activeCartRowIndex=index; updateCartView();
     }
 
-    function focusCartQty(productId) {
-      // Gunakan getElementById langsung agar ID produk apa pun tetap aman.
-      const input = document.getElementById(`cart-qty-${String(productId)}`);
+    function focusCartQty(rowIndex) {
+      const input = document.querySelector(`#cart-table-body tr[data-cart-index="${Number(rowIndex)}"] [data-qty-input="true"]`);
       if (!input) return false;
-
-      activeCartItemId = productId;
-      const row = input.closest('tr[data-cart-index]');
-      if (row) activeCartRowIndex = Number(row.dataset.cartIndex);
-
-      // Fokus + select harus dilakukan setelah DOM benar-benar selesai dirender.
-      input.focus({ preventScroll: true });
-      input.select();
-      syncActiveCartRow();
-      return document.activeElement === input;
+      activeCartRowIndex=Number(rowIndex); activeCartItemId=cart[activeCartRowIndex]?.cartKey || null;
+      input.focus({ preventScroll: true }); input.select(); syncActiveCartRow(); return document.activeElement===input;
     }
 
-    function focusCartQtyWhenReady(productId) {
-      // Retry beberapa frame untuk menghadapi render ulang/Lucide tanpa membuat kasir
-      // harus klik kolom QTY secara manual.
-      const delays = [0, 16, 40, 80, 150, 250];
-      delays.forEach(delay => {
-        setTimeout(() => {
-          if (!isKasirPageActive()) return;
-          const input = document.getElementById(`cart-qty-${String(productId)}`);
-          if (input) focusCartQty(productId);
-        }, delay);
-      });
+    function focusCartQtyWhenReady(rowIndex) {
+      const delays=[0,16,40,80,150,250];
+      delays.forEach(delay=>setTimeout(()=>{ if(isKasirPageActive() && cart[Number(rowIndex)]) focusCartQty(Number(rowIndex)); },delay));
     }
 
     function updateCartQty(productId, delta) {
-      const item = cart.find(c => String(c.id) === String(productId));
-      if (!item) return;
-      item.qty += delta;
-      const maxStock = Number(item.stok) || 0;
-      if (maxStock > 0 && item.qty > maxStock) item.qty = maxStock;
-      if (item.qty <= 0) cart = cart.filter(c => String(c.id) !== String(productId));
-      activeCartRowIndex = cart.findIndex(c => String(c.id) === String(productId));
-      activeCartItemId = activeCartRowIndex >= 0 ? cart[activeCartRowIndex].id : null;
-      updateCartView();
+      const index=cart.findIndex(c=>c.cartKey===productId || String(c.id)===String(productId));
+      const item=getCartItemByRow(index); if(!item) return;
+      const maxStock=getCartRowAvailableQty(item,index); item.qty=Math.min(maxStock, Number(item.qty||0)+delta);
+      if(item.qty<=0) cart.splice(index,1);
+      activeCartRowIndex=Math.min(index,cart.length-1); activeCartItemId=cart[activeCartRowIndex]?.cartKey||null; updateCartView();
     }
 
-    function handleCartQtyKeydown(event, productId) {
-      const rowIndex = cart.findIndex(c => String(c.id) === String(productId));
-      handleClassicTableKey(event, productId, rowIndex);
-    }
+    function handleCartQtyKeydown(event, rowIndex) { handleClassicTableKey(event, rowIndex); }
 
-    function updateCartQtyFromInput(productId, input) {
-      // Jangan render ulang tabel setiap tombol keyboard ditekan.
-      // Jika tabel dirender ulang pada oninput, fokus input akan hilang
-      // sehingga kasir harus klik lagi untuk mengetik angka berikutnya.
+    function updateCartQtyFromInput(rowIndex, input) {
       if (input.value === '') return;
-
-      const item = cart.find(c => String(c.id) === String(productId));
-      if (!item) return;
-
-      let qty = parseInt(input.value, 10);
-      if (!Number.isFinite(qty) || qty < 1) return;
-
-      const maxStock = Number(item.stok) || 0;
-      if (maxStock > 0 && qty > maxStock) {
-        qty = maxStock;
-        input.value = String(maxStock);
-        showToast(`QTY dibatasi stok ${maxStock}`);
-      }
-
-      item.qty = qty;
-      activeCartItemId = productId;
-      activeCartRowIndex = cart.findIndex(c => String(c.id) === String(productId));
-
-      // Perbarui total tanpa mengganti HTML input QTY.
-      const totalItems = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-      const totalPrice = getCartTotal();
-      const formattedTotal = 'Rp' + totalPrice.toLocaleString('id-ID');
-      const countEl = document.getElementById('cart-count');
-      const subtotalEl = document.getElementById('subtotal-val');
-      const totalEl = document.getElementById('total-val');
-      const discountEl = document.getElementById('cart-discount-val');
-      const classicTotal = document.getElementById('classic-total-display');
-      const classicSub = document.getElementById('classic-kasir-sub');
-      if (countEl) countEl.innerText = totalItems;
-      if (subtotalEl) subtotalEl.innerText = formattedTotal;
-      if (totalEl) totalEl.innerText = formattedTotal;
-      if (discountEl) discountEl.innerText = 'Rp' + getCartDiscountTotal().toLocaleString('id-ID');
-      if (classicTotal) classicTotal.innerText = formattedTotal;
-      if (classicSub) classicSub.innerText = `${totalItems} Barang di Kasir`;
+      const index=Number(rowIndex), item=getCartItemByRow(index); if(!item) return;
+      let qty=parseInt(input.value,10); if(!Number.isFinite(qty)||qty<1) return;
+      const maxStock=getCartRowAvailableQty(item,index);
+      if(qty>maxStock){qty=maxStock;input.value=String(maxStock);showToast(`QTY dibatasi stok yang tersisa (${maxStock} ${item.unitName})`);}
+      item.qty=qty; activeCartItemId=item.cartKey; activeCartRowIndex=index;
+      updateCartTotalsOnly();
     }
 
-    function normalizeCartQtyInput(productId, input) {
-      const item = cart.find(c => String(c.id) === String(productId));
-      if (!item) return;
-      const qty = parseInt(input.value,10);
-      input.value = Number.isFinite(qty) && qty > 0 ? item.qty : item.qty;
-    }
+    function normalizeCartQtyInput(rowIndex,input){const item=getCartItemByRow(Number(rowIndex));if(!item)return;const qty=parseInt(input.value,10);input.value=Number.isFinite(qty)&&qty>0?item.qty:item.qty;}
 
     function removeCartItem(productId) {
-      const oldIndex = cart.findIndex(c => String(c.id) === String(productId));
-      cart = cart.filter(c => String(c.id) !== String(productId));
-      if (activeCartRowIndex > oldIndex) activeCartRowIndex--;
-      if (activeCartRowIndex >= cart.length) activeCartRowIndex = cart.length - 1;
-      activeCartItemId = activeCartRowIndex >= 0 ? cart[activeCartRowIndex].id : null;
-      updateCartView();
+      let index=cart.findIndex(c=>c.cartKey===productId);
+      if(index<0) index=cart.findIndex(c=>String(c.id)===String(productId));
+      if(index<0)return;
+      cart.splice(index,1);
+      if(activeCartRowIndex>index) activeCartRowIndex--; if(activeCartRowIndex>=cart.length)activeCartRowIndex=cart.length-1;
+      activeCartItemId=activeCartRowIndex>=0?cart[activeCartRowIndex].cartKey:null; updateCartView();
     }
 
     function clearCart() {
@@ -3749,6 +3759,153 @@
       updateCartView();
     }
 
+
+    // ============================================================
+    // MULTI-SATUAN BARANG
+    // ============================================================
+    function normalizeProductUnits(product) {
+      const legacyEcer = Number(product?.hJual || 0);
+      const legacyGrosir = Number(product?.hGrosir || Math.round(legacyEcer * 0.9));
+      const raw = Array.isArray(product?.units) ? product.units : [];
+      const units = raw.map((u, i) => ({
+        id: String(u.id || ('u' + i)),
+        name: String(u.name || u.nama || '').trim().toUpperCase(),
+        conversion: Math.max(1, Number(u.conversion ?? u.isi ?? 1) || 1),
+        hJual: Math.max(0, Number(u.hJual ?? u.hargaJual ?? 0) || 0),
+        hGrosir: Math.max(0, Number(u.hGrosir ?? u.hargaGrosir ?? 0) || 0)
+      })).filter(u => u.name);
+      if (!units.length) units.push({id:'pcs', name:'PCS', conversion:1, hJual:legacyEcer, hGrosir:legacyGrosir});
+      let base = units.find(u => u.conversion === 1 && u.name === 'PCS') || units.find(u => u.conversion === 1) || units[0];
+      if (!base) base = units[0];
+      return units.map(u => ({...u, hGrosir: u.hGrosir || Math.round(u.hJual * 0.9)}));
+    }
+
+    function getProductUnits(product) { return normalizeProductUnits(product); }
+    function getProductUnit(product, unitName) {
+      const units = getProductUnits(product);
+      return units.find(u => String(u.name).toUpperCase() === String(unitName || '').toUpperCase()) || units[0];
+    }
+    function syncLegacyPricesFromUnits(product) {
+      const units = getProductUnits(product);
+      const base = units.find(u => u.conversion === 1 && u.name === 'PCS') || units.find(u => u.conversion === 1) || units[0];
+      product.units = units;
+      product.hJual = Number(base.hJual || 0);
+      product.hGrosir = Number(base.hGrosir || Math.round(base.hJual * 0.9));
+      return product;
+    }
+
+    let productUnitsDraft = [];
+    let productUnitsEditorTarget = 'product-units-editor';
+    function createUnitDraft(name='PCS', conversion=1, hJual=0, hGrosir=0) {
+      return {id:'u'+Date.now()+Math.random().toString(36).slice(2,6), name:String(name).toUpperCase(), conversion:Math.max(1,Number(conversion)||1), hJual:Math.max(0,Number(hJual)||0), hGrosir:Math.max(0,Number(hGrosir)||0)};
+    }
+    function renderProductUnitsEditor(targetId=productUnitsEditorTarget) {
+      const box = document.getElementById(targetId); if (!box) return;
+      if (!productUnitsDraft.length) productUnitsDraft=[createUnitDraft('PCS',1,Number(document.getElementById('barang-jual')?.value||0),Number(document.getElementById('barang-grosir')?.value||0))];
+      box.innerHTML = productUnitsDraft.map((u,i)=>`<div class="unit-row" data-unit-index="${i}">
+        <input value="${String(u.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" oninput="updateProductUnitDraft(${i},'name',this.value)" placeholder="PCS / PACK / DUS" ${u.conversion===1 && i===0 ? '' : ''}>
+        <input type="number" min="1" step="1" value="${u.conversion}" oninput="updateProductUnitDraft(${i},'conversion',this.value)" placeholder="Isi dasar">
+        <input type="number" min="0" step="1" value="${u.hJual}" oninput="updateProductUnitDraft(${i},'hJual',this.value);syncUnitHiddenLegacyPrices()" placeholder="Harga ecer">
+        <input type="number" min="0" step="1" value="${u.hGrosir}" oninput="updateProductUnitDraft(${i},'hGrosir',this.value);syncUnitHiddenLegacyPrices()" placeholder="Harga grosir">
+        ${i===0 ? '<div class="unit-base-badge" title="Satuan dasar utama">DASAR</div>' : `<button type="button" class="unit-remove" onclick="removeProductUnitRow(${i})" title="Hapus satuan"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`}
+      </div>`).join('');
+      lucide.createIcons();
+    }
+    function updateProductUnitDraft(index,key,value){
+      const u=productUnitsDraft[index]; if(!u) return;
+      if(key==='name') u.name=String(value||'').trim().toUpperCase();
+      else if(key==='conversion') u.conversion=Math.max(1,parseInt(value,10)||1);
+      else u[key]=Math.max(0,Number(value)||0);
+      if(index===0 && key==='conversion' && u.conversion!==1){ u.conversion=1; showToast('Satuan pertama harus menjadi satuan dasar dengan isi 1','error'); renderProductUnitsEditor(); }
+    }
+    function addProductUnitRow(){
+      const used=new Set(productUnitsDraft.map(u=>u.name));
+      const name=['PACK','DUS','BOX','LUSIN','IKAT','BUNDLE'].find(x=>!used.has(x)) || ('SATUAN'+(productUnitsDraft.length+1));
+      productUnitsDraft.push(createUnitDraft(name,1,0,0)); renderProductUnitsEditor();
+      setTimeout(()=>document.querySelector(`#product-units-editor .unit-row:last-child input`)?.focus(),30);
+    }
+    function removeProductUnitRow(index){
+      if(index===0) return showToast('Satuan dasar tidak boleh dihapus','error');
+      productUnitsDraft.splice(index,1); renderProductUnitsEditor();
+    }
+    function syncUnitHiddenLegacyPrices(){
+      const base=productUnitsDraft[0]||{};
+      const j=document.getElementById('barang-jual'), g=document.getElementById('barang-grosir');
+      if(j) j.value=Number(base.hJual||0); if(g) g.value=Number(base.hGrosir||0);
+    }
+    function openProductUnits(productId = '') {
+      productUnitsEditorTarget = 'product-units-manager-editor';
+      const id = String(productId || window.selectedProductActionId || '');
+      const prod = products.find(p => String(p.id) === id);
+      if (!prod) return showToast('Barang tidak ditemukan', 'error');
+      window.selectedProductUnitsId = id;
+      productUnitsDraft = getProductUnits(prod).map(u => ({...u}));
+      document.getElementById('product-units-name').textContent = prod.nama || '-';
+      document.getElementById('product-units-code').textContent = prod.kode || '-';
+      document.getElementById('product-units-stock').textContent = Number(prod.stok || 0).toLocaleString('id-ID');
+      renderProductUnitsEditor('product-units-manager-editor');
+      openModal('modal-product-units');
+      setTimeout(() => { try { lucide.createIcons(); } catch(e) {} }, 0);
+    }
+
+    async function saveProductUnits() {
+      const id = String(window.selectedProductUnitsId || '');
+      const prod = products.find(p => String(p.id) === id);
+      if (!prod) return showToast('Barang tidak ditemukan', 'error');
+      const cleanUnits = productUnitsDraft.map(u => ({
+        ...u, id: String(u.id || ('u' + Date.now())), name: String(u.name || '').trim().toUpperCase(),
+        conversion: Math.max(1, parseInt(u.conversion, 10) || 1), hJual: Math.max(0, Number(u.hJual) || 0), hGrosir: Math.max(0, Number(u.hGrosir) || 0)
+      })).filter(u => u.name);
+      if (!cleanUnits.length) return showToast('Minimal satuan PCS harus tersedia', 'error');
+      cleanUnits[0].name = 'PCS'; cleanUnits[0].conversion = 1;
+      for (let i=0;i<cleanUnits.length;i++) {
+        if (cleanUnits.slice(0,i).some(v => v.name === cleanUnits[i].name)) return showToast(`Satuan ${cleanUnits[i].name} duplikat.`, 'error');
+        if (!cleanUnits[i].hGrosir) cleanUnits[i].hGrosir = Math.round(cleanUnits[i].hJual * 0.9);
+      }
+      const base = cleanUnits[0];
+      const updated = {...prod, units: cleanUnits, hJual:Number(base.hJual||0), hGrosir:Number(base.hGrosir||0)};
+      try {
+        const idx = products.findIndex(p => String(p.id) === id);
+        if (idx >= 0) products[idx] = updated;
+        if (isFirebaseReady) await syncToCloud('products', id, updated);
+        addLog('UPDATE_PRODUCT_UNITS', `Multi satuan & harga ${prod.nama} diperbarui`);
+        closeModal('modal-product-units');
+        renderProductsTable(); renderPopupBarangList();
+        showToast('Multi satuan & harga berhasil disimpan');
+      } catch (err) {
+        console.error('Gagal menyimpan multi satuan:', err);
+        showToast('Gagal menyimpan multi satuan & harga', 'error');
+      }
+    }
+
+    function getCartUnit(item){
+      const product = products.find(p=>String(p.id)===String(item.id)) || item;
+      return getProductUnit(product,item.unitName);
+    }
+    function getCartBaseQty(item){ return Math.max(0,Number(item.qty)||0) * Math.max(1,Number(item.unitConversion)||1); }
+    function setCartUnit(productId, unitName){
+      const index=cart.findIndex(c=>c.cartKey===productId || String(c.id)===String(productId));
+      return setCartUnitByRow(index,unitName);
+    }
+
+    function setCartUnitByRow(rowIndex, unitName){
+      const item=getCartItemByRow(rowIndex); if(!item) return;
+      const u=getProductUnit(item,unitName); if(!u) return;
+      const newKey=getCartRowKey(item.id,u.name,item.priceMode);
+      const duplicateIndex=cart.findIndex((c,i)=>i!==Number(rowIndex)&&c.cartKey===newKey);
+      const maxQty=getCartRowAvailableQty(item,Number(rowIndex),u);
+      if(maxQty<1){showToast(`Stok tidak cukup untuk 1 ${u.name}`,'error');updateCartView();return;}
+      if(duplicateIndex>=0){
+        const dup=cart[duplicateIndex]; const available=getCartRowAvailableQty(dup,duplicateIndex,u); const moveQty=Math.min(Number(item.qty||0),available);
+        dup.qty+=moveQty;
+        if(moveQty<Number(item.qty||0)){item.qty-=moveQty;}else{cart.splice(Number(rowIndex),1);}
+        activeCartRowIndex=Math.min(duplicateIndex,cart.length-1);
+      }else{
+        item.unitName=u.name; item.unitConversion=u.conversion; item.currentPrice=item.priceMode==='grosir'?u.hGrosir:u.hJual; item.customPrice=false; item.cartKey=newKey;
+        if(Number(item.qty||0)>maxQty)item.qty=maxQty; activeCartRowIndex=Number(rowIndex);
+      }
+      activeCartItemId=cart[activeCartRowIndex]?.cartKey||null; updateCartView(); focusCartQtyWhenReady(activeCartRowIndex);
+    }
 
     // ============================================================
     // DISKON BARANG
@@ -3767,7 +3924,8 @@
         return {
           qty, price, gross, freeQty, paidQty,
           discountAmount: freeQty * price,
-          total: paidQty * price
+          total: paidQty * price,
+          baseQty: qty * Math.max(1, Number(item.unitConversion)||1)
         };
       }
 
@@ -3776,11 +3934,12 @@
         const discountAmount = gross * percent / 100;
         return {
           qty, price, gross, freeQty: 0, paidQty: qty,
-          discountAmount, total: Math.max(0, gross - discountAmount)
+          discountAmount, total: Math.max(0, gross - discountAmount),
+          baseQty: qty * Math.max(1, Number(item.unitConversion)||1)
         };
       }
 
-      return { qty, price, gross, freeQty: 0, paidQty: qty, discountAmount: 0, total: gross };
+      return { qty, price, gross, freeQty: 0, paidQty: qty, discountAmount: 0, total: gross, baseQty: qty * Math.max(1, Number(item.unitConversion)||1) };
     }
 
     function getCartTotal() {
@@ -3809,15 +3968,15 @@
       return 'DISKON';
     }
 
-    function openCartDiscountModal(productId = null) {
-      const targetId = productId || activeCartItemId || (cart[activeCartRowIndex]?.id);
-      const item = cart.find(c => String(c.id) === String(targetId));
+    function openCartDiscountModal(rowIndex = null) {
+      const index = rowIndex === null || rowIndex === undefined ? activeCartRowIndex : Number(rowIndex);
+      const item = cart[index];
       if (!item) {
         showToast('Pilih barang di keranjang terlebih dahulu');
         return;
       }
 
-      activeDiscountProductId = item.id;
+      activeDiscountProductId = index;
       activeDiscountType = item.discountType || 'none';
 
       document.getElementById('discount-product-name').innerText = `${item.nama} • QTY ${item.qty}`;
@@ -3844,7 +4003,7 @@
     }
 
     function updateDiscountPreview() {
-      const item = cart.find(c => String(c.id) === String(activeDiscountProductId));
+      const item = cart[Number(activeDiscountProductId)];
       if (!item) return;
 
       const temp = {...item, discountType: activeDiscountType};
@@ -3863,7 +4022,7 @@
     }
 
     function saveCartDiscount() {
-      const item = cart.find(c => String(c.id) === String(activeDiscountProductId));
+      const item = cart[Number(activeDiscountProductId)];
       if (!item) return;
 
       item.discountType = activeDiscountType;
@@ -3883,13 +4042,13 @@
 
       closeModal('modal-cart-discount');
       updateCartView();
-      activeCartRowIndex = cart.findIndex(c => String(c.id) === String(item.id));
+      activeCartRowIndex = cart.indexOf(item);
       syncActiveCartRow();
       showToast(activeDiscountType === 'none' ? 'Diskon dihapus' : 'Diskon barang diterapkan');
     }
 
-    function updateCartPriceFromInput(productId, input) {
-      const item = cart.find(c => String(c.id) === String(productId));
+    function updateCartPriceFromInput(rowIndex, input) {
+      const item = cart[Number(rowIndex)];
       if (!item) return;
       const value = Number(String(input.value).replace(/[^\d.-]/g, ''));
       if (!Number.isFinite(value) || value < 0) return;
@@ -3903,8 +4062,8 @@
       updateCartTotalsOnly();
     }
 
-    function normalizeCartPriceInput(productId, input) {
-      const item = cart.find(c => String(c.id) === String(productId));
+    function normalizeCartPriceInput(rowIndex, input) {
+      const item = cart[Number(rowIndex)];
       if (!item) return;
       let value = Number(String(input.value).replace(/[^\d.-]/g, ''));
       if (!Number.isFinite(value) || value < 0) value = Number(item.currentPrice) || 0;
@@ -3930,83 +4089,39 @@
     }
 
     function updateCartView() {
-      const tbody = document.getElementById('cart-table-body');
-      const userName = document.getElementById('classic-kasir-name');
-      if (userName) userName.innerText = currentUser?.name || '-';
-
-      updateCartTotalsOnly();
-      if (!tbody) return;
-
-      if (!cart.length) {
-        tbody.innerHTML = `<tr class="classic-empty-row"><td colspan="9">Belum ada barang. Fokuskan BARCODE lalu scan/ketik barang.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = cart.map((item,index) => {
-        const pricing = getCartItemPricing(item);
-        const active = index === activeCartRowIndex;
-        const mode = item.priceMode === 'grosir' ? 'grosir' : 'eceran';
-        const hasDiscount = (item.discountType || 'none') !== 'none';
-        const discountLabel = getDiscountLabel(item);
-        return `
-          <tr data-cart-index="${index}" data-product-id="${item.id}" class="${active ? 'active-cart-row' : ''}" onclick="setActiveCartRow(${index}, false)">
-            <td class="text-center font-bold">${index + 1}</td>
-            <td>
-              <input class="classic-cell-input" value="${item.barcode || item.kode || ''}"
-                readonly tabindex="-1" aria-label="Barcode ${item.nama}">
-            </td>
-            <td title="${item.nama}">
-              <input class="classic-cell-input" value="${String(item.nama).replace(/"/g,'&quot;')}"
-                readonly tabindex="-1" aria-label="Nama ${item.nama}">
-            </td>
-            <td>
-              <button type="button" class="classic-price-toggle ${mode === 'grosir' ? 'grosir' : ''}"
-                onclick="event.stopPropagation(); togglePriceMode('${item.id}','${mode === 'grosir' ? 'eceran' : 'grosir'}')">
-                ${mode === 'grosir' ? 'GROSIR' : 'ECER'}
-              </button>
-            </td>
-            <td>
-              <input id="cart-price-${item.id}" type="number" min="0" step="1" value="${Math.round(Number(item.currentPrice)||0)}"
-                class="cart-price-input" inputmode="numeric" autocomplete="off" aria-label="Harga ${item.nama}"
-                onclick="event.stopPropagation(); setActiveCartRow(${index}, false)"
-                onfocus="activeCartItemId='${item.id}'; activeCartRowIndex=${index}; this.select(); syncActiveCartRow()"
-                oninput="updateCartPriceFromInput('${item.id}',this)"
-                onblur="normalizeCartPriceInput('${item.id}',this)"
-                onkeydown="if(event.key==='Enter'){event.preventDefault();focusCartQty('${item.id}')}">
-            </td>
-            <td>
-              <input id="cart-qty-${item.id}" data-qty-input="true" type="number" min="1" max="${item.stok || 1}" step="1"
-                value="${item.qty}" inputmode="numeric" autocomplete="off"
-                class="classic-cell-input classic-qty-input"
-                onfocus="activeCartItemId='${item.id}'; activeCartRowIndex=${index}; syncActiveCartRow(); this.select()"
-                oninput="updateCartQtyFromInput('${item.id}',this)"
-                onblur="normalizeCartQtyInput('${item.id}',this)"
-                onkeydown="handleCartQtyKeydown(event,'${item.id}')">
-            </td>
-            <td>
-              <button type="button" class="cart-discount-btn ${hasDiscount ? 'has-discount ' + (item.discountType === 'free' ? 'discount-free' : 'discount-percent') : 'discount-none'}"
-                onclick="event.stopPropagation(); openCartDiscountModal('${item.id}')"
-                title="${hasDiscount ? discountLabel : 'Atur diskon barang'}"
-                aria-label="${hasDiscount ? discountLabel : 'Atur diskon barang'}">
-                <i data-lucide="${getDiscountIcon(item)}" aria-hidden="true"></i>
-              </button>
-            </td>
-            <td class="text-right font-bold" data-cart-subtotal>Rp${pricing.total.toLocaleString('id-ID')}</td>
-            <td class="classic-delete-cell">
-              <button type="button" class="cart-delete-btn" onclick="event.stopPropagation(); removeCartItem('${item.id}')" title="Hapus barang" aria-label="Hapus ${String(item.nama).replace(/"/g,'&quot;')}">
-                <i data-lucide="trash-2" aria-hidden="true"></i>
-              </button>
-            </td>
-          </tr>
-        `;
+      const tbody=document.getElementById('cart-table-body');
+      const userName=document.getElementById('classic-kasir-name'); if(userName)userName.innerText=currentUser?.name||'-';
+      updateCartTotalsOnly(); if(!tbody)return;
+      if(!cart.length){tbody.innerHTML=`<tr class="classic-empty-row"><td colspan="9">Belum ada barang. Fokuskan BARCODE lalu scan/ketik barang.</td></tr>`;return;}
+      tbody.innerHTML=cart.map((item,index)=>{
+        const pricing=getCartItemPricing(item), active=index===activeCartRowIndex, mode=item.priceMode==='grosir'?'grosir':'eceran';
+        const hasDiscount=(item.discountType||'none')!=='none', discountLabel=getDiscountLabel(item), maxQty=Math.max(1,getCartRowAvailableQty(item,index));
+        return `<tr data-cart-index="${index}" data-product-id="${item.id}" class="${active?'active-cart-row':''}" onclick="setActiveCartRow(${index},false)">
+          <td class="text-center font-bold">${index+1}</td>
+          <td><input class="classic-cell-input" value="${item.barcode||item.kode||''}" readonly tabindex="-1" aria-label="Barcode ${item.nama}"></td>
+          <td title="${item.nama}"><input class="classic-cell-input" value="${String(item.nama).replace(/"/g,'&quot;')}" readonly tabindex="-1" aria-label="Nama ${item.nama}"></td>
+          <td>
+            <div class="cart-price-mode-wrap" onclick="event.stopPropagation()">
+              <button type="button" class="cart-price-mode-btn ${mode==='eceran'?'active-ecer':''}" onclick="togglePriceModeByRow(${index},'eceran')">ECER</button>
+              <button type="button" class="cart-price-mode-btn ${mode==='grosir'?'active-grosir':''}" onclick="togglePriceModeByRow(${index},'grosir')">GROSIR</button>
+            </div>
+            <div class="cart-unit-select-wrap" onclick="event.stopPropagation()"><span class="cart-unit-label">SATUAN</span>
+              <select class="unit-select" onchange="setCartUnitByRow(${index},this.value)" aria-label="Satuan ${item.nama}">
+                ${getProductUnits(item).map(u=>`<option value="${String(u.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" ${String(u.name).toUpperCase()===String(item.unitName||'PCS').toUpperCase()?'selected':''}>${u.name} • ×${u.conversion}</option>`).join('')}
+              </select>
+            </div>
+            <div class="cart-unit-meta">${mode==='grosir'?'HARGA GROSIR':'HARGA ECER'} • ${item.unitName||'PCS'} • ×${Number(item.unitConversion||1)}</div>
+          </td>
+          <td><input id="cart-price-${index}" type="number" min="0" step="1" value="${Math.round(Number(item.currentPrice)||0)}" class="cart-price-input" inputmode="numeric" autocomplete="off" aria-label="Harga ${item.nama}"
+            onclick="event.stopPropagation();setActiveCartRow(${index},false)" onfocus="activeCartRowIndex=${index};activeCartItemId=cart[${index}]?.cartKey;this.select();syncActiveCartRow()" oninput="updateCartPriceFromInput(${index},this)" onblur="normalizeCartPriceInput(${index},this)" onkeydown="if(event.key==='Enter'){event.preventDefault();focusCartQty(${index})}"></td>
+          <td><input id="cart-qty-${index}" data-qty-input="true" type="number" min="1" max="${maxQty}" step="1" value="${item.qty}" inputmode="numeric" autocomplete="off" class="classic-cell-input classic-qty-input"
+            onfocus="activeCartItemId=cart[${index}]?.cartKey;activeCartRowIndex=${index};syncActiveCartRow();this.select()" oninput="updateCartQtyFromInput(${index},this)" onblur="normalizeCartQtyInput(${index},this)" onkeydown="handleCartQtyKeydown(event,${index})"></td>
+          <td><button type="button" class="cart-discount-btn ${hasDiscount?'has-discount '+(item.discountType==='free'?'discount-free':'discount-percent'):'discount-none'}" onclick="event.stopPropagation();openCartDiscountModal(${index})" title="${hasDiscount?discountLabel:'Atur diskon barang'}" aria-label="${hasDiscount?discountLabel:'Atur diskon barang'}"><i data-lucide="${getDiscountIcon(item)}" aria-hidden="true"></i></button></td>
+          <td class="text-right font-bold" data-cart-subtotal>Rp${pricing.total.toLocaleString('id-ID')}</td>
+          <td class="classic-delete-cell"><button type="button" class="cart-delete-btn" onclick="event.stopPropagation();removeCartItem('${item.cartKey}')" title="Hapus barang" aria-label="Hapus ${String(item.nama).replace(/"/g,'&quot;')}"><i data-lucide="trash-2" aria-hidden="true"></i></button></td>
+        </tr>`;
       }).join('');
-
-      // Render ikon diskon setelah baris benar-benar masuk ke DOM.
-      if (window.lucide && typeof lucide.createIcons === 'function') {
-        lucide.createIcons({ attrs: { 'aria-hidden': 'true' } });
-      }
-
-      syncActiveCartRow();
+      if(window.lucide&&typeof lucide.createIcons==='function')lucide.createIcons({attrs:{'aria-hidden':'true'}}); syncActiveCartRow();
     }
 
     function switchBarangSubTab(tab) {
@@ -4090,8 +4205,8 @@
                 Rp${(p.hModal || 0).toLocaleString('id-ID')}
               </td>
             ` : ''}
-            <td class="catalog-price px-2 py-2 font-bold text-gray-900">Rp${(p.hJual || 0).toLocaleString('id-ID')}</td>
-            <td class="catalog-price px-2 py-2 font-bold text-emerald-700">Rp${grosirPrice.toLocaleString('id-ID')}</td>
+            <td class="catalog-price px-2 py-2 font-bold text-gray-900">Rp${(p.hJual || 0).toLocaleString('id-ID')}<div class="text-[9px] text-gray-400 mt-1">${getProductUnits(p).map(u=>`${u.name}: Rp${Number(u.hJual||0).toLocaleString('id-ID')}`).join(' • ')}</div></td>
+            <td class="catalog-price px-2 py-2 font-bold text-emerald-700">Rp${grosirPrice.toLocaleString('id-ID')}<div class="text-[9px] text-gray-400 mt-1">${getProductUnits(p).map(u=>`${u.name}: Rp${Number(u.hGrosir||0).toLocaleString('id-ID')}`).join(' • ')}</div></td>
             <td class="catalog-stock px-2 py-2 text-center font-extrabold ${Number(p.stok || 0) <= 5 ? 'text-rose-600' : 'text-indigo-700'}">${Number(p.stok || 0).toLocaleString('id-ID')} ${Number(p.stok || 0) <= 5 ? '<span class="text-[10px]">(Menipis)</span>' : ''}</td>
             ${isAdmin ? `
               <td class="catalog-actions px-2 py-2">
@@ -4172,8 +4287,8 @@
         const promoLabel = pricing.freeQty > 0 ? ` • Gratis ${pricing.freeQty}` : ((item.discountType === 'percent' && item.discountPercent) ? ` • -${item.discountPercent}%` : '');
         return `
           <div class="flex justify-between items-start text-[10px] gap-2">
-            <span class="truncate max-w-[150px]">${item.nama} ${modeLabel}${promoLabel}</span>
-            <span class="shrink-0 text-right">${item.qty} fisik / ${pricing.paidQty} bayar<br>Rp${pricing.total.toLocaleString('id-ID')}</span>
+            <span class="truncate max-w-[150px]">${item.nama} <b>${item.qty} ${item.unitName || 'PCS'}</b> ${modeLabel}${promoLabel}</span>
+            <span class="shrink-0 text-right">${pricing.paidQty} bayar • ${Number(item.unitConversion||1)*Number(item.qty||0)} PCS<br>Rp${pricing.total.toLocaleString('id-ID')}</span>
           </div>
         `;
       }).join('');
@@ -4284,7 +4399,7 @@
 
     async function confirmCheckout() {
       const total = getCartTotal();
-      const totalModal = cart.reduce((s, i) => s + (i.qty * (i.hModal || 0)), 0);
+      const totalModal = cart.reduce((s, i) => s + (getCartBaseQty(i) * (Number(i.hModal) || 0)), 0);
       const profit = total - totalModal;
       const bayar = parseInt(document.getElementById('checkout-bayar').value) || 0;
 
@@ -4319,7 +4434,9 @@
         const prod = products.find(p => String(p.id) === String(item.id));
         if (prod) {
           const sebelum = prod.stok;
-          prod.stok -= item.qty;
+          const baseQty = getCartBaseQty(item);
+          if (baseQty > Number(prod.stok || 0)) { showToast(`Stok ${prod.nama} tidak cukup untuk ${item.qty} ${item.unitName}`,'error'); return; }
+          prod.stok -= baseQty;
           await syncToCloud("products", prod.id, prod);
 
           const stokLogEntry = {
@@ -4329,7 +4446,10 @@
             waktu: timeStr,
             barang: prod.nama,
             tipe: 'SALE',
-            qty: -item.qty,
+            qty: -baseQty,
+            unit: item.unitName,
+            unitConversion: item.unitConversion,
+            qtyJual: item.qty,
             sebelum: sebelum,
             setelah: prod.stok,
             user: currentUser.name
@@ -4360,7 +4480,7 @@
         status: 'SUKSES',
         items: JSON.parse(JSON.stringify(cart)).map(item => {
           const pricing = getCartItemPricing(item);
-          return {...item, paidQty: pricing.paidQty, freeQty: pricing.freeQty, discountAmount: pricing.discountAmount, lineTotal: pricing.total};
+          return {...item, unitName:item.unitName || 'PCS', unitConversion:Number(item.unitConversion||1), paidQty:pricing.paidQty, freeQty:pricing.freeQty, baseQty:pricing.baseQty, discountAmount:pricing.discountAmount, lineTotal:pricing.total};
         })
       };
 
@@ -4422,7 +4542,7 @@
 
       if (!barcode) barcode = '899' + Math.floor(1000000000 + Math.random() * 9000000000);
 
-      const prodData = { id, kode, barcode, nama, kategori: 'Umum', hModal, hJual, hGrosir, stok };
+      const prodData = { id, kode, barcode, nama, kategori: 'Umum', hModal, hJual, hGrosir, stok, units: [createUnitDraft('PCS',1,hJual,hGrosir)] };
       const duplicate = findDuplicateProduct(prodData, id);
       if (duplicate) {
         showToast(`Barang tidak ditambahkan. Barcode/kode sudah digunakan oleh "${duplicate.nama}".`, 'error');
@@ -4441,8 +4561,10 @@
     }
 
     function openModalBarang(editId = null) {
+      productUnitsEditorTarget = 'product-units-editor';
       const form = document.getElementById('form-barang');
       form.reset();
+      productUnitsDraft = [];
 
       const kodeInput = document.getElementById('barang-kode');
       const hint = document.getElementById('barang-kode-hint');
@@ -4457,7 +4579,7 @@
         kodeInput.readOnly = false;
         kodeInput.classList.remove('bg-gray-100', 'text-gray-500');
         kodeInput.classList.add('bg-white');
-        if (hint) hint.textContent = `Boleh diubah. Nomor harus 1–${products.length} dan sistem akan menjaga urutan tanpa double/kosong.`;
+
 
         document.getElementById('barang-barcode').value = prod.barcode || '';
         document.getElementById('barang-nama').value = prod.nama;
@@ -4466,6 +4588,8 @@
         document.getElementById('barang-jual').value = prod.hJual;
         document.getElementById('barang-grosir').value = prod.hGrosir || Math.round(prod.hJual * 0.9);
         document.getElementById('barang-stok').value = prod.stok;
+        productUnitsDraft = getProductUnits(prod).map(u => ({...u}));
+        syncUnitHiddenLegacyPrices();
       } else {
         document.getElementById('modal-barang-title').innerText = 'Tambah Barang Baru';
         document.getElementById('barang-id').value = '';
@@ -4475,8 +4599,10 @@
         kodeInput.classList.remove('bg-white');
         if (hint) hint.textContent = 'Kode baru dibuat otomatis pada nomor berikutnya yang tersedia.';
         generateRandomBarcode();
+        productUnitsDraft = [createUnitDraft('PCS',1,0,0)];
       }
 
+      renderProductUnitsEditor();
       openModal('modal-barang');
       setupEnterStepNavigation();
       setTimeout(() => document.getElementById('barang-nama').focus(), 150);
@@ -4543,9 +4669,14 @@
       const nama = document.getElementById('barang-nama').value.trim();
       const kategori = document.getElementById('barang-kategori').value;
       const hModal = parseInt(document.getElementById('barang-modal').value) || 0;
-      const hJual = parseInt(document.getElementById('barang-jual').value) || 0;
-      const hGrosir = parseInt(document.getElementById('barang-grosir').value) || 0;
       const stok = parseInt(document.getElementById('barang-stok').value) || 0;
+      const cleanUnits = productUnitsDraft.map(u => ({...u, name:String(u.name||'').trim().toUpperCase(), conversion:Math.max(1,parseInt(u.conversion,10)||1), hJual:Math.max(0,Number(u.hJual)||0), hGrosir:Math.max(0,Number(u.hGrosir)||0)})).filter(u=>u.name);
+      if (!cleanUnits.length) { showToast('Minimal satuan PCS harus tersedia','error'); return; }
+      cleanUnits[0].conversion = 1;
+      const duplicateUnit = cleanUnits.slice(1).find((u,i)=>cleanUnits.slice(0,i+1).some(v=>v.name===u.name));
+      if (duplicateUnit) { showToast(`Satuan ${duplicateUnit.name} duplikat.`, 'error'); return; }
+      const hJual = Number(cleanUnits[0].hJual)||0;
+      const hGrosir = Number(cleanUnits[0].hGrosir)||Math.round(hJual*0.9);
 
       if (!nama) {
         showToast('Nama barang wajib diisi.', 'error');
@@ -4585,7 +4716,8 @@
         hModal,
         hJual,
         hGrosir,
-        stok
+        stok,
+        units: cleanUnits
       };
 
       // Barcode tetap wajib unik. Kode ditangani terpisah karena pengguna
@@ -5487,18 +5619,26 @@
 
     function refreshPembelianProductSelect() {
       const s = document.getElementById('pembelian-produk'); if (!s) return;
-      s.innerHTML = products.map(p => `<option value="${p.id}">${p.kode || ''} • ${p.nama} • stok ${Number(p.stok||0)} • modal Rp${Number(p.hModal||0).toLocaleString('id-ID')}</option>`).join('');
+      s.innerHTML = products.map(p => `<option value="${p.id}">${p.kode || ''} • ${p.nama} • stok ${Number(p.stok||0)} PCS</option>`).join('');
+      refreshPembelianUnitSelect();
       syncPembelianHargaProduk();
     }
 
-    // Saat barang dipilih, harga beli/modal otomatis mengikuti harga modal yang tersimpan.
-    // Kasir/admin tetap bisa mengubahnya kapan saja untuk pembelian dengan harga baru.
+    function refreshPembelianUnitSelect() {
+      const s=document.getElementById('pembelian-satuan'); const pid=document.getElementById('pembelian-produk')?.value; const p=products.find(x=>String(x.id)===String(pid)); if(!s||!p)return;
+      const units=getProductUnits(p); const current=s.value; s.innerHTML=units.map(u=>`<option value="${u.name}">${u.name} • ${u.conversion} PCS</option>`).join('');
+      if(units.some(u=>u.name===current)) s.value=current;
+    }
+
+    // Harga beli mengikuti satuan pembelian yang dipilih.
     function syncPembelianHargaProduk() {
       const pid = document.getElementById('pembelian-produk')?.value;
       const p = products.find(x => String(x.id) === String(pid));
       const harga = document.getElementById('pembelian-harga');
       if (!p || !harga) return;
-      harga.value = Number(p.hModal || 0);
+      const unit=getProductUnit(p, document.getElementById('pembelian-satuan')?.value || 'PCS');
+      const unitCost=Number(p.hModal||0)*Math.max(1,Number(unit.conversion)||1);
+      harga.value = unitCost;
     }
 
     function addPembelianItem() {
@@ -5507,6 +5647,7 @@
       const hargaRaw = String(document.getElementById('pembelian-harga')?.value ?? '').trim();
       const ecerRaw = String(document.getElementById('pembelian-harga-eceran')?.value ?? '').trim();
       const grosirRaw = String(document.getElementById('pembelian-harga-grosir')?.value ?? '').trim();
+      const unitName = String(document.getElementById('pembelian-satuan')?.value || 'PCS').toUpperCase();
       const p = products.find(x => String(x.id) === String(pid));
       if (!p) return showToast('Pilih barang terlebih dahulu', 'error');
 
@@ -5526,10 +5667,15 @@
       if (eceran !== null && (!Number.isFinite(eceran) || eceran < 0)) return showToast('Harga eceran tidak valid', 'error');
       if (grosir !== null && (!Number.isFinite(grosir) || grosir < 0)) return showToast('Harga grosir tidak valid', 'error');
 
-      const existing = pembelianItems.find(x => String(x.productId) === String(pid));
+      const unit = getProductUnit(p, unitName);
+      const baseUnitCost = unit.conversion > 1 ? unitCost / unit.conversion : unitCost;
+      const existing = pembelianItems.find(x => String(x.productId) === String(pid) && String(x.unitName) === unit.name);
       if (existing) {
         existing.qty = Number(existing.qty || 0) + qty;
         existing.unitCost = unitCost;
+        existing.unitName = unit.name;
+        existing.unitConversion = unit.conversion;
+        existing.baseUnitCost = baseUnitCost;
         // Harga jual hanya diubah jika pada input baru memang diisi.
         if (eceran !== null) existing.newHJual = eceran;
         if (grosir !== null) existing.newHGrosir = grosir;
@@ -5539,7 +5685,10 @@
           kode: p.kode,
           nama: p.nama,
           qty,
+          unitName: unit.name,
+          unitConversion: unit.conversion,
           unitCost,
+          baseUnitCost,
           newHJual: eceran,
           newHGrosir: grosir
         });
@@ -5564,8 +5713,8 @@
         const ecer = it.newHJual === null || it.newHJual === undefined ? '<span class="text-gray-400">Tetap</span>' : money(it.newHJual);
         const grosir = it.newHGrosir === null || it.newHGrosir === undefined ? '<span class="text-gray-400">Tetap</span>' : money(it.newHGrosir);
         return `<tr>
-          <td class="p-2 font-bold">${it.kode || '-'} • ${it.nama}</td>
-          <td class="p-2 text-right font-black">${Number(it.qty).toLocaleString('id-ID')}</td>
+          <td class="p-2 font-bold">${it.kode || '-'} • ${it.nama}<div class="text-[9px] text-blue-600">${it.qty} ${it.unitName||'PCS'} = ${(Number(it.qty)||0)*(Number(it.unitConversion)||1)} PCS</div></td>
+          <td class="p-2 text-right font-black">${Number(it.qty).toLocaleString('id-ID')} ${it.unitName||'PCS'}</td>
           <td class="p-2 text-right">${money(it.unitCost)}</td>
           <td class="p-2 text-right">${ecer}</td>
           <td class="p-2 text-right">${grosir}</td>
@@ -5601,14 +5750,16 @@
         const oldHJual = Number(p.hJual) || 0;
         const oldHGrosir = Number(p.hGrosir) || 0;
         const addQty = Number(item.qty) || 0;
+        const conversion = Math.max(1, Number(item.unitConversion)||1);
+        const addBaseQty = addQty * conversion;
         if (!Number.isInteger(addQty) || addQty < 1) return showToast(`Qty ${p.nama} tidak valid`, 'error');
 
-        // Harga modal mengikuti harga beli yang baru diinput, BUKAN weighted average.
-        const newCost = Number(item.unitCost) || 0;
+        // Harga modal disimpan per PCS dasar agar semua satuan memiliki sumber biaya yang sama.
+        const newCost = Number(item.baseUnitCost ?? (Number(item.unitCost)||0) / conversion) || 0;
         const newHJual = item.newHJual === null || item.newHJual === undefined ? oldHJual : Number(item.newHJual);
         const newHGrosir = item.newHGrosir === null || item.newHGrosir === undefined ? oldHGrosir : Number(item.newHGrosir);
 
-        p.stok = oldStock + addQty;
+        p.stok = oldStock + addBaseQty;
         p.hModal = newCost;
         p.hJual = newHJual;
         p.hGrosir = newHGrosir;
@@ -5618,7 +5769,11 @@
           kode: p.kode,
           nama: p.nama,
           qty: addQty,
-          unitCost: newCost,
+          unitName: item.unitName || 'PCS',
+          unitConversion: conversion,
+          baseQty: addBaseQty,
+          unitCost: Number(item.unitCost)||0,
+          baseUnitCost: newCost,
           subtotal: addQty * newCost,
           hargaModalSebelum: oldCost,
           hargaModalSesudah: newCost,
@@ -5637,7 +5792,10 @@
           barang: p.nama,
           productId: p.id,
           tipe: 'PURCHASE',
-          qty: addQty,
+          qty: addBaseQty,
+          unit: item.unitName || 'PCS',
+          unitConversion: conversion,
+          qtyInput: addQty,
           sebelum: oldStock,
           setelah: p.stok,
           hargaBeli: newCost,
@@ -5667,7 +5825,7 @@
         faktur,
         supplier,
         total,
-        qtyTotal: savedItems.reduce((s, x) => s + Number(x.qty || 0), 0),
+        qtyTotal: savedItems.reduce((s, x) => s + Number(x.baseQty || 0), 0),
         items: savedItems,
         user: currentUser.name,
         status: 'SELESAI'
@@ -5677,7 +5835,7 @@
       addLog('PURCHASE', `Pembelian ${faktur} dari ${supplier} Rp${total.toLocaleString('id-ID')}`);
       closeModal('modal-pembelian');
       renderPembelian(); renderProductsTable(); renderStokTable(); renderDashboard(); renderLaporan(); renderLaporanProduk();
-      showToast(`Pembelian berhasil. ${purchase.qtyTotal.toLocaleString('id-ID')} unit ditambahkan ke stok.`);
+      showToast(`Pembelian berhasil. ${purchase.qtyTotal.toLocaleString('id-ID')} PCS ditambahkan ke stok.`);
     }
 
     function renderPembelian() {
@@ -5932,6 +6090,7 @@
         if (action === 'add') openModalStok('tambah', id);
         else if (action === 'minus') openModalStok('kurang', id);
         else if (action === 'edit') openModalBarang(id);
+        else if (action === 'units') openProductUnits(id);
         else if (action === 'barcode') showBarcodeModal(id);
         else if (action === 'delete') deleteProduct(id);
       }, 80);
@@ -8027,4 +8186,4 @@
 #classic-pos-table { table-layout: fixed !important; }
 </style>
 </body>
-</html>
+</hhtml>
