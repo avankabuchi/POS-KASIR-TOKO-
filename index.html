@@ -2822,16 +2822,33 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[10px] text-gray-500 mb-0.5">H. Modal / PCS Dasar</label>
-            <input type="number" id="barang-modal" class="border rounded-xl p-2 w-full font-bold" required />
+            <input type="number" id="barang-modal" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2 w-full font-bold" required />
             <p class="text-[9px] text-gray-400 mt-1">Modal disimpan per satuan dasar untuk perhitungan stok/laba.</p>
           </div>
           <div>
             <label class="block text-[10px] text-gray-500 mb-0.5">Stok Awal (PCS Dasar)</label>
-            <input type="number" id="barang-stok" class="border rounded-xl p-2 w-full font-bold" required />
+            <input type="number" id="barang-stok" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2 w-full font-bold" required />
           </div>
         </div>
-        <input type="hidden" id="barang-jual" value="0" />
-        <input type="hidden" id="barang-grosir" value="0" />
+        <div class="rounded-2xl border border-blue-100 bg-blue-50/60 p-3 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <p class="text-[11px] font-black text-slate-800">Harga Jual PCS</p>
+              <p class="text-[9px] text-slate-500">Tentukan harga ecer dan grosir langsung saat tambah/edit barang.</p>
+            </div>
+            <span class="text-[9px] font-black text-blue-700 bg-white border border-blue-100 px-2 py-1 rounded-lg">WAJIB</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] text-blue-700 mb-0.5 font-bold">Harga Ecer</label>
+              <input type="number" id="barang-jual" min="0" step="1" inputmode="numeric" placeholder="Contoh: 3500" class="border border-blue-200 bg-white rounded-xl p-2.5 w-full font-black" required />
+            </div>
+            <div>
+              <label class="block text-[10px] text-indigo-700 mb-0.5 font-bold">Harga Grosir</label>
+              <input type="number" id="barang-grosir" min="0" step="1" inputmode="numeric" placeholder="Contoh: 3200" class="border border-indigo-200 bg-white rounded-xl p-2.5 w-full font-black" required />
+            </div>
+          </div>
+        </div>
         <div class="flex justify-end space-x-2 pt-2 border-t">
           <button type="button" onclick="closeModal('modal-barang')" class="px-4 py-2 border rounded-xl font-medium">Batal</button>
           <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700">Simpan Barang</button>
@@ -3853,6 +3870,7 @@
     }
 
     let productUnitsDraft = [];
+    let isSavingProduct = false;
     let productUnitsEditorTarget = 'product-units-editor';
     function createUnitDraft(name='PCS', conversion=1, hJual=0, hGrosir=0) {
       return {id:'u'+Date.now()+Math.random().toString(36).slice(2,6), name:String(name).toUpperCase(), conversion:Math.max(1,Number(conversion)||1), hJual:Math.max(0,Number(hJual)||0), hGrosir:Math.max(0,Number(hGrosir)||0)};
@@ -4692,7 +4710,10 @@
         document.getElementById('barang-jual').value = prod.hJual;
         document.getElementById('barang-grosir').value = prod.hGrosir || Math.round(prod.hJual * 0.9);
         document.getElementById('barang-stok').value = prod.stok;
-        productUnitsDraft = getProductUnits(prod).map(u => ({...u}));
+        const editUnits = getProductUnits(prod).map(u => ({...u}));
+        productUnitsDraft = editUnits.length ? editUnits : [createUnitDraft('PCS',1,Number(prod.hJual||0),Number(prod.hGrosir||0))];
+        document.getElementById('barang-jual').value = Number(productUnitsDraft[0].hJual || prod.hJual || 0);
+        document.getElementById('barang-grosir').value = Number(productUnitsDraft[0].hGrosir || prod.hGrosir || 0);
         syncUnitHiddenLegacyPrices();
       } else {
         document.getElementById('modal-barang-title').innerText = 'Tambah Barang Baru';
@@ -4704,6 +4725,8 @@
         if (hint) hint.textContent = 'Kode baru dibuat otomatis pada nomor berikutnya yang tersedia.';
         generateRandomBarcode();
         productUnitsDraft = [createUnitDraft('PCS',1,0,0)];
+        document.getElementById('barang-jual').value = '0';
+        document.getElementById('barang-grosir').value = '0';
       }
 
       renderProductUnitsEditor();
@@ -4764,9 +4787,21 @@
 
     async function saveProduct(e) {
       e.preventDefault();
+      if (isSavingProduct) return;
+      isSavingProduct = true;
 
+      const form = document.getElementById('form-barang');
+      const submitButton = form?.querySelector('button[type="submit"]');
+      const originalSubmitText = submitButton?.innerHTML || '';
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 inline mr-1 animate-spin"></i>Menyimpan...';
+        try { lucide.createIcons(); } catch (_) {}
+      }
+
+      try {
       const existingId = document.getElementById('barang-id').value.trim();
-      const id = existingId || String(Date.now());
+      const id = existingId || ('p' + Date.now() + '_' + Math.random().toString(36).slice(2, 8));
 
       const rawKode = document.getElementById('barang-kode').value.trim().toUpperCase();
       const barcode = document.getElementById('barang-barcode').value.trim() || rawKode;
@@ -4774,6 +4809,17 @@
       const kategori = document.getElementById('barang-kategori').value;
       const hModal = parseInt(document.getElementById('barang-modal').value) || 0;
       const stok = parseInt(document.getElementById('barang-stok').value) || 0;
+      const hargaEcerForm = Math.max(0, Number(document.getElementById('barang-jual')?.value) || 0);
+      const hargaGrosirForm = Math.max(0, Number(document.getElementById('barang-grosir')?.value) || 0);
+      if (hargaEcerForm <= 0) { showToast('Harga ecer wajib diisi.', 'error'); return; }
+      if (hargaGrosirForm <= 0) { showToast('Harga grosir wajib diisi.', 'error'); return; }
+
+      if (!productUnitsDraft.length) productUnitsDraft = [createUnitDraft('PCS',1,hargaEcerForm,hargaGrosirForm)];
+      productUnitsDraft[0].name = 'PCS';
+      productUnitsDraft[0].conversion = 1;
+      productUnitsDraft[0].hJual = hargaEcerForm;
+      productUnitsDraft[0].hGrosir = hargaGrosirForm;
+
       const cleanUnits = productUnitsDraft.map(u => ({...u, name:String(u.name||'').trim().toUpperCase(), conversion:Math.max(1,parseInt(u.conversion,10)||1), hJual:Math.max(0,Number(u.hJual)||0), hGrosir:Math.max(0,Number(u.hGrosir)||0)})).filter(u=>u.name);
       if (!cleanUnits.length) { showToast('Minimal satuan PCS harus tersedia','error'); return; }
       cleanUnits[0].conversion = 1;
@@ -4879,6 +4925,14 @@
       } catch (err) {
         console.error('Gagal menyimpan barang:', err);
         showToast('Gagal menyimpan barang. Silakan coba lagi.', 'error');
+      }
+      } finally {
+        isSavingProduct = false;
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.innerHTML = originalSubmitText || 'Simpan Barang';
+          try { lucide.createIcons(); } catch (_) {}
+        }
       }
     }
 
