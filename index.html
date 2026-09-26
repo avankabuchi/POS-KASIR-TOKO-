@@ -892,6 +892,82 @@
 .multiunit-summary .unit-pill.stock{background:#ecfdf5;color:#047857;border-color:#a7f3d0}
 @media(max-width:640px){.unit-head,.unit-row{grid-template-columns:1fr 1fr}.unit-head{display:none}.unit-row .unit-remove{grid-column:2;justify-self:end}.unit-row .unit-base-badge{grid-column:1}.unit-manager{padding:11px}}
 
+
+    /* ============================================================
+       KASIR: KUNCI TAMPILAN, HANYA ISI TABEL YANG SCROLL
+       ============================================================ */
+    #view-app.kasir-view-active{
+      height:100vh !important;
+      min-height:0 !important;
+      overflow:hidden !important;
+    }
+
+    #view-app.kasir-view-active > main{
+      min-height:0 !important;
+      height:100% !important;
+      overflow:hidden !important;
+    }
+
+    #view-app.kasir-view-active #page-kasir{
+      height:100% !important;
+      min-height:0 !important;
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+      gap:0 !important;
+    }
+
+    #view-app.kasir-view-active #page-kasir > .classic-pos-shell{
+      flex:1 1 auto !important;
+      min-height:0 !important;
+      height:100% !important;
+      display:flex !important;
+      flex-direction:column !important;
+      overflow:hidden !important;
+    }
+
+    #view-app.kasir-view-active #page-kasir .classic-table-wrap{
+      flex:1 1 auto !important;
+      min-height:0 !important;
+      height:auto !important;
+      max-height:none !important;
+      overflow-y:auto !important;
+      overflow-x:auto !important;
+      overscroll-behavior:contain !important;
+      -webkit-overflow-scrolling:touch !important;
+    }
+
+    #view-app.kasir-view-active #page-kasir .classic-pos-header,
+    #view-app.kasir-view-active #page-kasir .classic-input-row,
+    #view-app.kasir-view-active #page-kasir .classic-info-row,
+    #view-app.kasir-view-active #page-kasir .classic-toolbar,
+    #view-app.kasir-view-active #page-kasir .classic-pos-footer{
+      flex-shrink:0 !important;
+    }
+
+    /* Saat kasir aktif, jangan biarkan body/html ikut bergeser */
+    html:has(#view-app.kasir-view-active),
+    body:has(#view-app.kasir-view-active){
+      overflow:hidden !important;
+    }
+
+    @media(max-width:767px){
+      #view-app.kasir-view-active{
+        height:100dvh !important;
+        min-height:0 !important;
+      }
+
+      #view-app.kasir-view-active > main{
+        min-height:0 !important;
+        height:auto !important;
+        flex:1 1 auto !important;
+      }
+
+      #view-app.kasir-view-active #page-kasir > .classic-pos-shell{
+        min-height:0 !important;
+      }
+    }
+
 </style>
 
 <style id="product-code-edit-polish">
@@ -6730,6 +6806,10 @@
       document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
       const active = document.getElementById(`page-${pageId}`);
       if (active) active.classList.remove('hidden');
+
+      // Kasir: kunci seluruh viewport dan izinkan scroll hanya pada isi tabel.
+      const appView = document.getElementById('view-app');
+      if (appView) appView.classList.toggle('kasir-view-active', pageId === 'kasir');
 
       document.querySelectorAll('.nav-item').forEach(btn => {
         if (btn.dataset.page === pageId) {
