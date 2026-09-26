@@ -3762,10 +3762,22 @@
         activeCartRowIndex=Math.min(duplicateIndex,cart.length-1);
         activeCartItemId=cart[activeCartRowIndex]?.cartKey || null;
       } else {
-        item.priceMode=newMode; item.cartKey=key; item.currentPrice=newMode==='grosir'?u.hGrosir:u.hJual; item.customPrice=false;
-        activeCartRowIndex=Number(rowIndex); activeCartItemId=item.cartKey;
+        item.priceMode = newMode;
+        item.cartKey = key;
+        // Harga aktif HARUS mengikuti pilihan Ecer/Grosir.
+        // Subtotal kemudian dihitung dari currentPrice x qty.
+        item.currentPrice = Number(newMode === 'grosir' ? u.hGrosir : u.hJual) || 0;
+        item.customPrice = false;
+        activeCartRowIndex = Number(rowIndex);
+        activeCartItemId = item.cartKey;
       }
-      updateCartView(); focusCartQtyWhenReady(activeCartRowIndex);
+
+      // Pastikan subtotal baris langsung menggunakan harga mode yang baru.
+      // updateCartView() akan mengambil getCartItemPricing(item), sehingga:
+      // Ecer  = harga eceran x qty
+      // Grosir = harga grosir x qty
+      updateCartView();
+      focusCartQtyWhenReady(activeCartRowIndex);
     }
 
     function setAllPriceMode(mode) {
@@ -3808,15 +3820,48 @@
 
     function updateCartQtyFromInput(rowIndex, input) {
       if (input.value === '') return;
-      const index=Number(rowIndex), item=getCartItemByRow(index); if(!item) return;
-      let qty=parseInt(input.value,10); if(!Number.isFinite(qty)||qty<1) return;
-      const maxStock=getCartRowAvailableQty(item,index);
-      if(qty>maxStock){qty=maxStock;input.value=String(maxStock);showToast(`QTY dibatasi stok yang tersisa (${maxStock} ${item.unitName})`);}
-      item.qty=qty; activeCartItemId=item.cartKey; activeCartRowIndex=index;
+      const index = Number(rowIndex), item = getCartItemByRow(index);
+      if (!item) return;
+
+      let qty = parseInt(input.value, 10);
+      if (!Number.isFinite(qty) || qty < 1) return;
+
+      const maxStock = getCartRowAvailableQty(item, index);
+      if (qty > maxStock) {
+        qty = maxStock;
+        input.value = String(maxStock);
+        showToast(`QTY dibatasi stok yang tersisa (${maxStock} ${item.unitName})`);
+      }
+
+      // QTY pada baris kasir harus selalu langsung memengaruhi subtotal:
+      // SUBTOTAL = HARGA UNIT x QTY (setelah diskon jika ada).
+      item.qty = qty;
+      activeCartItemId = item.cartKey;
+      activeCartRowIndex = index;
+
+      const pricing = getCartItemPricing(item);
+      const row = input.closest('tr');
+      const subtotalEl = row?.querySelector('[data-cart-subtotal]');
+      if (subtotalEl) {
+        subtotalEl.innerText = 'Rp' + pricing.total.toLocaleString('id-ID');
+      }
+
       updateCartTotalsOnly();
     }
 
-    function normalizeCartQtyInput(rowIndex,input){const item=getCartItemByRow(Number(rowIndex));if(!item)return;const qty=parseInt(input.value,10);input.value=Number.isFinite(qty)&&qty>0?item.qty:item.qty;}
+    function normalizeCartQtyInput(rowIndex, input) {
+      const item = getCartItemByRow(Number(rowIndex));
+      if (!item) return;
+      const qty = parseInt(input.value, 10);
+      input.value = Number.isFinite(qty) && qty > 0 ? String(item.qty) : String(item.qty);
+
+      // Pastikan subtotal baris tetap sinkron setelah input kehilangan fokus.
+      const pricing = getCartItemPricing(item);
+      const row = input.closest('tr');
+      const subtotalEl = row?.querySelector('[data-cart-subtotal]');
+      if (subtotalEl) subtotalEl.innerText = 'Rp' + pricing.total.toLocaleString('id-ID');
+      updateCartTotalsOnly();
+    }
 
     function removeCartItem(productId) {
       let index=cart.findIndex(c=>c.cartKey===productId);
