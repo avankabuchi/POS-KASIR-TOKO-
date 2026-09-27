@@ -2721,7 +2721,7 @@
       </div>
       <div>
         <label class="block text-[10px] text-gray-500 mb-1">Uang Diterima (Nominal Bayar)</label>
-        <input type="number" id="checkout-bayar" value="0" onkeydown="handleCheckoutKeydown(event)" onfocus="if(this.value=='0')this.value=''" oninput="hitungKembalian()" class="w-full border rounded-xl p-2.5 font-bold text-base outline-none focus:ring-2 focus:ring-emerald-500" placeholder="0" />
+        <input type="text" inputmode="numeric" id="checkout-bayar" value="0" onkeydown="handleCheckoutKeydown(event)" onfocus="focusNominalBayar(this)" oninput="formatNominalBayar(this); hitungKembalian()" class="w-full border rounded-xl p-2.5 font-bold text-base outline-none focus:ring-2 focus:ring-emerald-500" placeholder="0" autocomplete="off" />
       </div>
       <div class="p-2.5 bg-gray-50 border rounded-xl flex justify-between font-bold">
         <span>Kembalian:</span>
@@ -4614,37 +4614,108 @@
       if (checkoutDiscount) checkoutDiscount.innerText = 'Rp' + discount.toLocaleString('id-ID');
 
       const bayarInput = document.getElementById('checkout-bayar');
-      bayarInput.value = 0;
+      bayarInput.value = '';
       hitungKembalian();
 
       openModal('modal-checkout');
       setTimeout(() => bayarInput.focus(), 150);
     }
 
+    // Format nominal pembayaran dengan titik pemisah ribuan.
+    // Bisa mengetik angka berapa pun, contoh:
+    // 1500 -> 1.500
+    // 150000 -> 150.000
+    // 1500000 -> 1.500.000
+    function formatNominalBayar(input) {
+      const nilaiLama = String(input.value || '');
+      const posisiLama = input.selectionStart ?? nilaiLama.length;
+
+      // Hitung jumlah digit di sebelah kiri cursor.
+      const digitSebelumCursor = nilaiLama
+        .slice(0, posisiLama)
+        .replace(/\D/g, '').length;
+
+      // Ambil hanya angka. Titik pemisah akan dibuat otomatis.
+      const raw = nilaiLama.replace(/\D/g, '');
+      if (!raw) {
+        input.value = '';
+        return;
+      }
+
+      // Hilangkan nol di depan, tetapi tetap izinkan angka besar.
+      const rawBersih = raw.replace(/^0+(?=\d)/, '');
+      input.value = Number(rawBersih).toLocaleString('id-ID');
+
+      // Pertahankan posisi cursor setelah formatter menambahkan titik.
+      let jumlahDigit = 0;
+      let posisiBaru = input.value.length;
+
+      for (let i = 0; i < input.value.length; i++) {
+        if (/\d/.test(input.value[i])) {
+          jumlahDigit++;
+          if (jumlahDigit === digitSebelumCursor) {
+            posisiBaru = i + 1;
+            break;
+          }
+        }
+      }
+
+      requestAnimationFrame(() => {
+        try {
+          input.setSelectionRange(posisiBaru, posisiBaru);
+        } catch (e) {}
+      });
+    }
+
+    function getNominalBayar() {
+      const input = document.getElementById('checkout-bayar');
+      if (!input) return 0;
+
+      // Hilangkan titik pemisah sebelum dipakai untuk perhitungan.
+      const angka = String(input.value || '').replace(/\D/g, '');
+      return parseInt(angka, 10) || 0;
+    }
+
+    function focusNominalBayar(input) {
+      if (String(input.value || '').replace(/\D/g, '') === '0') {
+        input.value = '';
+      }
+
+      requestAnimationFrame(() => {
+        try {
+          input.setSelectionRange(input.value.length, input.value.length);
+        } catch (e) {}
+      });
+    }
+
     function setNominalPas() {
       const total = getCartTotal();
-      document.getElementById('checkout-bayar').value = total;
+      const input = document.getElementById('checkout-bayar');
+      input.value = total > 0 ? total.toLocaleString('id-ID') : '';
       hitungKembalian();
     }
 
     function quickAddBayar(val) {
-      const curr = parseInt(document.getElementById('checkout-bayar').value) || 0;
-      document.getElementById('checkout-bayar').value = curr + val;
+      const curr = getNominalBayar();
+      const totalBaru = curr + val;
+      document.getElementById('checkout-bayar').value =
+        totalBaru > 0 ? totalBaru.toLocaleString('id-ID') : '';
       hitungKembalian();
     }
 
     function hitungKembalian() {
       const total = getCartTotal();
-      const bayar = parseInt(document.getElementById('checkout-bayar').value) || 0;
+      const bayar = getNominalBayar();
       const kembalian = Math.max(0, bayar - total);
-      document.getElementById('checkout-kembalian').innerText = 'Rp' + kembalian.toLocaleString('id-ID');
+      document.getElementById('checkout-kembalian').innerText =
+        'Rp' + kembalian.toLocaleString('id-ID');
     }
 
     async function confirmCheckout() {
       const total = getCartTotal();
       const totalModal = cart.reduce((s, i) => s + (getCartBaseQty(i) * (Number(i.hModal) || 0)), 0);
       const profit = total - totalModal;
-      const bayar = parseInt(document.getElementById('checkout-bayar').value) || 0;
+      const bayar = getNominalBayar();
 
       if (bayar < total) {
         alert('Nominal pembayaran masih kurang dari total belanja!');
