@@ -1504,7 +1504,7 @@
           </button>
           <button onclick="navigate('pengeluaran')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="pengeluaran">
             <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
-            <span>Pengeluaran</span>
+            <span>Arus Pengeluaran</span>
           </button>
           <button onclick="navigate('brilink')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="brilink">
             <i data-lucide="landmark" class="w-4 h-4"></i>
@@ -2135,7 +2135,7 @@
       <section id="page-pengeluaran" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Pengeluaran Toko & BRI Link</h1>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Arus Pengeluaran Toko & BRI Link</h1>
             <p class="text-xs text-gray-500 mt-0.5" id="pengeluaran-total-label">Total: Rp0 (Toko: Rp0 | BRI Link: Rp0)</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
@@ -2341,6 +2341,11 @@
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
               <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGELUARAN TOKO</span>
               <h3 class="text-lg sm:text-2xl font-extrabold text-red-500 mt-1" id="lap-pengeluaran">Rp0</h3>
+            </div>
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+              <span class="text-[9px] sm:text-[10px] font-bold text-red-500 uppercase tracking-wider">TOTAL ARUS PENGELUARAN</span>
+              <h3 class="text-lg sm:text-2xl font-extrabold text-red-600 mt-1" id="lap-total-pengeluaran">Rp0</h3>
+              <p class="text-[10px] text-gray-400 mt-1">Toko + BRI Link</p>
             </div>
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
               <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">REFUND RETUR PELANGGAN</span>
@@ -3329,12 +3334,14 @@
     }
 
     async function syncToCloud(col, docId, data) {
-      if (isFirebaseReady && db) {
-        try {
-          await db.collection(col).doc(String(docId)).set(data, { merge: true });
-        } catch (err) {
-          console.error(`Sync fail [${col}]:`, err);
-        }
+      if (!isFirebaseReady || !db) return true;
+      try {
+        await db.collection(col).doc(String(docId)).set(data, { merge: true });
+        return true;
+      } catch (err) {
+        console.error(`Sync fail [${col}]:`, err);
+        showToast(`Gagal menyimpan ${col} ke Cloud. Periksa koneksi/Firebase.`, 'error');
+        return false;
       }
     }
 
@@ -4485,6 +4492,10 @@
 
       initializeDateFilters();
       const today = getTodayISODate();
+      const expenseDate = document.getElementById('filter-pengeluaran-date');
+      if (expenseDate && !expenseDate.value) expenseDate.value = today;
+      const incomeDate = document.getElementById('filter-pemasukan-date');
+      if (incomeDate && !incomeDate.value) incomeDate.value = today;
       if (document.getElementById('laporan-period')) document.getElementById('laporan-period').value = today.slice(0, 7);
 
       document.querySelectorAll('.admin-only').forEach(el => {
@@ -5268,54 +5279,65 @@
       const type = document.getElementById('kas-type').value;
       const kategori = document.getElementById('kas-kategori').value.trim();
       const metode = document.getElementById('kas-metode').value;
-      const nominal = parseInt(document.getElementById('kas-nominal').value, 10) || 0;
+      const nominal = parseInt(
+        String(document.getElementById('kas-nominal').value || '').replace(/[^0-9]/g, ''),
+        10
+      ) || 0;
       const catatan = document.getElementById('kas-catatan').value.trim();
 
+      if (!kategori) {
+        showToast('Kategori wajib diisi', 'error');
+        return;
+      }
+
       if (nominal <= 0) {
-        showToast('Nominal harus lebih dari 0');
+        showToast('Nominal harus lebih dari 0', 'error');
         return;
       }
 
       const now = new Date();
+      const timestamp = now.getTime();
       const dateKey = getLocalDateKey(now);
       const timeStr = now.toLocaleDateString('id-ID', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        second: '2-digit'
       }) + ' WIB';
 
       if (type === 'pemasukan') {
         const entry = {
-          id: 'IN-' + Date.now(),
+          id: 'IN-' + timestamp,
           dateKey,
           tanggal: timeStr,
+          timestamp,
           kategori,
           metode,
           nominal,
           catatan,
-          source: 'manual'
+          source: 'manual',
+          flowType: 'pemasukan'
         };
 
-        pemasukans.unshift(entry);
-        await syncToCloud("pemasukans", entry.id, entry);
+        const saved = await syncToCloud("pemasukans", entry.id, entry);
+        if (!saved) return;
+
+        if (!isFirebaseReady) pemasukans.unshift(entry);
         addLog('CASH_IN', `Pemasukan manual Rp${nominal.toLocaleString('id-ID')}`);
       } else {
-        // Baca pilihan radio secara eksplisit dari elemen yang diklik.
-        // Ini mencegah pilihan BRI Link jatuh kembali ke "toko".
         const radioBrilink = document.getElementById('target-brilink');
-        const radioToko = document.getElementById('target-toko');
-        const expenseType = radioBrilink && radioBrilink.checked
-          ? 'brilink'
-          : (radioToko && radioToko.checked ? 'toko' : 'toko');
+        const expenseType = radioBrilink && radioBrilink.checked ? 'brilink' : 'toko';
 
         const entry = {
-          id: (expenseType === 'brilink' ? 'EXP-BRI-' : 'EXP-TOK-') + Date.now(),
+          id: (expenseType === 'brilink' ? 'EXP-BRI-' : 'EXP-TOK-') + timestamp,
           expenseType,
           jenisPengeluaran: expenseType,
+          flowType: 'pengeluaran',
           dateKey,
           tanggal: timeStr,
+          timestamp,
           kategori,
           metode,
           nominal,
@@ -5323,8 +5345,12 @@
           source: 'manual'
         };
 
-        pengeluarans.unshift(entry);
-        await syncToCloud("pengeluarans", entry.id, entry);
+        const saved = await syncToCloud("pengeluarans", entry.id, entry);
+        if (!saved) return;
+
+        // Listener Firestore akan mengisi state saat Cloud aktif.
+        // Mode lokal tetap langsung menampilkan transaksi.
+        if (!isFirebaseReady) pengeluarans.unshift(entry);
 
         addLog(
           'CASH_OUT',
@@ -5336,14 +5362,14 @@
       renderDashboard();
       renderLaporan();
       clearExecutedForm('form-kas');
-      // Setelah reset, pastikan default kembali ke Toko untuk input berikutnya.
+
       const targetToko = document.getElementById('target-toko');
       const targetBri = document.getElementById('target-brilink');
       if (targetToko) targetToko.checked = true;
       if (targetBri) targetBri.checked = false;
 
       closeModal('modal-kas');
-      showToast('Data berhasil disimpan & terintegrasi ke pembukuan!');
+      showToast('Arus kas berhasil disimpan dan masuk ke Laporan Terpadu!');
     }
 
     async function deleteKas(type, id) {
@@ -5396,6 +5422,20 @@
       return { date: document.getElementById(`filter-${prefix}-date`)?.value || getTodayISODate() };
     }
 
+    function getExpenseType(item) {
+      const raw = String(
+        item?.expenseType ??
+        item?.jenisPengeluaran ??
+        item?.target ??
+        item?.tipe ??
+        'toko'
+      ).trim().toLowerCase();
+
+      return raw === 'brilink' || raw === 'bri link' || raw === 'bri_link'
+        ? 'brilink'
+        : 'toko';
+    }
+
     function matchesPeriod(item, prefix) {
       return getItemDateKey(item) === getPeriodFilter(prefix).date;
     }
@@ -5439,10 +5479,13 @@
 
       const tbodyKeluar = document.getElementById('table-pengeluaran-body');
       if (tbodyKeluar) {
-        const filteredPengeluarans = pengeluarans.filter(p => matchesPeriod(p, 'pengeluaran'));
-        const totalSemuaKeluar = filteredPengeluarans.reduce((s, i) => s + (i.nominal || 0), 0);
-        const expToko = filteredPengeluarans.filter(p => !p.expenseType || p.expenseType === 'toko');
-        const expBri = filteredPengeluarans.filter(p => p.expenseType === 'brilink');
+        const filteredPengeluarans = pengeluarans
+          .filter(p => matchesPeriod(p, 'pengeluaran'))
+          .sort((a, b) => Number(b.timestamp || 0) - Number(a.timestamp || 0));
+
+        const totalSemuaKeluar = filteredPengeluarans.reduce((s, i) => s + (Number(i.nominal) || 0), 0);
+        const expToko = filteredPengeluarans.filter(p => getExpenseType(p) === 'toko');
+        const expBri = filteredPengeluarans.filter(p => getExpenseType(p) === 'brilink');
 
         const totalToko = expToko.reduce((s, i) => s + (i.nominal || 0), 0);
         const totalBri = expBri.reduce((s, i) => s + (i.nominal || 0), 0);
@@ -5460,7 +5503,7 @@
         tbodyKeluar.innerHTML = filteredKeluar.length === 0
           ? `<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Tidak ada catatan pengeluaran (${activePengeluaranTab})</td></tr>`
           : filteredKeluar.map((p, idx) => {
-            const isBri = p.expenseType === 'brilink';
+            const isBri = getExpenseType(p) === 'brilink';
             return `
               <tr class="hover:bg-gray-50/60 transition">
                 <td class="px-4 sm:px-6 py-3 font-semibold">${idx + 1}</td>
@@ -6251,8 +6294,8 @@
       const totalSales = validTx.reduce((s, i) => s + n(i.total), 0);
       const grossProfit = validTx.reduce((s, i) => s + n(i.profit), 0);
 
-      const tokoExp = monthExp.filter(p => !p.expenseType || p.expenseType === 'toko');
-      const briExp = monthExp.filter(p => p.expenseType === 'brilink');
+      const tokoExp = monthExp.filter(p => getExpenseType(p) === 'toko');
+      const briExp = monthExp.filter(p => getExpenseType(p) === 'brilink');
       const totalExpToko = tokoExp.reduce((s, i) => s + n(i.nominal), 0);
       const totalExpBri = briExp.reduce((s, i) => s + n(i.nominal), 0);
 
@@ -6286,6 +6329,7 @@
       setMoney('lap-pemasukan', totalPemasukan);
       setMoney('lap-retur-supplier', totalReturSupplier);
       setMoney('lap-pengeluaran', totalExpToko);
+      setMoney('lap-total-pengeluaran', totalExpToko + totalExpBri);
       setMoney('lap-retur-pelanggan', totalRefundReturPelanggan);
       setMoney('lap-lababersih', netProfitToko);
 
@@ -6665,8 +6709,8 @@
       const totalSales = validTx.reduce((s, i) => s + (Number(i.total) || 0), 0);
       const totalProfit = validTx.reduce((s, i) => s + (Number(i.profit) || 0), 0);
       const totalExpenses = selectedExpenses.reduce((s, i) => s + (Number(i.nominal) || 0), 0);
-      const expToko = selectedExpenses.filter(p => !p.expenseType || p.expenseType === 'toko').reduce((s, i) => s + (Number(i.nominal) || 0), 0);
-      const expBri = selectedExpenses.filter(p => p.expenseType === 'brilink').reduce((s, i) => s + (Number(i.nominal) || 0), 0);
+      const expToko = selectedExpenses.filter(p => getExpenseType(p) === 'toko').reduce((s, i) => s + (Number(i.nominal) || 0), 0);
+      const expBri = selectedExpenses.filter(p => getExpenseType(p) === 'brilink').reduce((s, i) => s + (Number(i.nominal) || 0), 0);
       const totalBriLink = selectedBri.reduce((s, i) => s + (Number(i.profit) || 0), 0);
 
       let periodText;
@@ -8097,7 +8141,7 @@
         const lVal = dayTx.reduce((acc, t) => acc + (Number(t.profit) || 0), 0);
 
         const dayExp = pengeluarans.filter(p =>
-          p.dateKey === isoDate && (!p.expenseType || p.expenseType === 'toko')
+          p.dateKey === isoDate && getExpenseType(p) === 'toko'
         );
         const eVal = dayExp.reduce((acc, p) => acc + (Number(p.nominal) || 0), 0);
 
@@ -8146,7 +8190,7 @@
         const bVol = dayBri.reduce((acc, b) => acc + (b.nominal || 0), 0);
         const bFee = dayBri.reduce((acc, b) => acc + (b.fee || 0), 0);
         const bProfit = dayBri.reduce((acc, b) => acc + (b.profit || 0), 0);
-        const bExp = pengeluarans.filter(p => p.dateKey === isoDate && p.expenseType === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
+        const bExp = pengeluarans.filter(p => p.dateKey === isoDate && getExpenseType(p) === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
 
         rows.push({
           'Tanggal': simpleDate,
