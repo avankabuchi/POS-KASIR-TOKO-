@@ -5894,12 +5894,32 @@
       const now = new Date();
       const dateKey = now.toISOString().slice(0, 10);
       const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
-      const briId = 'BRI-' + dateKey.replace(/-/g, '') + '-' + String(brilinks.length + 1).padStart(4, '0');
+      // ID TRANSAKSI HARUS SELALU UNIK.
+      // Jangan menggunakan brilinks.length + 1 karena onSnapshot Firestore
+      // bersifat asinkron. Jika transaksi baru disimpan sebelum snapshot
+      // terbaru masuk, dua transaksi dapat memperoleh ID yang sama dan
+      // dokumen lama akan tertimpa.
+      const uniqueSuffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+      const briId = `BRI-${dateKey.replace(/-/g, '')}-${uniqueSuffix}`;
 
-      const entry = { id: briId, timestamp: Date.now(), dateKey, waktu: timeStr, jenis, nominal, fee, profit, user: currentUser.name };
-      
-      if (!isFirebaseReady) brilinks.unshift(entry);
-      else await syncToCloud("brilinks", briId, entry);
+      const entry = {
+        id: briId,
+        timestamp: Date.now(),
+        dateKey,
+        waktu: timeStr,
+        jenis,
+        nominal,
+        fee,
+        profit,
+        user: currentUser.name
+      };
+
+      if (!isFirebaseReady) {
+        brilinks.unshift(entry);
+      } else {
+        const saved = await syncToCloud("brilinks", briId, entry);
+        if (!saved) return;
+      }
 
       addLog('BRI_LINK_TXN', `BRI Link ${briId} profit Rp${profit.toLocaleString('id-ID')}`);
       closeModal('modal-brilink');
