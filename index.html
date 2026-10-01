@@ -3202,7 +3202,13 @@
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3 text-xs">
       <div class="flex justify-between items-center border-b pb-2"><h3 class="font-bold text-sm">Transaksi BRI Link</h3><button onclick="closeModal('modal-brilink')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
       <form id="form-brilink" onsubmit="saveBriLinkTx(event)" class="space-y-3">
-        <select id="bri-jenis" class="w-full border rounded-xl p-2.5 font-bold"><option value="TARIK TUNAI">TARIK TUNAI</option><option value="TRANSFER">TRANSFER</option><option value="SETOR TUNAI">SETOR TUNAI</option><option value="TOP UP E-WALLET">TOP UP E-WALLET</option></select>
+        <select id="bri-jenis" class="w-full border rounded-xl p-2.5 font-bold">
+          <option value="TARIK TUNAI">TARIK TUNAI</option>
+          <option value="TRANSFER">TRANSFER</option>
+          <option value="SETOR TUNAI">SETOR TUNAI</option>
+          <option value="TOP UP E-WALLET">TOP UP E-WALLET</option>
+          <option value="FEE BRILINK">FEE BRILINK</option>
+        </select>
         <input type="number" id="bri-nominal" placeholder="Nominal Transaksi (Rp)" class="w-full border rounded-xl p-2.5 font-bold" required />
         <div class="grid grid-cols-2 gap-2">
           <input type="number" id="bri-fee" placeholder="Fee Admin Total (Rp)" class="border rounded-xl p-2.5 font-semibold" required />
