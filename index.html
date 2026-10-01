@@ -1357,8 +1357,7 @@
   #brilink-bulanan-view table td { white-space: nowrap; }
   #brilink-monthly-profit { letter-spacing: -0.02em; }
   @media print {
-    #brilink-monthly-period,
-    #brilink-view-btn-transaksi,
+        #brilink-view-btn-transaksi,
     #brilink-view-btn-bulanan { display:none !important; }
   }
 </style>
@@ -2299,8 +2298,25 @@
             <div class="flex flex-wrap items-end gap-2">
               <div>
                 <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Pilih Bulan</label>
-                <input type="month" id="brilink-monthly-period" onchange="renderBrilinkMonthlyReport()"
-                       class="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500" />
+                <div class="flex items-center gap-1.5">
+                  <select id="brilink-monthly-month" onchange="renderBrilinkMonthlyReport()"
+                          class="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500 bg-white">
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                  <select id="brilink-monthly-year" onchange="renderBrilinkMonthlyReport()"
+                          class="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500 bg-white"></select>
+                </div>
               </div>
               <button onclick="exportBrilinkMonthlyExcel()"
                       class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5">
@@ -6141,6 +6157,7 @@
         bulanan.classList.remove('hidden');
         btnTransaksi.className = inactiveClass;
         btnBulanan.className = activeClass;
+        initBrilinkMonthlyPeriod();
         renderBrilinkMonthlyReport();
       } else {
         bulanan.classList.add('hidden');
@@ -6151,14 +6168,54 @@
       lucide.createIcons();
     }
 
-    function getBrilinkMonthlyPeriod() {
-      const el = document.getElementById('brilink-monthly-period');
+    function initBrilinkMonthlyPeriod() {
+      const monthEl = document.getElementById('brilink-monthly-month');
+      const yearEl = document.getElementById('brilink-monthly-year');
+      if (!monthEl || !yearEl) return;
+
       const now = new Date();
-      const fallback = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-      const value = el?.value || fallback;
-      const [yearRaw, monthRaw] = value.split('-').map(Number);
-      const year = yearRaw || now.getFullYear();
-      const month = monthRaw || now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+      const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+      const years = new Set();
+
+      // Sediakan tahun sekarang ± 5 tahun agar histori tetap bisa dipilih manual.
+      for (let y = currentYear - 5; y <= currentYear + 1; y++) years.add(y);
+
+      // Tambahkan tahun yang memang ada di data transaksi/pengeluaran.
+      brilinks.forEach(b => {
+        const m = String(b.dateKey || '').match(/^(\d{4})-/);
+        if (m) years.add(Number(m[1]));
+      });
+      pengeluarans.forEach(p => {
+        const m = String(p.dateKey || '').match(/^(\d{4})-/);
+        if (m) years.add(Number(m[1]));
+      });
+
+      yearEl.innerHTML = [...years].sort((a, b) => a - b)
+        .map(y => `<option value="${y}">${y}</option>`).join('');
+
+      // Setiap kali laporan bulanan dibuka, otomatis kembali ke bulan & tahun saat ini.
+      monthEl.value = currentMonth;
+      yearEl.value = String(currentYear);
+    }
+
+    function getBrilinkMonthlyPeriod() {
+      const monthEl = document.getElementById('brilink-monthly-month');
+      const yearEl = document.getElementById('brilink-monthly-year');
+      const now = new Date();
+
+      if (!monthEl || !yearEl) {
+        const fallback = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        return {
+          value: fallback,
+          year: now.getFullYear(),
+          month: now.getMonth() + 1,
+          label: new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+        };
+      }
+
+      const year = Number(yearEl.value) || now.getFullYear();
+      const month = Number(monthEl.value) || (now.getMonth() + 1);
       return {
         value: `${year}-${String(month).padStart(2, '0')}`,
         year,
