@@ -1351,6 +1351,17 @@
   }
 }
 </style>
+
+<style id="brilink-monthly-polish">
+  #brilink-bulanan-view table th,
+  #brilink-bulanan-view table td { white-space: nowrap; }
+  #brilink-monthly-profit { letter-spacing: -0.02em; }
+  @media print {
+    #brilink-monthly-period,
+    #brilink-view-btn-transaksi,
+    #brilink-view-btn-bulanan { display:none !important; }
+  }
+</style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
@@ -2209,6 +2220,23 @@
           <p class="text-xs text-gray-500 mt-0.5">Transaksi agen perbankan otomatis menyatu ke pemasukan dan laporan</p>
         </div>
 
+        <!-- PILIHAN TAMPILAN BRI LINK -->
+        <div class="bg-white rounded-2xl border border-gray-200 p-1.5 shadow-sm flex flex-wrap gap-1">
+          <button id="brilink-view-btn-transaksi"
+                  onclick="switchBrilinkView('transaksi')"
+                  class="flex-1 min-w-[150px] px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold flex items-center justify-center gap-2 transition">
+            <i data-lucide="list" class="w-4 h-4"></i>
+            <span>Transaksi BRI Link</span>
+          </button>
+          <button id="brilink-view-btn-bulanan"
+                  onclick="switchBrilinkView('bulanan')"
+                  class="flex-1 min-w-[150px] px-4 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-xs font-extrabold flex items-center justify-center gap-2 transition">
+            <i data-lucide="calendar-days" class="w-4 h-4"></i>
+            <span>Laporan Bulanan</span>
+          </button>
+        </div>
+
+        <div id="brilink-transaksi-view" class="space-y-4 sm:space-y-5">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENGHASILAN HARI INI</span>
@@ -2257,6 +2285,94 @@
               </thead>
               <tbody id="table-brilink-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
             </table>
+          </div>
+        </div>
+        </div>
+
+        <!-- LAPORAN BULANAN BRI LINK LANGSUNG DARI MENU BRI LINK -->
+        <div id="brilink-bulanan-view" class="hidden space-y-4">
+          <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+            <div>
+              <h2 class="text-sm sm:text-base font-extrabold text-gray-900">Laporan Bulanan BRI Link</h2>
+              <p class="text-[11px] text-gray-500 mt-1">Ringkasan seluruh transaksi BRI Link berdasarkan bulan yang dipilih.</p>
+            </div>
+            <div class="flex flex-wrap items-end gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Pilih Bulan</label>
+                <input type="month" id="brilink-monthly-period" onchange="renderBrilinkMonthlyReport()"
+                       class="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500" />
+              </div>
+              <button onclick="exportBrilinkMonthlyExcel()"
+                      class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                Export Excel
+              </button>
+              <button onclick="printCustomArea('printable-brilink-monthly')"
+                      class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                Cetak
+              </button>
+            </div>
+          </div>
+
+          <div id="printable-brilink-monthly" class="space-y-4">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+              <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Total Transaksi</div>
+                <div id="brilink-monthly-tx" class="text-xl font-black text-gray-900 mt-1">0</div>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Volume Transaksi</div>
+                <div id="brilink-monthly-volume" class="text-lg sm:text-xl font-black text-blue-700 mt-1">Rp0</div>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Fee / Admin</div>
+                <div id="brilink-monthly-fee" class="text-lg sm:text-xl font-black text-teal-600 mt-1">Rp0</div>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Pengeluaran</div>
+                <div id="brilink-monthly-exp" class="text-lg sm:text-xl font-black text-red-600 mt-1">Rp0</div>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Laba Bersih</div>
+                <div id="brilink-monthly-profit" class="text-lg sm:text-xl font-black text-emerald-700 mt-1">Rp0</div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div class="px-4 sm:px-6 py-3.5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <div>
+                  <h3 class="text-xs font-extrabold text-gray-800">Rekap Harian BRI Link</h3>
+                  <p id="brilink-monthly-label" class="text-[10px] text-gray-400 mt-0.5">Bulan berjalan</p>
+                </div>
+                <span class="text-[10px] text-gray-400">Volume + Fee + Pengeluaran + Laba Bersih</span>
+              </div>
+              <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-xs min-w-[760px]">
+                  <thead class="bg-gray-50 text-gray-500 uppercase tracking-wider font-bold">
+                    <tr>
+                      <th class="px-4 py-3 text-left">Tanggal</th>
+                      <th class="px-4 py-3 text-center">Transaksi</th>
+                      <th class="px-4 py-3 text-right">Volume</th>
+                      <th class="px-4 py-3 text-right">Fee / Admin</th>
+                      <th class="px-4 py-3 text-right text-red-500">Pengeluaran</th>
+                      <th class="px-4 py-3 text-right text-emerald-700">Laba Bersih</th>
+                    </tr>
+                  </thead>
+                  <tbody id="brilink-monthly-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+                  <tfoot class="bg-gray-50 border-t-2 border-gray-200">
+                    <tr class="font-black">
+                      <td class="px-4 py-3">TOTAL BULAN</td>
+                      <td id="brilink-monthly-total-tx" class="px-4 py-3 text-center">0</td>
+                      <td id="brilink-monthly-total-volume" class="px-4 py-3 text-right">Rp0</td>
+                      <td id="brilink-monthly-total-fee" class="px-4 py-3 text-right">Rp0</td>
+                      <td id="brilink-monthly-total-exp" class="px-4 py-3 text-right text-red-600">Rp0</td>
+                      <td id="brilink-monthly-total-profit" class="px-4 py-3 text-right text-emerald-700">Rp0</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -3277,7 +3393,11 @@
 
       db.collection("brilinks").onSnapshot(snapshot => {
         brilinks = [];
-        snapshot.forEach(doc => brilinks.push({ id: doc.id, ...doc.data() }));
+        snapshot.forEach(doc => {
+          // Dokumen counter bukan transaksi dan tidak boleh tampil di laporan/tabel.
+          if (doc.id.startsWith('__BRI_COUNTER__')) return;
+          brilinks.push({ id: doc.id, ...doc.data() });
+        });
         brilinks.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         renderBriLinkTable();
         renderDashboard();
@@ -5884,6 +6004,51 @@
 
     function openModalBriLink() { openModal('modal-brilink'); }
 
+    // Membuat kode acak 4 karakter. Karakter yang mudah tertukar (I/O/0/1) dihindari.
+    function generateBriRandomCode(length = 4) {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    // Mengambil nomor urut harian secara aman. Jika Firebase aktif, counter
+    // disimpan sebagai dokumen khusus di collection brilinks agar dua perangkat
+    // tidak mendapatkan nomor urut yang sama secara bersamaan.
+    async function getNextBriSequence(dateKey) {
+      const datePart = String(dateKey).replace(/-/g, '');
+      const counterId = `__BRI_COUNTER__${datePart}`;
+
+      if (isFirebaseReady && db) {
+        try {
+          const counterRef = db.collection('brilinks').doc(counterId);
+          const nextSequence = await db.runTransaction(async transaction => {
+            const snap = await transaction.get(counterRef);
+            const current = snap.exists ? Number(snap.data().value || 0) : 0;
+            const next = current + 1;
+            transaction.set(counterRef, {
+              value: next,
+              dateKey,
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            return next;
+          });
+          return nextSequence;
+        } catch (err) {
+          console.warn('Counter BRI Link gagal, menggunakan urutan lokal:', err);
+        }
+      }
+
+      const today = brilinks.filter(tx => String(tx.dateKey || '') === String(dateKey));
+      const maxSequence = today.reduce((max, tx) => {
+        const match = String(tx.id || '').match(/^BRI-\d{8}-(\d{4})-/);
+        return Math.max(max, match ? Number(match[1]) : 0);
+      }, 0);
+      return maxSequence + 1;
+    }
+
     async function saveBriLinkTx(e) {
       e.preventDefault();
       const jenis = document.getElementById('bri-jenis').value;
@@ -5891,44 +6056,62 @@
       const fee = parseInt(document.getElementById('bri-fee').value) || 0;
       const profit = parseInt(document.getElementById('bri-profit').value) || 0;
 
-      const now = new Date();
-      const dateKey = now.toISOString().slice(0, 10);
-      const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
-      // ID TRANSAKSI HARUS SELALU UNIK.
-      // Jangan menggunakan brilinks.length + 1 karena onSnapshot Firestore
-      // bersifat asinkron. Jika transaksi baru disimpan sebelum snapshot
-      // terbaru masuk, dua transaksi dapat memperoleh ID yang sama dan
-      // dokumen lama akan tertimpa.
-      const uniqueSuffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-      const briId = `BRI-${dateKey.replace(/-/g, '')}-${uniqueSuffix}`;
-
-      const entry = {
-        id: briId,
-        timestamp: Date.now(),
-        dateKey,
-        waktu: timeStr,
-        jenis,
-        nominal,
-        fee,
-        profit,
-        user: currentUser.name
-      };
-
-      if (!isFirebaseReady) {
-        brilinks.unshift(entry);
-      } else {
-        const saved = await syncToCloud("brilinks", briId, entry);
-        if (!saved) return;
+      if (nominal <= 0) {
+        showToast('Nominal transaksi harus lebih dari Rp0', 'error');
+        return;
       }
 
-      addLog('BRI_LINK_TXN', `BRI Link ${briId} profit Rp${profit.toLocaleString('id-ID')}`);
-      closeModal('modal-brilink');
-      renderBriLinkTable();
-      renderDashboard();
-      renderLaporan();
-      renderKasTable();
-      clearExecutedForm('form-brilink');
-      showToast('Transaksi BRI Link tersimpan di Cloud!');
+      const submitBtn = document.querySelector('#form-brilink button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const now = new Date();
+        // Gunakan tanggal lokal agar transaksi setelah 00:00 WIB tidak masuk tanggal UTC.
+        const dateKey = getLocalDateKey(now);
+        const datePart = dateKey.replace(/-/g, '');
+        const timeStr = now.toLocaleDateString('id-ID', {
+          day: '2-digit', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', second: '2-digit'
+        }) + ' WIB';
+
+        const sequence = await getNextBriSequence(dateKey);
+        const sequencePart = String(sequence).padStart(4, '0');
+        const randomPart = generateBriRandomCode(4);
+        const briId = `BRI-${datePart}-${sequencePart}-${randomPart}`;
+
+        const entry = {
+          id: briId,
+          timestamp: Date.now(),
+          dateKey,
+          waktu: timeStr,
+          jenis,
+          nominal,
+          fee,
+          profit,
+          user: currentUser?.name || 'Sistem'
+        };
+
+        if (!isFirebaseReady) {
+          brilinks.unshift(entry);
+        } else {
+          const saved = await syncToCloud('brilinks', briId, entry);
+          if (!saved) throw new Error('Gagal menyimpan transaksi BRI Link ke Cloud.');
+        }
+
+        addLog('BRI_LINK_TXN', `BRI Link ${briId} profit Rp${profit.toLocaleString('id-ID')}`);
+        closeModal('modal-brilink');
+        renderBriLinkTable();
+        renderDashboard();
+        renderLaporan();
+        renderKasTable();
+        clearExecutedForm('form-brilink');
+        showToast(`Transaksi ${briId} berhasil disimpan!`);
+      } catch (err) {
+        console.error('Gagal menyimpan transaksi BRI Link:', err);
+        showToast('Transaksi BRI Link gagal disimpan. Data lama tidak diubah.', 'error');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
     }
 
     async function deleteBriLink(id) {
@@ -5940,6 +6123,158 @@
       renderLaporan();
       renderKasTable();
       showToast('Transaksi BRI Link dihapus');
+    }
+
+
+    function switchBrilinkView(view) {
+      const transaksi = document.getElementById('brilink-transaksi-view');
+      const bulanan = document.getElementById('brilink-bulanan-view');
+      const btnTransaksi = document.getElementById('brilink-view-btn-transaksi');
+      const btnBulanan = document.getElementById('brilink-view-btn-bulanan');
+      if (!transaksi || !bulanan || !btnTransaksi || !btnBulanan) return;
+
+      const activeClass = 'flex-1 min-w-[150px] px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold flex items-center justify-center gap-2 transition';
+      const inactiveClass = 'flex-1 min-w-[150px] px-4 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-xs font-extrabold flex items-center justify-center gap-2 transition';
+
+      if (view === 'bulanan') {
+        transaksi.classList.add('hidden');
+        bulanan.classList.remove('hidden');
+        btnTransaksi.className = inactiveClass;
+        btnBulanan.className = activeClass;
+        renderBrilinkMonthlyReport();
+      } else {
+        bulanan.classList.add('hidden');
+        transaksi.classList.remove('hidden');
+        btnTransaksi.className = activeClass;
+        btnBulanan.className = inactiveClass;
+      }
+      lucide.createIcons();
+    }
+
+    function getBrilinkMonthlyPeriod() {
+      const el = document.getElementById('brilink-monthly-period');
+      const now = new Date();
+      const fallback = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const value = el?.value || fallback;
+      const [yearRaw, monthRaw] = value.split('-').map(Number);
+      const year = yearRaw || now.getFullYear();
+      const month = monthRaw || now.getMonth() + 1;
+      return {
+        value: `${year}-${String(month).padStart(2, '0')}`,
+        year,
+        month,
+        label: new Date(year, month - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+      };
+    }
+
+    function renderBrilinkMonthlyReport() {
+      const period = getBrilinkMonthlyPeriod();
+      const monthKey = period.value;
+      const n = v => Number(v) || 0;
+      const monthBri = brilinks.filter(b => String(b.dateKey || '').startsWith(monthKey));
+      const monthExp = pengeluarans.filter(p =>
+        String(p.dateKey || '').startsWith(monthKey) && getExpenseType(p) === 'brilink'
+      );
+
+      const totalTx = monthBri.length;
+      const totalVolume = monthBri.reduce((s, b) => s + n(b.nominal), 0);
+      const totalFee = monthBri.reduce((s, b) => s + n(b.fee), 0);
+      const totalProfitKotor = monthBri.reduce((s, b) => s + n(b.profit), 0);
+      const totalExp = monthExp.reduce((s, p) => s + n(p.nominal), 0);
+      const totalProfitBersih = totalProfitKotor - totalExp;
+
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = value;
+      };
+      const rp = value => 'Rp' + n(value).toLocaleString('id-ID');
+
+      setText('brilink-monthly-tx', totalTx.toLocaleString('id-ID'));
+      setText('brilink-monthly-volume', rp(totalVolume));
+      setText('brilink-monthly-fee', rp(totalFee));
+      setText('brilink-monthly-exp', rp(totalExp));
+      setText('brilink-monthly-profit', rp(totalProfitBersih));
+      setText('brilink-monthly-label', period.label);
+
+      const rows = [];
+      const totalDays = new Date(period.year, period.month, 0).getDate();
+
+      for (let day = 1; day <= totalDays; day++) {
+        const isoDate = `${monthKey}-${String(day).padStart(2, '0')}`;
+        const dayBri = monthBri.filter(b => b.dateKey === isoDate);
+        const dayExp = monthExp.filter(p => p.dateKey === isoDate);
+        const volume = dayBri.reduce((s, b) => s + n(b.nominal), 0);
+        const fee = dayBri.reduce((s, b) => s + n(b.fee), 0);
+        const profit = dayBri.reduce((s, b) => s + n(b.profit), 0);
+        const exp = dayExp.reduce((s, p) => s + n(p.nominal), 0);
+        const net = profit - exp;
+
+        rows.push({
+          isoDate,
+          day,
+          tx: dayBri.length,
+          volume,
+          fee,
+          exp,
+          net
+        });
+      }
+
+      const tbody = document.getElementById('brilink-monthly-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = rows.map(r => `
+        <tr class="hover:bg-gray-50/70">
+          <td class="px-4 py-3 font-semibold">${String(r.day).padStart(2, '0')}/${String(period.month).padStart(2, '0')}/${period.year}</td>
+          <td class="px-4 py-3 text-center font-bold">${r.tx}</td>
+          <td class="px-4 py-3 text-right">${rp(r.volume)}</td>
+          <td class="px-4 py-3 text-right text-teal-700">${rp(r.fee)}</td>
+          <td class="px-4 py-3 text-right text-red-600">${rp(r.exp)}</td>
+          <td class="px-4 py-3 text-right font-extrabold ${r.net >= 0 ? 'text-emerald-700' : 'text-red-600'}">${rp(r.net)}</td>
+        </tr>
+      `).join('');
+
+      setText('brilink-monthly-total-tx', totalTx.toLocaleString('id-ID'));
+      setText('brilink-monthly-total-volume', rp(totalVolume));
+      setText('brilink-monthly-total-fee', rp(totalFee));
+      setText('brilink-monthly-total-exp', rp(totalExp));
+      setText('brilink-monthly-total-profit', rp(totalProfitBersih));
+    }
+
+    function exportBrilinkMonthlyExcel() {
+      const period = getBrilinkMonthlyPeriod();
+      const n = v => Number(v) || 0;
+      const monthBri = brilinks.filter(b => String(b.dateKey || '').startsWith(period.value));
+      const monthExp = pengeluarans.filter(p =>
+        String(p.dateKey || '').startsWith(period.value) && getExpenseType(p) === 'brilink'
+      );
+      const rows = [];
+      const totalDays = new Date(period.year, period.month, 0).getDate();
+
+      for (let day = 1; day <= totalDays; day++) {
+        const isoDate = `${period.value}-${String(day).padStart(2, '0')}`;
+        const dayBri = monthBri.filter(b => b.dateKey === isoDate);
+        const dayExp = monthExp.filter(p => p.dateKey === isoDate);
+        const volume = dayBri.reduce((s, b) => s + n(b.nominal), 0);
+        const fee = dayBri.reduce((s, b) => s + n(b.fee), 0);
+        const profit = dayBri.reduce((s, b) => s + n(b.profit), 0);
+        const exp = dayExp.reduce((s, p) => s + n(p.nominal), 0);
+
+        rows.push({
+          'Tanggal': `${String(day).padStart(2, '0')}/${String(period.month).padStart(2, '0')}/${period.year}`,
+          'Jumlah Transaksi': dayBri.length,
+          'Volume Transaksi': volume,
+          'Fee / Admin': fee,
+          'Pengeluaran BRI Link': exp,
+          'Laba Bersih': profit - exp
+        });
+      }
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Laporan BRI Link');
+      XLSX.writeFile(wb, `Laporan_BRILink_${period.value}.xlsx`);
+      showToast(`Laporan BRI Link ${period.label} berhasil diexport`);
     }
 
     function renderBriLinkTable() {
