@@ -1868,10 +1868,10 @@
             <div class="p-3 sm:p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
               <div class="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 w-full sm:w-72">
                 <i data-lucide="search" class="w-4 h-4 text-gray-400 shrink-0"></i>
-                <input type="text" id="filter-barang-search" oninput="renderProductsTable()" placeholder="Cari nama / kode / barcode..." class="text-xs bg-transparent outline-none w-full" />
+                <input type="text" id="filter-barang-search" oninput="scheduleRenderProductsTable()" placeholder="Cari nama / kode / barcode..." class="text-xs bg-transparent outline-none w-full" />
               </div>
               <div class="flex items-center space-x-2 text-xs">
-                <select id="filter-barang-kategori" onchange="renderProductsTable()" class="flex-1 sm:flex-none border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 font-medium">
+                <select id="filter-barang-kategori" onchange="barangPage=1; renderProductsTable()" class="flex-1 sm:flex-none border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 font-medium">
                   <option value="semua">Semua Kategori</option>
                   <option value="Minuman">Minuman</option>
                   <option value="Sembako">Sembako</option>
@@ -1904,6 +1904,7 @@
                 <tbody id="table-barang-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
               </table>
             </div>
+            <div id="barang-pagination" class="px-3 py-2 border-t border-gray-100 bg-white"></div>
           </div>
         </div>
 
@@ -4555,10 +4556,52 @@
       if (elValue) elValue.textContent = 'Rp' + totalAsset.toLocaleString('id-ID');
     }
 
-    function renderProductsTable() {
-      updateAssetSummary();
+    // Optimasi katalog barang: jangan membangun seluruh tabel setiap kali
+    // pengguna mengetik. Hanya 100 baris yang sedang terlihat yang dibuat.
+    const BARANG_PAGE_SIZE = 100;
+    let barangPage = 1;
+    let barangSearchTimer = null;
+
+    function scheduleRenderProductsTable() {
+      barangPage = 1;
+      clearTimeout(barangSearchTimer);
+      barangSearchTimer = setTimeout(() => renderProductsTable(false), 180);
+    }
+
+    function renderBarangPagination(totalItems) {
+      const el = document.getElementById('barang-pagination');
+      if (!el) return;
+      const totalPages = Math.max(1, Math.ceil(totalItems / BARANG_PAGE_SIZE));
+      barangPage = Math.min(Math.max(1, barangPage), totalPages);
+      if (totalPages <= 1) {
+        el.innerHTML = `<div class="text-[11px] text-gray-400">Menampilkan ${totalItems.toLocaleString('id-ID')} barang</div>`;
+        return;
+      }
+      const start = (barangPage - 1) * BARANG_PAGE_SIZE + 1;
+      const end = Math.min(barangPage * BARANG_PAGE_SIZE, totalItems);
+      el.innerHTML = `
+        <div class="flex items-center justify-between gap-2 text-xs">
+          <span class="text-gray-500">${start.toLocaleString('id-ID')}-${end.toLocaleString('id-ID')} dari ${totalItems.toLocaleString('id-ID')} barang</span>
+          <div class="flex items-center gap-1">
+            <button type="button" onclick="changeBarangPage(-1)" ${barangPage<=1?'disabled':''} class="px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white disabled:opacity-40">‹</button>
+            <span class="px-2 font-semibold text-gray-700">Halaman ${barangPage} / ${totalPages}</span>
+            <button type="button" onclick="changeBarangPage(1)" ${barangPage>=totalPages?'disabled':''} class="px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white disabled:opacity-40">›</button>
+          </div>
+        </div>`;
+    }
+
+    function changeBarangPage(delta) {
+      barangPage += Number(delta) || 0;
+      renderProductsTable(false);
+      const table = document.getElementById('table-barang-body');
+      if (table) table.closest('.overflow-x-auto')?.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function renderProductsTable(updateSummary = true) {
+      if (updateSummary) updateAssetSummary();
       const tbody = document.getElementById('table-barang-body');
-      const search = (document.getElementById('filter-barang-search')?.value || '').toLowerCase();
+      if (!tbody) return;
+      const search = (document.getElementById('filter-barang-search')?.value || '').toLowerCase().trim();
       const kat = document.getElementById('filter-barang-kategori')?.value || 'semua';
       const isAdmin = currentUser && currentUser.role === 'admin';
 
@@ -4566,53 +4609,46 @@
         const nama = String(p.nama || '').toLowerCase();
         const kode = String(p.kode || '').toLowerCase();
         const barcode = String(p.barcode || '').toLowerCase();
-        const matchSearch = nama.includes(search) || kode.includes(search) || barcode.includes(search);
-        const matchKat = kat === 'semua' || p.kategori === kat;
-        const matchMenipis = !filterMenipisOnly || p.stok <= 5;
-        return matchSearch && matchKat && matchMenipis;
+        return (nama.includes(search) || kode.includes(search) || barcode.includes(search)) &&
+               (kat === 'semua' || p.kategori === kat) &&
+               (!filterMenipisOnly || Number(p.stok || 0) <= 5);
       });
       filtered = sortProductsByCode(filtered);
-
       document.getElementById('barang-count-label').innerText = `${products.length} barang terdaftar di sistem cloud`;
 
-      if (filtered.length === 0) {
+      renderBarangPagination(filtered.length);
+      const start = (barangPage - 1) * BARANG_PAGE_SIZE;
+      const visible = filtered.slice(start, start + BARANG_PAGE_SIZE);
+
+      if (visible.length === 0) {
         tbody.innerHTML = `<tr><td colspan="10" class="px-4 py-8 text-center text-gray-400">Tidak ada barang yang cocok</td></tr>`;
+        updateBulkDeleteUI();
         return;
       }
 
-      tbody.innerHTML = filtered.map(p => {
+      tbody.innerHTML = visible.map(p => {
         const isChecked = selectedProductIds.has(String(p.id));
         const grosirPrice = p.hGrosir || Math.round(p.hJual * 0.9);
+        const units = getProductUnits(p);
+        const ecerUnits = units.map(u=>`${u.name}: Rp${Number(u.hJual||0).toLocaleString('id-ID')}`).join(' • ');
+        const grosirUnits = units.map(u=>`${u.name}: Rp${Number(u.hGrosir||0).toLocaleString('id-ID')}`).join(' • ');
         return `
           <tr class="hover:bg-gray-50/60 transition ${isChecked ? 'bg-emerald-50/40' : ''}">
-            ${isAdmin ? `
-              <td class="catalog-select px-2 py-2 text-center">
-                <input type="checkbox" onchange="toggleSelectProduct('${p.id}', this)" ${isChecked ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
-              </td>
-            ` : ''}
+            ${isAdmin ? `<td class="catalog-select px-2 py-2 text-center"><input type="checkbox" onchange="toggleSelectProduct('${p.id}', this)" ${isChecked ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer" /></td>` : ''}
             <td class="catalog-code px-2 py-2 font-semibold text-gray-900">${p.kode}</td>
             <td class="catalog-barcode px-2 py-2 font-mono text-gray-500 text-[11px]" title="${p.barcode || '-'}">${p.barcode || '-'}</td>
             <td class="catalog-name px-2 py-2 font-semibold text-gray-900" title="${p.nama}">${p.nama}</td>
             <td class="catalog-category px-2 py-2 text-gray-500" title="${p.kategori}">${p.kategori}</td>
-            ${isAdmin ? `
-              <td class="catalog-price px-2 py-2 font-medium text-gray-700">
-                Rp${(p.hModal || 0).toLocaleString('id-ID')}
-              </td>
-            ` : ''}
-            <td class="catalog-price px-2 py-2 font-bold text-gray-900">Rp${(p.hJual || 0).toLocaleString('id-ID')}<div class="text-[9px] text-gray-400 mt-1">${getProductUnits(p).map(u=>`${u.name}: Rp${Number(u.hJual||0).toLocaleString('id-ID')}`).join(' • ')}</div></td>
-            <td class="catalog-price px-2 py-2 font-bold text-emerald-700">Rp${grosirPrice.toLocaleString('id-ID')}<div class="text-[9px] text-gray-400 mt-1">${getProductUnits(p).map(u=>`${u.name}: Rp${Number(u.hGrosir||0).toLocaleString('id-ID')}`).join(' • ')}</div></td>
+            ${isAdmin ? `<td class="catalog-price px-2 py-2 font-medium text-gray-700">Rp${(p.hModal || 0).toLocaleString('id-ID')}</td>` : ''}
+            <td class="catalog-price px-2 py-2 font-bold text-gray-900">Rp${(p.hJual || 0).toLocaleString('id-ID')}<div class="text-[9px] text-gray-400 mt-1">${ecerUnits}</div></td>
+            <td class="catalog-price px-2 py-2 font-bold text-emerald-700">Rp${grosirPrice.toLocaleString('id-ID')}<div class="text-[9px] text-gray-400 mt-1">${grosirUnits}</div></td>
             <td class="catalog-stock px-2 py-2 text-center font-extrabold ${Number(p.stok || 0) <= 5 ? 'text-rose-600' : 'text-indigo-700'}">${Number(p.stok || 0).toLocaleString('id-ID')} ${Number(p.stok || 0) <= 5 ? '<span class="text-[10px]">(Menipis)</span>' : ''}</td>
-            ${isAdmin ? `
-              <td class="catalog-actions px-2 py-2">
-                <button onclick="openProductActions('${p.id}')" title="Kelola Barang" class="btn-product-manage" aria-label="Kelola barang">
-                  <i data-lucide="settings-2" class="w-4 h-4"></i><span>Kelola</span>
-                </button>
-              </td>
-            ` : ''}
-          </tr>
-        `;
+            ${isAdmin ? `<td class="catalog-actions px-2 py-2"><button onclick="openProductActions('${p.id}')" title="Kelola Barang" class="btn-product-manage" aria-label="Kelola barang"><i data-lucide="settings-2" class="w-4 h-4"></i><span>Kelola</span></button></td>` : ''}
+          </tr>`;
       }).join('');
-      lucide.createIcons();
+
+      // Ikon hanya perlu diproses untuk 100 baris yang sedang tampil.
+      try { lucide.createIcons({attrs:{'stroke-width':1.8}}); } catch (_) { try { lucide.createIcons(); } catch(e) {} }
       updateBulkDeleteUI();
     }
 
@@ -5261,14 +5297,20 @@
           }
         }
 
-        await normalizeProductCodes(true);
+        // Barang baru/edit biasa sudah memiliki kode yang benar. Normalisasi
+        // hanya dilakukan jika pengguna benar-benar memindahkan nomor kode.
+        if (existingId && requestedNumber !== null) {
+          const currentCodeNumber = parseInt(String(existingProduct?.kode || '').replace(/^P/i, ''), 10);
+          if (currentCodeNumber !== requestedNumber) await normalizeProductCodes(true);
+        }
 
         addLog('SAVE_PRODUCT', `Barang ${nama} (${products.find(p => String(p.id) === String(id))?.kode || kode}) disimpan`);
         clearExecutedForm('form-barang');
         closeModal('modal-barang');
         renderProductsTable();
-        renderPopupBarangList();
-        showToast(existingId ? 'Barang berhasil diperbarui. Urutan kode sudah dirapikan.' : 'Barang berhasil disimpan di Cloud!');
+        const katalog = document.getElementById('modal-katalog-barang');
+        if (katalog && !katalog.classList.contains('hidden')) renderPopupBarangList();
+        showToast(existingId ? 'Barang berhasil diperbarui.' : 'Barang berhasil disimpan di Cloud!');
       } catch (err) {
         console.error('Gagal menyimpan barang:', err);
         showToast('Gagal menyimpan barang. Silakan coba lagi.', 'error');
