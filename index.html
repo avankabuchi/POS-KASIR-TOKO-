@@ -2453,6 +2453,7 @@
         </div>
 
         <div id="section-laporan-toko" class="space-y-4">
+          <div class="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-xs text-emerald-800">Laporan ini <strong>khusus Toko</strong>. Transaksi BRI Link tidak dihitung di laporan Toko.</div>
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
               <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOTAL PENJUALAN</span>
@@ -2475,9 +2476,9 @@
               <h3 class="text-lg sm:text-2xl font-extrabold text-red-500 mt-1" id="lap-pengeluaran">Rp0</h3>
             </div>
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
-              <span class="text-[9px] sm:text-[10px] font-bold text-red-500 uppercase tracking-wider">TOTAL ARUS PENGELUARAN</span>
+              <span class="text-[9px] sm:text-[10px] font-bold text-red-500 uppercase tracking-wider">TOTAL PENGELUARAN TOKO</span>
               <h3 class="text-lg sm:text-2xl font-extrabold text-red-600 mt-1" id="lap-total-pengeluaran">Rp0</h3>
-              <p class="text-[10px] text-gray-400 mt-1">Toko + BRI Link</p>
+              <p class="text-[10px] text-gray-400 mt-1">Khusus operasional & arus kas Toko</p>
             </div>
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
               <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">REFUND RETUR PELANGGAN</span>
@@ -2521,6 +2522,7 @@
         </div>
 
         <div id="section-laporan-brilink" class="space-y-4 hidden">
+          <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs text-blue-800">Laporan ini <strong>khusus BRI Link</strong>. Transaksi Toko tidak dihitung di sini.</div>
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
               <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">VOLUME TRANSAKSI</span>
@@ -4147,7 +4149,7 @@
     }
     function renderProductUnitsEditor(targetId=productUnitsEditorTarget) {
       const box = document.getElementById(targetId); if (!box) return;
-      if (!productUnitsDraft.length) productUnitsDraft=[createUnitDraft('PCS',1,Number(document.getElementById('barang-jual')?.value||0),Number(document.getElementById('barang-grosir')?.value||0))];
+      if (!productUnitsDraft.length) productUnitsDraft=[createUnitDraft('PCS',1,parseMoneyInput(document.getElementById('barang-jual')?.value),parseMoneyInput(document.getElementById('barang-grosir')?.value))];
       box.innerHTML = productUnitsDraft.map((u,i)=>`<div class="unit-row" data-unit-index="${i}">
         <input value="${String(u.name).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" oninput="updateProductUnitDraft(${i},'name',this.value)" placeholder="PCS / PACK / DUS" ${u.conversion===1 && i===0 ? '' : ''}>
         <input type="number" min="1" step="1" value="${u.conversion}" oninput="updateProductUnitDraft(${i},'conversion',this.value)" placeholder="Isi dasar">
@@ -4161,7 +4163,7 @@
       const u=productUnitsDraft[index]; if(!u) return;
       if(key==='name') u.name=String(value||'').trim().toUpperCase();
       else if(key==='conversion') u.conversion=Math.max(1,parseInt(value,10)||1);
-      else u[key]=Math.max(0,Number(value)||0);
+      else u[key]=Math.max(0,parseMoneyInput(value));
       if(index===0 && key==='conversion' && u.conversion!==1){ u.conversion=1; showToast('Satuan pertama harus menjadi satuan dasar dengan isi 1','error'); renderProductUnitsEditor(); }
     }
     function addProductUnitRow(){
@@ -4409,7 +4411,7 @@
     function updateCartPriceFromInput(rowIndex, input) {
       const item = cart[Number(rowIndex)];
       if (!item) return;
-      const value = Number(String(input.value).replace(/[^\d.-]/g, ''));
+      const value = parseMoneyInput(input.value);
       if (!Number.isFinite(value) || value < 0) return;
       item.currentPrice = Math.round(value);
       item.customPrice = true;
@@ -4424,10 +4426,10 @@
     function normalizeCartPriceInput(rowIndex, input) {
       const item = cart[Number(rowIndex)];
       if (!item) return;
-      let value = Number(String(input.value).replace(/[^\d.-]/g, ''));
+      let value = parseMoneyInput(input.value);
       if (!Number.isFinite(value) || value < 0) value = Number(item.currentPrice) || 0;
       item.currentPrice = Math.round(value);
-      input.value = String(item.currentPrice);
+      input.value = Number(item.currentPrice).toLocaleString('id-ID');
       updateCartTotalsOnly();
     }
 
@@ -5052,13 +5054,13 @@
         document.getElementById('barang-nama').value = prod.nama;
         document.getElementById('barang-kategori').value = prod.kategori;
         document.getElementById('barang-modal').value = prod.hModal;
-        document.getElementById('barang-jual').value = prod.hJual;
-        document.getElementById('barang-grosir').value = prod.hGrosir || Math.round(prod.hJual * 0.9);
+        document.getElementById('barang-jual').value = Number(prod.hJual || 0).toLocaleString('id-ID');
+        document.getElementById('barang-grosir').value = Number(prod.hGrosir || Math.round(prod.hJual * 0.9)).toLocaleString('id-ID');
         document.getElementById('barang-stok').value = prod.stok;
         const editUnits = getProductUnits(prod).map(u => ({...u}));
         productUnitsDraft = editUnits.length ? editUnits : [createUnitDraft('PCS',1,Number(prod.hJual||0),Number(prod.hGrosir||0))];
-        document.getElementById('barang-jual').value = Number(productUnitsDraft[0].hJual || prod.hJual || 0);
-        document.getElementById('barang-grosir').value = Number(productUnitsDraft[0].hGrosir || prod.hGrosir || 0);
+        document.getElementById('barang-jual').value = Number(productUnitsDraft[0].hJual || prod.hJual || 0).toLocaleString('id-ID');
+        document.getElementById('barang-grosir').value = Number(productUnitsDraft[0].hGrosir || prod.hGrosir || 0).toLocaleString('id-ID');
         syncUnitHiddenLegacyPrices();
       } else {
         document.getElementById('modal-barang-title').innerText = 'Tambah Barang Baru';
@@ -5152,10 +5154,10 @@
       const barcode = document.getElementById('barang-barcode').value.trim() || rawKode;
       const nama = document.getElementById('barang-nama').value.trim();
       const kategori = document.getElementById('barang-kategori').value;
-      const hModal = parseInt(document.getElementById('barang-modal').value) || 0;
+      const hModal = parseMoneyInput(document.getElementById('barang-modal').value);
       const stok = parseInt(document.getElementById('barang-stok').value) || 0;
-      const hargaEcerForm = Math.max(0, Number(document.getElementById('barang-jual')?.value) || 0);
-      const hargaGrosirForm = Math.max(0, Number(document.getElementById('barang-grosir')?.value) || 0);
+      const hargaEcerForm = Math.max(0, parseMoneyInput(document.getElementById('barang-jual')?.value));
+      const hargaGrosirForm = Math.max(0, parseMoneyInput(document.getElementById('barang-grosir')?.value));
       if (hargaEcerForm <= 0) { showToast('Harga ecer wajib diisi.', 'error'); return; }
       if (hargaGrosirForm <= 0) { showToast('Harga grosir wajib diisi.', 'error'); return; }
 
@@ -5565,17 +5567,28 @@
     }
 
     function getExpenseType(item) {
-      const raw = String(
+      // Prioritaskan penanda sumber yang tersimpan pada transaksi.
+      const explicit = String(
         item?.expenseType ??
         item?.jenisPengeluaran ??
         item?.target ??
-        item?.tipe ??
-        'toko'
+        item?.flowSource ??
+        ''
       ).trim().toLowerCase();
 
-      return raw === 'brilink' || raw === 'bri link' || raw === 'bri_link'
-        ? 'brilink'
-        : 'toko';
+      if (explicit === 'brilink' || explicit === 'bri link' || explicit === 'bri_link') {
+        return 'brilink';
+      }
+      if (explicit === 'toko') return 'toko';
+
+      // Kompatibilitas data lama: jika transaksi tidak mempunyai field sumber,
+      // kenali dari kategori/catatan yang jelas menyebut BRI Link.
+      const legacyText = String(
+        item?.kategori ?? item?.catatan ?? item?.tipe ?? ''
+      ).trim().toLowerCase();
+      if (/bri\s*link|brilink/.test(legacyText)) return 'brilink';
+
+      return 'toko';
     }
 
     function matchesPeriod(item, prefix) {
@@ -6074,9 +6087,9 @@
     async function saveBriLinkTx(e) {
       e.preventDefault();
       const jenis = document.getElementById('bri-jenis').value;
-      const nominal = parseInt(document.getElementById('bri-nominal').value) || 0;
-      const fee = parseInt(document.getElementById('bri-fee').value) || 0;
-      const profit = parseInt(document.getElementById('bri-profit').value) || 0;
+      const nominal = parseMoneyInput(document.getElementById('bri-nominal').value);
+      const fee = parseMoneyInput(document.getElementById('bri-fee').value);
+      const profit = parseMoneyInput(document.getElementById('bri-profit').value);
 
       if (nominal <= 0) {
         showToast('Nominal transaksi harus lebih dari Rp0', 'error');
@@ -6449,7 +6462,7 @@
       if (!p || !harga) return;
       const unit=getProductUnit(p, document.getElementById('pembelian-satuan')?.value || 'PCS');
       const unitCost=Number(p.hModal||0)*Math.max(1,Number(unit.conversion)||1);
-      harga.value = unitCost;
+      harga.value = unitCost.toLocaleString('id-ID');
     }
 
     function addPembelianItem() {
@@ -6747,7 +6760,7 @@
       setMoney('lap-pemasukan', totalPemasukan);
       setMoney('lap-retur-supplier', totalReturSupplier);
       setMoney('lap-pengeluaran', totalExpToko);
-      setMoney('lap-total-pengeluaran', totalExpToko + totalExpBri);
+      setMoney('lap-total-pengeluaran', totalExpToko);
       setMoney('lap-retur-pelanggan', totalRefundReturPelanggan);
       setMoney('lap-lababersih', netProfitToko);
 
@@ -9306,8 +9319,74 @@
   #classic-pos-table td.cart-mode-unit-cell > .cart-dynamic-btn{width:68px !important; min-width:68px !important; max-width:68px !important;}
 }
 </style>
+
+<script id="global-rupiah-input-formatter">
+(function(){
+  function parseMoneyInput(value){
+    const raw=String(value ?? '').replace(/\D/g,'');
+    return raw ? (parseInt(raw,10)||0) : 0;
+  }
+  window.parseMoneyInput=parseMoneyInput;
+
+  const MONEY_IDS=new Set([
+    'barang-modal','barang-jual','barang-grosir',
+    'pembelian-harga','pembelian-harga-eceran','pembelian-harga-grosir',
+    'kas-nominal','bri-nominal','bri-fee','bri-profit'
+  ]);
+
+  function isMoneyInput(el){
+    if(!el || el.tagName!=='INPUT') return false;
+    if(MONEY_IDS.has(el.id)) return true;
+    if(el.classList.contains('cart-price-input') || el.classList.contains('cart-active-price-input')) return true;
+    // Harga ecer/grosir pada editor multi-satuan dibuat secara dinamis.
+    const ph=String(el.getAttribute('placeholder')||'').toLowerCase();
+    return ph.includes('harga ecer') || ph.includes('harga grosir') || ph.includes('harga beli / modal');
+  }
+
+  function formatMoney(el, preserveCursor){
+    if(!isMoneyInput(el)) return;
+    const old=String(el.value||'');
+    const pos=el.selectionStart==null?old.length:el.selectionStart;
+    const digitsBefore=old.slice(0,pos).replace(/\D/g,'').length;
+    const digits=old.replace(/\D/g,'').replace(/^0+(?=\d)/,'');
+    const formatted=digits ? Number(digits).toLocaleString('id-ID') : '';
+    el.value=formatted;
+    if(preserveCursor && document.activeElement===el){
+      let p=formatted.length, count=0;
+      for(let i=0;i<formatted.length;i++){
+        if(/\d/.test(formatted[i])){ count++; if(count===digitsBefore){p=i+1;break;} }
+      }
+      requestAnimationFrame(()=>{try{el.setSelectionRange(p,p)}catch(e){}});
+    }
+  }
+
+  function prepare(el){
+    if(!isMoneyInput(el) || el.dataset.rupiahFormatter==='1') return;
+    el.dataset.rupiahFormatter='1';
+    el.type='text';
+    el.setAttribute('inputmode','numeric');
+    el.setAttribute('autocomplete','off');
+    el.addEventListener('input',()=>formatMoney(el,true));
+    el.addEventListener('blur',()=>formatMoney(el,false));
+    el.addEventListener('focus',()=>{
+      if(el.value==='0') el.value='';
+      requestAnimationFrame(()=>{try{el.setSelectionRange(el.value.length,el.value.length)}catch(e){}});
+    });
+    formatMoney(el,false);
+  }
+
+  function scan(root=document){
+    if(root.nodeType===1 && root.matches && root.matches('input')) prepare(root);
+    root.querySelectorAll?.('input').forEach(prepare);
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>scan());
+  else scan();
+  new MutationObserver(muts=>muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1) scan(n)}))).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
 </body>
-</hhtml>
+</html>
 <style id="dynamic-unit-button-responsive">
 @media (max-width: 640px){
   #classic-pos-table .cart-mode-unit-cell{min-width:132px;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;}
