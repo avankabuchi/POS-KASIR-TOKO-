@@ -1010,6 +1010,52 @@
 @media(max-width:640px){.classic-pos-table{min-width:780px!important}}
 </style>
 
+<style id="unified-date-filter-ui">
+/* ===== FILTER TANGGAL / HARI SERAGAM & RESPONSIVE ===== */
+input[type="date"].filter-date-control,
+input[type="month"].filter-date-control,
+select.filter-date-control {
+  width: 148px !important;
+  min-width: 148px !important;
+  max-width: 100% !important;
+  height: 36px !important;
+  box-sizing: border-box !important;
+  padding: 0 10px !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  color: #374151 !important;
+  outline: none !important;
+}
+.filter-date-group {
+  min-width: 148px;
+  width: 148px;
+}
+.filter-date-group label { margin-bottom: 4px !important; }
+@media (max-width: 640px) {
+  input[type="date"].filter-date-control,
+  input[type="month"].filter-date-control,
+  select.filter-date-control {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 36px !important;
+  }
+  .filter-date-group {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 150px !important;
+  }
+}
+/* Semua panel filter tanggal memakai ukuran kotak yang sama. */
+#dash-report-mode, #dash-report-date, #dash-report-month,
+#filter-tx-date, #filter-pemasukan-date, #filter-pengeluaran-date,
+#filter-brilink-date, #laporan-delete-date {
+  box-sizing: border-box !important;
+}
+</style>
+
 <style id="kasir-table-final-layout">
 /* ===== FINAL KASIR CART LAYOUT ===== */
 .classic-pos-table-wrap{width:100%;overflow-x:auto;overflow-y:visible}
@@ -1703,20 +1749,19 @@
           <div class="flex flex-wrap items-end gap-2 sm:gap-3">
             <div>
               <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tampilan Dashboard</label>
-              <select id="dash-report-mode" onchange="renderDashboard()" class="border border-gray-200 rounded-lg px-3 py-2 text-xs font-semibold outline-none bg-white">
+              <select id="dash-report-mode" onchange="renderDashboard()" class="filter-date-control border border-gray-200 rounded-lg px-3 py-2 text-xs font-semibold outline-none bg-white">
                 <option value="day">Harian</option>
                 <option value="month">Bulanan</option>
               </select>
             </div>
             <div id="dash-date-wrap">
               <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label>
-              <input type="date" id="dash-report-date" onchange="renderDashboard()" class="border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" />
+              <input type="date" id="dash-report-date" onchange="renderDashboard()" class="filter-date-control border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" />
             </div>
             <div id="dash-month-wrap" class="hidden">
               <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label>
-              <input type="month" id="dash-report-month" onchange="renderDashboard()" class="border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" />
+              <input type="month" id="dash-report-month" onchange="renderDashboard()" class="filter-date-control border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" />
             </div>
-            <button onclick="setDashboardToday()" class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700">Hari Ini</button>
             <div class="hidden" id="dash-period-label" aria-hidden="true"></div>
           </div>
         </div>
@@ -2016,7 +2061,7 @@
           <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Riwayat Transaksi Kasir</h1>
           <div class="flex flex-wrap items-center gap-2 text-xs">
             <div class="flex items-center space-x-1 border border-gray-200 rounded-lg p-1 bg-white w-full sm:w-auto">
-              <input type="date" id="filter-tx-date" onchange="renderTransaksiTable()" class="px-2 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs flex-1 sm:flex-none" />
+              <input type="date" id="filter-tx-date" onchange="renderTransaksiTable()" class="filter-date-control px-2 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs flex-1 sm:flex-none" />
               <button onclick="hapusLaporanTanggalTertentu(document.getElementById('filter-tx-date').value)" class="admin-only px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded flex items-center space-x-1">
                 <i data-lucide="calendar-x" class="w-3.5 h-3.5"></i>
                 <span class="hidden sm:inline">Hapus Tanggal Ini</span>
@@ -2117,8 +2162,7 @@
 
         <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
   <div class="flex flex-wrap items-end gap-2 sm:gap-3">
-    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-pemasukan-date" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
-    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Hari Ini</button>
+    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-pemasukan-date" onchange="renderKasTable()" class="filter-date-control w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
   </div>
 </div>
 
@@ -2163,8 +2207,7 @@
 
         <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
   <div class="flex flex-wrap items-end gap-2 sm:gap-3">
-    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-pengeluaran-date" onchange="renderKasTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
-    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Hari Ini</button>
+    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-pengeluaran-date" onchange="renderKasTable()" class="filter-date-control w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
   </div>
 </div>
 
@@ -2254,11 +2297,13 @@
         </div>
 
         <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
-  <div class="flex flex-wrap items-end gap-2 sm:gap-3">
-    <div class="flex-1 min-w-[150px]"><label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label><input type="date" id="filter-brilink-date" onchange="renderBriLinkTable()" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" /></div>
-    <button onclick="clearKasFilters()" class="px-3 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">Hari Ini</button>
-  </div>
-</div>
+          <div class="flex flex-wrap items-end gap-2">
+            <div class="filter-date-group">
+              <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tanggal</label>
+              <input type="date" id="filter-brilink-date" onchange="renderBriLinkTable()" class="filter-date-control w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none" />
+            </div>
+          </div>
+        </div>
 
         <button onclick="openModalBriLink()" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg flex items-center space-x-1.5 shadow hover:bg-emerald-700">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i>
@@ -2291,44 +2336,46 @@
 
         <!-- LAPORAN BULANAN BRI LINK LANGSUNG DARI MENU BRI LINK -->
         <div id="brilink-bulanan-view" class="hidden space-y-4">
-          <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-            <div>
-              <h2 class="text-sm sm:text-base font-extrabold text-gray-900">Laporan Bulanan BRI Link</h2>
-              <p class="text-[11px] text-gray-500 mt-1">Ringkasan seluruh transaksi BRI Link berdasarkan bulan yang dipilih.</p>
-            </div>
-            <div class="flex flex-wrap items-end gap-2">
+          <div class="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
               <div>
-                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Pilih Bulan</label>
-                <div class="flex items-center gap-1.5">
-                  <select id="brilink-monthly-month" onchange="renderBrilinkMonthlyReport()"
-                          class="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500 bg-white">
-                    <option value="01">Januari</option>
-                    <option value="02">Februari</option>
-                    <option value="03">Maret</option>
-                    <option value="04">April</option>
-                    <option value="05">Mei</option>
-                    <option value="06">Juni</option>
-                    <option value="07">Juli</option>
-                    <option value="08">Agustus</option>
-                    <option value="09">September</option>
-                    <option value="10">Oktober</option>
-                    <option value="11">November</option>
-                    <option value="12">Desember</option>
-                  </select>
-                  <select id="brilink-monthly-year" onchange="renderBrilinkMonthlyReport()"
-                          class="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-blue-500 bg-white"></select>
-                </div>
+                <h2 class="text-sm sm:text-base font-extrabold text-gray-900">Laporan Bulanan BRI Link</h2>
+                <p class="text-[11px] text-gray-500 mt-1">Ringkasan seluruh transaksi BRI Link berdasarkan bulan yang dipilih.</p>
               </div>
-              <button onclick="exportBrilinkMonthlyExcel()"
-                      class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5">
-                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                Export Excel
-              </button>
-              <button onclick="printCustomArea('printable-brilink-monthly')"
-                      class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5">
-                <i data-lucide="printer" class="w-4 h-4"></i>
-                Cetak
-              </button>
+              <div class="flex flex-wrap items-end gap-2">
+                <div class="filter-date-group" style="width:250px;min-width:250px;">
+                  <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Bulan</label>
+                  <div class="flex items-center gap-1.5">
+                    <select id="brilink-monthly-month" onchange="renderBrilinkMonthlyReport()"
+                            class="filter-date-control border border-gray-200 rounded-lg px-3 py-2 text-xs font-semibold outline-none focus:border-blue-500 bg-white">
+                      <option value="01">Januari</option>
+                      <option value="02">Februari</option>
+                      <option value="03">Maret</option>
+                      <option value="04">April</option>
+                      <option value="05">Mei</option>
+                      <option value="06">Juni</option>
+                      <option value="07">Juli</option>
+                      <option value="08">Agustus</option>
+                      <option value="09">September</option>
+                      <option value="10">Oktober</option>
+                      <option value="11">November</option>
+                      <option value="12">Desember</option>
+                    </select>
+                    <select id="brilink-monthly-year" onchange="renderBrilinkMonthlyReport()"
+                            class="border border-gray-200 rounded-lg px-3 py-2 text-xs font-semibold outline-none focus:border-blue-500 bg-white" style="width:120px;height:36px;"></select>
+                  </div>
+                </div>
+                <button onclick="exportBrilinkMonthlyExcel()"
+                        class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5">
+                  <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                  Export Excel
+                </button>
+                <button onclick="printCustomArea('printable-brilink-monthly')"
+                        class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5">
+                  <i data-lucide="printer" class="w-4 h-4"></i>
+                  Cetak
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2424,7 +2471,7 @@
               <span class="text-gray-500 font-medium pl-1 text-[11px]">Periode:</span>
               <input type="month" id="laporan-period" onchange="renderLaporan()" class="px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs" />
               <span class="text-gray-500 font-medium text-[11px]">Hapus:</span>
-              <input type="date" id="laporan-delete-date" class="px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs" />
+              <input type="date" id="laporan-delete-date" class="filter-date-control px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs" />
               <button onclick="hapusLaporanTanggalTertentu(document.getElementById('laporan-delete-date').value)" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded flex items-center space-x-1">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 <span class="hidden sm:inline">Hapus Tanggal Ini</span>
@@ -3003,17 +3050,17 @@
       </div>
       <form id="form-barang" onsubmit="saveProduct(event)" class="space-y-3">
         <input type="hidden" id="barang-id" />
+        <!-- Urutan input barang baru: kode otomatis, barcode, nama, kategori, harga, lalu stok. -->
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[10px] text-gray-500 mb-0.5">Kode Barang</label>
-            <input type="text" id="barang-kode" placeholder="P001" class="border rounded-xl p-2.5 w-full font-bold uppercase" maxlength="12" required />
+            <input type="text" id="barang-kode" placeholder="P001" class="border rounded-xl p-2.5 w-full font-bold uppercase bg-gray-100 text-gray-500" maxlength="12" required readonly />
+            <p class="text-[9px] text-gray-400 mt-1" id="barang-kode-hint">Kode dibuat otomatis oleh sistem.</p>
           </div>
           <div>
-            <label class="block text-[10px] text-gray-500 mb-0.5">Barcode Scan (Auto Detect)</label>
-            <div class="flex space-x-1">
-              <input type="text" id="barang-barcode" data-barcode-input="true" placeholder="Scan Barcode..." onkeydown="handleBarcodeFieldKey(event, 'barang-barcode')" class="border border-emerald-400 bg-emerald-50/20 rounded-xl p-2.5 w-full font-mono font-bold focus:ring-2 focus:ring-emerald-500 outline-none" required />
-              <button type="button" onclick="generateRandomBarcode()" class="px-2 bg-gray-100 border rounded-xl font-bold text-[10px]">Acak</button>
-            </div>
+            <label class="block text-[10px] text-emerald-700 mb-0.5 font-bold">Barcode</label>
+            <input type="text" id="barang-barcode" data-barcode-input="true" placeholder="Scan / masukkan barcode terlebih dahulu" onkeydown="handleBarcodeFieldKey(event, 'barang-barcode')" class="border-2 border-emerald-200 bg-white rounded-xl p-2.5 w-full font-mono font-bold focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
+            <p class="text-[9px] text-emerald-600 mt-1">Input pertama aktif setelah form dibuka.</p>
           </div>
         </div>
         <div>
@@ -3035,35 +3082,33 @@
           </div>
           <p class="text-[10px] text-gray-400 mt-1">Tambahkan kategori baru tanpa harus menutup form barang.</p>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[10px] text-gray-500 mb-0.5">H. Modal / PCS Dasar</label>
-            <input type="number" id="barang-modal" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2 w-full font-bold" required />
-            <p class="text-[9px] text-gray-400 mt-1">Modal disimpan per satuan dasar untuk perhitungan stok/laba.</p>
-          </div>
-          <div>
-            <label class="block text-[10px] text-gray-500 mb-0.5">Stok Awal (PCS Dasar)</label>
-            <input type="number" id="barang-stok" min="0" step="1" inputmode="numeric" class="border rounded-xl p-2 w-full font-bold" required />
-          </div>
-        </div>
         <div class="rounded-2xl border border-blue-100 bg-blue-50/60 p-3 space-y-2">
           <div class="flex items-center justify-between gap-2">
             <div>
-              <p class="text-[11px] font-black text-slate-800">Harga Jual PCS</p>
-              <p class="text-[9px] text-slate-500">Tentukan harga ecer dan grosir langsung saat tambah/edit barang.</p>
+              <p class="text-[11px] font-black text-slate-800">Harga Barang</p>
+              <p class="text-[9px] text-slate-500">Isi berurutan: harga modal, harga ecer, lalu harga grosir.</p>
             </div>
             <span class="text-[9px] font-black text-blue-700 bg-white border border-blue-100 px-2 py-1 rounded-lg">WAJIB</span>
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[10px] text-slate-700 mb-0.5 font-bold">Harga Modal</label>
+              <input type="number" id="barang-modal" min="0" step="1" inputmode="numeric" placeholder="Modal" class="border border-slate-200 bg-white rounded-xl p-2.5 w-full font-black" required />
+            </div>
             <div>
               <label class="block text-[10px] text-blue-700 mb-0.5 font-bold">Harga Ecer</label>
-              <input type="number" id="barang-jual" min="0" step="1" inputmode="numeric" placeholder="Contoh: 3500" class="border border-blue-200 bg-white rounded-xl p-2.5 w-full font-black" required />
+              <input type="number" id="barang-jual" min="0" step="1" inputmode="numeric" placeholder="Ecer" class="border border-blue-200 bg-white rounded-xl p-2.5 w-full font-black" required />
             </div>
             <div>
               <label class="block text-[10px] text-indigo-700 mb-0.5 font-bold">Harga Grosir</label>
-              <input type="number" id="barang-grosir" min="0" step="1" inputmode="numeric" placeholder="Contoh: 3200" class="border border-indigo-200 bg-white rounded-xl p-2.5 w-full font-black" required />
+              <input type="number" id="barang-grosir" min="0" step="1" inputmode="numeric" placeholder="Grosir" class="border border-indigo-200 bg-white rounded-xl p-2.5 w-full font-black" required />
             </div>
           </div>
+        </div>
+        <div>
+          <label class="block text-[10px] text-emerald-700 mb-0.5 font-bold">Stok Awal (PCS Dasar)</label>
+          <input type="number" id="barang-stok" min="0" step="1" inputmode="numeric" placeholder="Masukkan stok terakhir" class="border-2 border-emerald-200 bg-white rounded-xl p-2.5 w-full font-black" required />
+          <p class="text-[9px] text-gray-400 mt-1">Stok menjadi kolom terakhir sebelum tombol Simpan Barang.</p>
         </div>
         <div class="flex justify-end space-x-2 pt-2 border-t">
           <button type="button" onclick="closeModal('modal-barang')" class="px-4 py-2 border rounded-xl font-medium">Batal</button>
@@ -5022,7 +5067,8 @@
     function openModalBarangSimple() {
       const form = document.getElementById('form-barang-simple');
       form.reset();
-      generateRandomBarcodeSimple();
+      const simpleBarcode = document.getElementById('simple-barcode');
+      if (simpleBarcode) simpleBarcode.value = '';
       openModal('modal-barang-simple');
       setupEnterStepNavigation();
       setTimeout(() => document.getElementById('simple-nama').focus(), 150);
@@ -5044,8 +5090,6 @@
       const stok = parseInt(document.getElementById('simple-stok').value) || 0;
       const id = String(Date.now());
       const kode = getNextProductCode();
-
-      if (!barcode) barcode = '899' + Math.floor(1000000000 + Math.random() * 9000000000);
 
       const prodData = { id, kode, barcode, nama, kategori: 'Umum', hModal, hJual, hGrosir, stok, units: [createUnitDraft('PCS',1,hJual,hGrosir)] };
       const duplicate = findDuplicateProduct(prodData, id);
@@ -5087,6 +5131,7 @@
 
 
         document.getElementById('barang-barcode').value = prod.barcode || '';
+        document.getElementById('barang-barcode').required = false;
         document.getElementById('barang-nama').value = prod.nama;
         document.getElementById('barang-kategori').value = prod.kategori;
         document.getElementById('barang-modal').value = prod.hModal;
@@ -5106,7 +5151,9 @@
         kodeInput.classList.add('bg-gray-100', 'text-gray-500');
         kodeInput.classList.remove('bg-white');
         if (hint) hint.textContent = 'Kode baru dibuat otomatis pada nomor berikutnya yang tersedia.';
-        generateRandomBarcode();
+        const barcodeInput = document.getElementById('barang-barcode');
+        barcodeInput.value = '';
+        barcodeInput.required = true;
         productUnitsDraft = [createUnitDraft('PCS',1,0,0)];
         document.getElementById('barang-jual').value = '0';
         document.getElementById('barang-grosir').value = '0';
@@ -5115,7 +5162,15 @@
       renderProductUnitsEditor();
       openModal('modal-barang');
       setupEnterStepNavigation();
-      setTimeout(() => document.getElementById('barang-nama').focus(), 150);
+      // Untuk tambah/edit, barcode menjadi field pertama yang aktif.
+      // Kode barang tetap otomatis dan tidak perlu diisi manual.
+      setTimeout(() => {
+        const firstField = document.getElementById('barang-barcode');
+        if (firstField) {
+          firstField.focus();
+          try { firstField.select(); } catch (_) {}
+        }
+      }, 150);
     }
 
     async function addProductCategory() {
@@ -5187,8 +5242,13 @@
       const id = existingId || ('p' + Date.now() + '_' + Math.random().toString(36).slice(2, 8));
 
       const rawKode = document.getElementById('barang-kode').value.trim().toUpperCase();
-      const barcode = document.getElementById('barang-barcode').value.trim() || rawKode;
+      const barcode = document.getElementById('barang-barcode').value.trim();
       const nama = document.getElementById('barang-nama').value.trim();
+      if (!existingId && !barcode) {
+        showToast('Barcode wajib diisi terlebih dahulu.', 'error');
+        document.getElementById('barang-barcode').focus();
+        return;
+      }
       const kategori = document.getElementById('barang-kategori').value;
       const hModal = parseMoneyInput(document.getElementById('barang-modal').value);
       const stok = parseInt(document.getElementById('barang-stok').value) || 0;
@@ -6909,11 +6969,11 @@
           data: {
             labels: daysArr,
             datasets: [
-              { label: 'Penjualan', data: sData, borderColor: '#10b981', tension: 0.3 },
-              { label: 'Laba Kotor', data: lData, borderColor: '#059669', tension: 0.3 }
+              { label: 'Penjualan', data: sData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.10)', tension: 0.3, fill: true },
+              { label: 'Laba Kotor', data: lData, borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.06)', tension: 0.3, fill: false }
             ]
           },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+          options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } }, scales: { y: { beginAtZero: true } } }
         });
       }
 
@@ -6921,12 +6981,12 @@
       if (ctxBri) {
         if (chartLaporanBriObj) chartLaporanBriObj.destroy();
         chartLaporanBriObj = new Chart(ctxBri, {
-          type: 'bar',
+          type: 'line',
           data: {
             labels: daysArr,
-            datasets: [{ label: 'Laba Bersih Agen (Rp)', data: briProfitData, backgroundColor: '#3b82f6', borderRadius: 4 }]
+            datasets: [{ label: 'Laba Bersih Agen', data: briProfitData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.10)', tension: 0.3, fill: true }]
           },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+          options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } }, scales: { y: { beginAtZero: true } } }
         });
       }
 
@@ -7205,8 +7265,8 @@
       setText('dash-brilink-count', `${selectedBri.length} transaksi`);
       setText('dash-period-label', '');
       ['sales','profit','expense','brilink'].forEach(id => setText(`dash-${id}-label`, mode === 'month' ? 'BULAN DIPILIH' : 'HARI DIPILIH'));
-      setText('chart-sales-title', mode === 'month' ? 'HARIAN DALAM BULAN' : 'TANGGAL DIPILIH');
-      setText('chart-exp-title', mode === 'month' ? '(HARIAN DALAM BULAN)' : '(TANGGAL DIPILIH)');
+      setText('chart-sales-title', mode === 'month' ? 'HARIAN DALAM BULAN' : 'PENJUALAN 7 HARI TERAKHIR');
+      setText('chart-exp-title', mode === 'month' ? '(HARIAN DALAM BULAN)' : '(7 HARI TERAKHIR)');
       setText('dash-active-products', products.length);
       setText('dash-low-stock', products.filter(p => Number(p.stok || 0) <= 5).length);
 
@@ -7229,11 +7289,19 @@
           expData.push(pengeluarans.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.nominal)||0), 0));
         }
       } else {
+        // Mode harian tetap menampilkan tren 7 hari terakhir,
+        // dengan tanggal yang dipilih sebagai hari terakhir pada grafik.
         const selected = getDashboardDate();
-        labels = [new Date(`${selected}T00:00:00`).toLocaleDateString('id-ID', { day:'2-digit', month:'short' })];
-        salesData = [transactions.filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t) === selected).reduce((s,x) => s + (Number(x.total)||0), 0)];
-        briData = [brilinks.filter(x => getItemDateKey(x) === selected).reduce((s,x) => s + (Number(x.profit)||0), 0)];
-        expData = [pengeluarans.filter(x => getItemDateKey(x) === selected).reduce((s,x) => s + (Number(x.nominal)||0), 0)];
+        const end = new Date(`${selected}T00:00:00`);
+        for (let offset = 6; offset >= 0; offset--) {
+          const d = new Date(end);
+          d.setDate(end.getDate() - offset);
+          const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          labels.push(d.toLocaleDateString('id-ID', { day:'2-digit', month:'short' }));
+          salesData.push(transactions.filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t) === key).reduce((s,x) => s + (Number(x.total)||0), 0));
+          briData.push(brilinks.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.profit)||0), 0));
+          expData.push(pengeluarans.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.nominal)||0), 0));
+        }
       }
 
       const ctx1 = document.getElementById('chartPenjualan');
