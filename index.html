@@ -1051,7 +1051,7 @@ select.filter-date-control {
 /* Semua panel filter tanggal memakai ukuran kotak yang sama. */
 #dash-report-mode, #dash-report-date, #dash-report-month,
 #filter-tx-date, #filter-pemasukan-date, #filter-pengeluaran-date,
-#filter-brilink-date, #laporan-delete-date {
+#filter-brilink-date {
   box-sizing: border-box !important;
 }
 </style>
@@ -1542,6 +1542,10 @@ select.filter-date-control {
             <i data-lucide="boxes" class="w-4 h-4"></i>
             <span>Data Barang & Stok</span>
           </button>
+          <button onclick="navigate('mutasi-stok')" class="admin-only nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="mutasi-stok">
+            <i data-lucide="history" class="w-4 h-4"></i>
+            <span>Riwayat Mutasi Stok</span>
+          </button>
           <button onclick="navigate('member')" class="nav-item flex items-center w-full px-3 py-2 rounded-lg transition space-x-3 hover:bg-gray-100" data-page="member">
             <i data-lucide="users-round" class="w-4 h-4"></i>
             <span>Member Cloud</span>
@@ -1830,11 +1834,11 @@ select.filter-date-control {
 
         <div class="admin-only grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div class="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-3">Penjualan 7 Hari Terakhir</h3>
+            <h3 id="chart-sales-title" class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-3">PENGHASILAN TOKO & PENGELUARAN TOKO</h3>
             <div class="h-56 sm:h-64"><canvas id="chartPenjualan"></canvas></div>
           </div>
           <div class="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-3">Pengeluaran vs BRI Link (7 Hari)</h3>
+            <h3 id="chart-exp-title" class="text-xs font-bold text-gray-800 uppercase tracking-wide mb-3">PENGHASILAN BRILINK & PENGELUARAN BRILINK</h3>
             <div class="h-56 sm:h-64"><canvas id="chartPengeluaran"></canvas></div>
           </div>
         </div>
@@ -1882,17 +1886,6 @@ select.filter-date-control {
           </div>
         </div>
 
-
-        <div class="flex border-b border-gray-200 space-x-4 text-xs font-bold">
-          <button id="tab-sub-barang" onclick="switchBarangSubTab('katalog')" class="pb-2 text-emerald-600 border-b-2 border-emerald-600 flex items-center space-x-1.5">
-            <i data-lucide="package" class="w-4 h-4"></i>
-            <span>KATALOG BARANG & STOK FISIK</span>
-          </button>
-          <button id="tab-sub-stok" onclick="switchBarangSubTab('mutasi')" class="pb-2 text-gray-400 hover:text-gray-600 flex items-center space-x-1.5 admin-only">
-            <i data-lucide="history" class="w-4 h-4"></i>
-            <span>RIWAYAT MUTASI STOK</span>
-          </button>
-        </div>
 
         <div id="subview-katalog-barang" class="space-y-3">
           <div id="bulk-delete-bar" class="hidden bg-rose-50 border border-rose-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
@@ -1953,47 +1946,55 @@ select.filter-date-control {
           </div>
         </div>
 
-        <div id="subview-mutasi-stok" class="space-y-3" style="display: none;">
-          <div class="flex justify-between items-center bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="package-plus" class="w-4 h-4 text-emerald-600"></i>
-              <span class="text-xs font-bold text-gray-700">Catat Penambahan atau Koreksi Stok Fisik:</span>
-            </div>
-            <div class="flex space-x-2">
-              <button onclick="openModalStok('tambah')" class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 flex items-center space-x-1 shadow-sm">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                <span>Tambah Stok</span>
-              </button>
-              <button onclick="openModalStok('penyesuaian')" class="px-3 py-1.5 bg-gray-100 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-200 flex items-center space-x-1">
-                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
-                <span>Penyesuaian Opname</span>
-              </button>
-            </div>
-          </div>
 
-          <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-            <div class="overflow-x-auto custom-scrollbar">
-              <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
-                <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
-                  <tr>
-                    <th class="px-4 sm:px-6 py-3.5">Waktu</th>
-                    <th class="px-4 sm:px-6 py-3.5">Barang</th>
-                    <th class="px-4 sm:px-6 py-3.5">Tipe</th>
-                    <th class="px-4 sm:px-6 py-3.5">Qty</th>
-                    <th class="px-4 sm:px-6 py-3.5">Sebelum</th>
-                    <th class="px-4 sm:px-6 py-3.5">Setelah</th>
-                    <th class="px-4 sm:px-6 py-3.5">User</th>
-                    <th class="px-4 sm:px-6 py-3.5 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="table-stok-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
-              </table>
-            </div>
+      </section>
+
+
+      <!-- 4. RIWAYAT MUTASI STOK -->
+      <section id="page-mutasi-stok" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Riwayat Mutasi Stok</h1>
+            <p class="text-xs text-gray-500 mt-0.5">Riwayat penambahan, pengurangan, penyesuaian, penjualan, dan perubahan stok barang.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openModalStok('tambah')" class="px-3 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 flex items-center space-x-1 shadow-sm">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Tambah Stok</span>
+            </button>
+            <button onclick="openModalStok('penyesuaian')" class="px-3 py-2 bg-gray-100 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-200 flex items-center space-x-1">
+              <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              <span>Penyesuaian Opname</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+          <div class="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+            <i data-lucide="history" class="w-4 h-4 text-emerald-600"></i>
+            <span class="text-xs font-bold text-gray-700">Daftar Riwayat Mutasi Stok</span>
+          </div>
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
+              <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-4 sm:px-6 py-3.5">Waktu</th>
+                  <th class="px-4 sm:px-6 py-3.5">Barang</th>
+                  <th class="px-4 sm:px-6 py-3.5">Tipe</th>
+                  <th class="px-4 sm:px-6 py-3.5">Qty</th>
+                  <th class="px-4 sm:px-6 py-3.5">Sebelum</th>
+                  <th class="px-4 sm:px-6 py-3.5">Setelah</th>
+                  <th class="px-4 sm:px-6 py-3.5">User</th>
+                  <th class="px-4 sm:px-6 py-3.5 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-stok-body" class="divide-y divide-gray-100 text-gray-700"></tbody>
+            </table>
           </div>
         </div>
       </section>
 
-      <!-- 4. PEMBELIAN BARANG -->
+      <!-- 5. PEMBELIAN BARANG -->
       <section id="page-pembelian" class="page-content hidden space-y-4 sm:space-y-5 admin-only">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
@@ -2062,16 +2063,7 @@ select.filter-date-control {
           <div class="flex flex-wrap items-center gap-2 text-xs">
             <div class="flex items-center space-x-1 border border-gray-200 rounded-lg p-1 bg-white w-full sm:w-auto">
               <input type="date" id="filter-tx-date" onchange="renderTransaksiTable()" class="filter-date-control px-2 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs flex-1 sm:flex-none" />
-              <button onclick="hapusLaporanTanggalTertentu(document.getElementById('filter-tx-date').value)" class="admin-only px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded flex items-center space-x-1">
-                <i data-lucide="calendar-x" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Hapus Tanggal Ini</span>
-                <span class="sm:hidden">Hapus</span>
-              </button>
             </div>
-            <button onclick="resetAllTransactions()" class="admin-only w-full sm:w-auto px-3 py-2 bg-red-50 text-red-600 border border-red-200 font-bold rounded-lg hover:bg-red-100 flex items-center justify-center space-x-1">
-              <i data-lucide="trash" class="w-3.5 h-3.5"></i>
-              <span>Reset Semua</span>
-            </button>
           </div>
         </div>
 
@@ -2365,16 +2357,6 @@ select.filter-date-control {
                             class="border border-gray-200 rounded-lg px-3 py-2 text-xs font-semibold outline-none focus:border-blue-500 bg-white" style="width:120px;height:36px;"></select>
                   </div>
                 </div>
-                <button onclick="exportBrilinkMonthlyExcel()"
-                        class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5">
-                  <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                  Export Excel
-                </button>
-                <button onclick="printCustomArea('printable-brilink-monthly')"
-                        class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5">
-                  <i data-lucide="printer" class="w-4 h-4"></i>
-                  Cetak
-                </button>
               </div>
             </div>
           </div>
@@ -2470,13 +2452,6 @@ select.filter-date-control {
             <div class="flex flex-wrap items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white w-full sm:w-auto">
               <span class="text-gray-500 font-medium pl-1 text-[11px]">Periode:</span>
               <input type="month" id="laporan-period" onchange="renderLaporan()" class="px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs" />
-              <span class="text-gray-500 font-medium text-[11px]">Hapus:</span>
-              <input type="date" id="laporan-delete-date" class="filter-date-control px-1.5 py-1 bg-transparent text-gray-700 font-semibold outline-none text-xs" />
-              <button onclick="hapusLaporanTanggalTertentu(document.getElementById('laporan-delete-date').value)" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded flex items-center space-x-1">
-                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">Hapus Tanggal Ini</span>
-                <span class="sm:hidden">Hapus</span>
-              </button>
             </div>
             <button onclick="exportLaporanExcelAktif()" class="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-semibold flex items-center justify-center space-x-1 hover:bg-emerald-700">
               <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
@@ -2560,7 +2535,6 @@ select.filter-date-control {
                     <th class="px-4 sm:px-6 py-3 text-right text-red-600">Pengeluaran</th>
                     <th class="px-4 sm:px-6 py-3 text-right text-orange-600">Refund Retur Pelanggan</th>
                     <th class="px-4 sm:px-6 py-3 text-right text-emerald-700">Hasil Bersih</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="table-laporan-harian" class="divide-y divide-gray-100 text-gray-700"></tbody>
@@ -2609,7 +2583,6 @@ select.filter-date-control {
                     <th class="px-4 sm:px-6 py-3 text-right">Fee Kotor</th>
                     <th class="px-4 sm:px-6 py-3 text-right text-red-500">Pengeluaran</th>
                     <th class="px-4 sm:px-6 py-3 text-right text-emerald-700">Laba Bersih</th>
-                    <th class="px-4 sm:px-6 py-3 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="table-laporan-brilink-harian" class="divide-y divide-gray-100 text-gray-700"></tbody>
@@ -4559,27 +4532,6 @@ select.filter-date-control {
       if(window.lucide&&typeof lucide.createIcons==='function')lucide.createIcons({attrs:{'aria-hidden':'true'}}); syncActiveCartRow();
     }
 
-    function switchBarangSubTab(tab) {
-      activeBarangSubTab = tab;
-      const vKatalog = document.getElementById('subview-katalog-barang');
-      const vMutasi = document.getElementById('subview-mutasi-stok');
-      const btnKatalog = document.getElementById('tab-sub-barang');
-      const btnMutasi = document.getElementById('tab-sub-stok');
-
-      if (tab === 'katalog') {
-        vKatalog.style.display = 'block';
-        vMutasi.style.display = 'none';
-        btnKatalog.className = 'pb-2 text-emerald-600 border-b-2 border-emerald-600 flex items-center space-x-1.5 font-bold';
-        btnMutasi.className = 'pb-2 text-gray-400 hover:text-gray-600 flex items-center space-x-1.5 font-semibold';
-      } else {
-        vKatalog.style.display = 'none';
-        vMutasi.style.display = 'block';
-        btnMutasi.className = 'pb-2 text-emerald-600 border-b-2 border-emerald-600 flex items-center space-x-1.5 font-bold';
-        btnKatalog.className = 'pb-2 text-gray-400 hover:text-gray-600 flex items-center space-x-1.5 font-semibold';
-      }
-      lucide.createIcons();
-    }
-
     function updateAssetSummary() {
       const totalProducts = products.length;
       const totalStock = products.reduce((sum, p) => sum + (Number(p.stok) || 0), 0);
@@ -4719,12 +4671,10 @@ select.filter-date-control {
       if (document.getElementById('laporan-period')) document.getElementById('laporan-period').value = today.slice(0, 7);
 
       document.querySelectorAll('.admin-only').forEach(el => {
-        if (el.id === 'subview-mutasi-stok') return;
         if (isAdmin) el.classList.remove('hidden');
         else el.classList.add('hidden');
       });
 
-      switchBarangSubTab('katalog');
 
       renderDashboard();
       renderKasirCategoryPills();
@@ -6923,11 +6873,6 @@ select.filter-date-control {
           <td class="px-4 sm:px-6 py-3 text-right text-red-600">Rp${dayExpToko.toLocaleString('id-ID')}</td>
           <td class="px-4 sm:px-6 py-3 text-right text-orange-600">Rp${dayRefund.toLocaleString('id-ID')}</td>
           <td class="px-4 sm:px-6 py-3 text-right font-extrabold ${netVal >= 0 ? 'text-emerald-700' : 'text-rose-600'}">Rp${netVal.toLocaleString('id-ID')}</td>
-          <td class="px-4 sm:px-6 py-3 text-right">
-            <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus seluruh data tanggal ini">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </td>
         </tr>`;
 
         const dayBri = monthBri.filter(b => b.dateKey === isoDate);
@@ -6945,11 +6890,6 @@ select.filter-date-control {
           <td class="px-4 sm:px-6 py-3 text-right text-teal-600 font-medium">Rp${bFee.toLocaleString('id-ID')}</td>
           <td class="px-4 sm:px-6 py-3 text-right text-red-500 font-medium">Rp${dayExpBri.toLocaleString('id-ID')}</td>
           <td class="px-4 sm:px-6 py-3 text-right text-emerald-700 font-bold">Rp${bNetProfit.toLocaleString('id-ID')}</td>
-          <td class="px-4 sm:px-6 py-3 text-right">
-            <button onclick="hapusLaporanTanggalTertentu('${isoDate}')" class="text-gray-400 hover:text-red-600 p-1" title="Hapus laporan tanggal ini">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </td>
         </tr>`;
       }
 
@@ -7181,7 +7121,7 @@ select.filter-date-control {
 
     function initializeDateFilters() {
       const today = getTodayISODate();
-      ['filter-tx-date','filter-pemasukan-date','filter-pengeluaran-date','filter-brilink-date','laporan-delete-date','dash-report-date'].forEach(id => {
+      ['filter-tx-date','filter-pemasukan-date','filter-pengeluaran-date','filter-brilink-date','dash-report-date'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = today;
       });
@@ -7260,8 +7200,8 @@ select.filter-date-control {
       setText('dash-brilink-count', `${selectedBri.length} transaksi`);
       setText('dash-period-label', '');
       ['sales','profit','expense','brilink'].forEach(id => setText(`dash-${id}-label`, mode === 'month' ? 'BULAN DIPILIH' : 'HARI DIPILIH'));
-      setText('chart-sales-title', mode === 'month' ? 'HARIAN DALAM BULAN' : 'PENJUALAN 7 HARI TERAKHIR');
-      setText('chart-exp-title', mode === 'month' ? '(HARIAN DALAM BULAN)' : '(7 HARI TERAKHIR)');
+      setText('chart-sales-title', mode === 'month' ? 'PENGHASILAN TOKO & PENGELUARAN TOKO — HARIAN DALAM 1 BULAN' : 'PENGHASILAN TOKO & PENGELUARAN TOKO — 7 HARI TERAKHIR');
+      setText('chart-exp-title', mode === 'month' ? 'PENGHASILAN BRILINK & PENGELUARAN BRILINK — HARIAN DALAM 1 BULAN' : 'PENGHASILAN BRILINK & PENGELUARAN BRILINK — 7 HARI TERAKHIR');
       setText('dash-active-products', products.length);
       setText('dash-low-stock', products.filter(p => Number(p.stok || 0) <= 5).length);
 
@@ -7270,7 +7210,22 @@ select.filter-date-control {
 
     function initCharts() {
       const mode = getDashboardMode();
-      let labels = [], salesData = [], briData = [], expData = [];
+      let labels = [], tokoIncomeData = [], tokoExpenseData = [], briIncomeData = [], briExpenseData = [];
+
+      const pushDayData = (key) => {
+        tokoIncomeData.push(transactions
+          .filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t) === key)
+          .reduce((s, x) => s + (Number(x.total) || 0), 0));
+        tokoExpenseData.push(pengeluarans
+          .filter(x => getExpenseType(x) === 'toko' && getItemDateKey(x) === key)
+          .reduce((s, x) => s + (Number(x.nominal) || 0), 0));
+        briIncomeData.push(brilinks
+          .filter(x => getItemDateKey(x) === key)
+          .reduce((s, x) => s + (Number(x.profit) || 0), 0));
+        briExpenseData.push(pengeluarans
+          .filter(x => getExpenseType(x) === 'brilink' && getItemDateKey(x) === key)
+          .reduce((s, x) => s + (Number(x.nominal) || 0), 0));
+      };
 
       if (mode === 'month') {
         const month = getDashboardMonth();
@@ -7279,13 +7234,10 @@ select.filter-date-control {
         for (let d = 1; d <= daysInMonth; d++) {
           const key = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
           labels.push(String(d));
-          salesData.push(transactions.filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t) === key).reduce((s,x) => s + (Number(x.total)||0), 0));
-          briData.push(brilinks.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.profit)||0), 0));
-          expData.push(pengeluarans.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.nominal)||0), 0));
+          pushDayData(key);
         }
       } else {
-        // Mode harian tetap menampilkan tren 7 hari terakhir,
-        // dengan tanggal yang dipilih sebagai hari terakhir pada grafik.
+        // Mode harian menampilkan tren 7 hari, dengan tanggal yang dipilih sebagai hari terakhir.
         const selected = getDashboardDate();
         const end = new Date(`${selected}T00:00:00`);
         for (let offset = 6; offset >= 0; offset--) {
@@ -7293,22 +7245,40 @@ select.filter-date-control {
           d.setDate(end.getDate() - offset);
           const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
           labels.push(d.toLocaleDateString('id-ID', { day:'2-digit', month:'short' }));
-          salesData.push(transactions.filter(t => t.status !== 'DIBATALKAN' && getItemDateKey(t) === key).reduce((s,x) => s + (Number(x.total)||0), 0));
-          briData.push(brilinks.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.profit)||0), 0));
-          expData.push(pengeluarans.filter(x => getItemDateKey(x) === key).reduce((s,x) => s + (Number(x.nominal)||0), 0));
+          pushDayData(key);
         }
       }
 
       const ctx1 = document.getElementById('chartPenjualan');
       if (ctx1 && typeof Chart !== 'undefined') {
         if (chart1) chart1.destroy();
-        chart1 = new Chart(ctx1, { type:'line', data:{ labels, datasets:[{ label:'Penjualan', data:salesData, borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.1)', tension:0.3, fill:true }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} } });
+        chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              { label:'Penghasilan Toko', data:tokoIncomeData, borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.08)', tension:0.3, fill:true },
+              { label:'Pengeluaran Toko', data:tokoExpenseData, borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.05)', tension:0.3, fill:false }
+            ]
+          },
+          options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true}} }
+        });
       }
 
       const ctx2 = document.getElementById('chartPengeluaran');
       if (ctx2 && typeof Chart !== 'undefined') {
         if (chart2) chart2.destroy();
-        chart2 = new Chart(ctx2, { type:'line', data:{ labels, datasets:[{ label:'BRI Link', data:briData, borderColor:'#3b82f6', tension:0.3 }, { label:'Pengeluaran', data:expData, borderColor:'#ef4444', tension:0.3 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true}} } });
+        chart2 = new Chart(ctx2, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              { label:'Penghasilan Brilink', data:briIncomeData, borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)', tension:0.3, fill:true },
+              { label:'Pengeluaran Brilink', data:briExpenseData, borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.05)', tension:0.3, fill:false }
+            ]
+          },
+          options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true}} }
+        });
       }
     }
 
@@ -7474,6 +7444,7 @@ select.filter-date-control {
 
       if (pageId === 'pembelian') { renderPembelian(); }
       if (pageId === 'laporan-produk') { renderLaporanProduk(); }
+      if (pageId === 'mutasi-stok') { renderStokTable(); }
       if (pageId === 'kasir') {
         setTimeout(() => {
           const scanInput = document.getElementById('kasir-search');
