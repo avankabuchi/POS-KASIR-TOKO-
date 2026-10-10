@@ -2076,7 +2076,7 @@ select.filter-date-control {
             <button onclick="document.getElementById('filter-tx-date').value = getTodayISODate(); renderTransaksiTable();" class="text-xs text-emerald-600 hover:underline font-semibold text-right sm:text-left">Semua Tanggal</button>
           </div>
           <div class="overflow-x-auto custom-scrollbar">
-            <table class="w-full text-left text-xs min-w-[650px] sm:min-w-full">
+            <table class="w-full text-left text-xs min-w-[580px] sm:min-w-full">
               <thead class="bg-gray-50/70 border-b border-gray-100 text-gray-500 uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-4 sm:px-6 py-3.5">No</th>
@@ -2314,8 +2314,7 @@ select.filter-date-control {
                   <th class="px-4 sm:px-6 py-3.5">Waktu</th>
                   <th class="px-4 sm:px-6 py-3.5">Jenis</th>
                   <th class="px-4 sm:px-6 py-3.5">Nominal</th>
-                  <th class="px-4 sm:px-6 py-3.5">Fee</th>
-                  <th class="px-4 sm:px-6 py-3.5">Profit Agen</th>
+                  <th class="px-4 sm:px-6 py-3.5">Fee Admin</th>
                   <th class="px-4 sm:px-6 py-3.5">User</th>
                   <th class="admin-only px-4 sm:px-6 py-3.5 text-right">Aksi</th>
                 </tr>
@@ -3226,10 +3225,7 @@ select.filter-date-control {
           <option value="FEE BRILINK">FEE BRILINK</option>
         </select>
         <input type="number" id="bri-nominal" placeholder="Nominal Transaksi (Rp)" class="w-full border rounded-xl p-2.5 font-bold" required />
-        <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="bri-fee" placeholder="Fee Admin Total (Rp)" class="border rounded-xl p-2.5 font-semibold" required />
-          <input type="number" id="bri-profit" placeholder="Laba Bersih Agen (Rp)" class="border border-emerald-300 rounded-xl p-2.5 font-bold text-emerald-700" required />
-        </div>
+        <input type="number" id="bri-profit" placeholder="Fee Admin (Rp)" class="w-full border border-emerald-300 rounded-xl p-2.5 font-bold text-emerald-700" required />
         <div class="flex justify-end space-x-2 pt-2 border-t"><button type="button" onclick="closeModal('modal-brilink')" class="px-4 py-2 border rounded-xl">Batal</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold">Simpan Transaksi</button></div>
       </form>
     </div>
@@ -5601,7 +5597,7 @@ select.filter-date-control {
           kategori: `BRI Link (${b.jenis})`,
           metode: 'SISTEM',
           nominal: b.profit,
-          catatan: `Fee profit agen ${b.id}`,
+          catatan: `Fee admin ${b.id}`,
           isSystem: true
         });
       });
@@ -6135,8 +6131,8 @@ select.filter-date-control {
       e.preventDefault();
       const jenis = document.getElementById('bri-jenis').value;
       const nominal = parseMoneyInput(document.getElementById('bri-nominal').value);
-      const fee = parseMoneyInput(document.getElementById('bri-fee').value);
       const profit = parseMoneyInput(document.getElementById('bri-profit').value);
+      const fee = profit; // Fee Admin adalah profit agen; satu input saja.
 
       if (nominal <= 0) {
         showToast('Nominal transaksi harus lebih dari Rp0', 'error');
@@ -6180,7 +6176,7 @@ select.filter-date-control {
           if (!saved) throw new Error('Gagal menyimpan transaksi BRI Link ke Cloud.');
         }
 
-        addLog('BRI_LINK_TXN', `BRI Link ${briId} profit Rp${profit.toLocaleString('id-ID')}`);
+        addLog('BRI_LINK_TXN', `BRI Link ${briId} fee admin Rp${profit.toLocaleString('id-ID')}`);
         closeModal('modal-brilink');
         renderBriLinkTable();
         renderDashboard();
@@ -6301,8 +6297,9 @@ select.filter-date-control {
 
       const totalTx = monthBri.length;
       const totalVolume = monthBri.reduce((s, b) => s + n(b.nominal), 0);
-      const totalFee = monthBri.reduce((s, b) => s + n(b.fee), 0);
-      const totalProfitKotor = monthBri.reduce((s, b) => s + n(b.profit), 0);
+      const totalFee = monthBri.reduce((s, b) => s + n(b.profit), 0);
+      // Laba bersih BRI Link dihitung dari total fee/admin, bukan kolom profit transaksi.
+      const totalProfitKotor = totalFee;
       const totalExp = monthExp.reduce((s, p) => s + n(p.nominal), 0);
       const totalProfitBersih = totalProfitKotor - totalExp;
 
@@ -6327,8 +6324,8 @@ select.filter-date-control {
         const dayBri = monthBri.filter(b => b.dateKey === isoDate);
         const dayExp = monthExp.filter(p => p.dateKey === isoDate);
         const volume = dayBri.reduce((s, b) => s + n(b.nominal), 0);
-        const fee = dayBri.reduce((s, b) => s + n(b.fee), 0);
-        const profit = dayBri.reduce((s, b) => s + n(b.profit), 0);
+        const fee = dayBri.reduce((s, b) => s + n(b.profit), 0);
+        const profit = fee; // Fee/admin merupakan pendapatan BRI Link.
         const exp = dayExp.reduce((s, p) => s + n(p.nominal), 0);
         const net = profit - exp;
 
@@ -6379,8 +6376,8 @@ select.filter-date-control {
         const dayBri = monthBri.filter(b => b.dateKey === isoDate);
         const dayExp = monthExp.filter(p => p.dateKey === isoDate);
         const volume = dayBri.reduce((s, b) => s + n(b.nominal), 0);
-        const fee = dayBri.reduce((s, b) => s + n(b.fee), 0);
-        const profit = dayBri.reduce((s, b) => s + n(b.profit), 0);
+        const fee = dayBri.reduce((s, b) => s + n(b.profit), 0);
+        const profit = fee; // Fee/admin merupakan pendapatan BRI Link.
         const exp = dayExp.reduce((s, p) => s + n(p.nominal), 0);
 
         rows.push({
@@ -6413,7 +6410,7 @@ select.filter-date-control {
       document.getElementById('brilink-tx-today').innerText = `${filteredBri.length} transaksi`;
 
       if (filteredBri.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400">Belum ada transaksi BRI Link</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada transaksi BRI Link</td></tr>`;
         return;
       }
 
@@ -6423,8 +6420,7 @@ select.filter-date-control {
           <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${b.waktu}</td>
           <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-600">${b.jenis}</span></td>
           <td class="px-4 sm:px-6 py-3 font-medium text-gray-900">Rp${b.nominal.toLocaleString('id-ID')}</td>
-          <td class="px-4 sm:px-6 py-3 text-gray-500">Rp${b.fee.toLocaleString('id-ID')}</td>
-          <td class="px-4 sm:px-6 py-3 font-bold text-emerald-600">Rp${b.profit.toLocaleString('id-ID')}</td>
+          <td class="px-4 sm:px-6 py-3 font-bold text-emerald-600">Rp${Number(b.profit || 0).toLocaleString('id-ID')}</td>
           <td class="px-4 sm:px-6 py-3 text-gray-500">${b.user}</td>
           <td class="px-4 sm:px-6 py-3 text-right">
             ${isAdmin ? `<button onclick="deleteBriLink('${b.id}')" class="text-gray-400 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
@@ -6813,7 +6809,7 @@ select.filter-date-control {
 
       // BRI Link tetap dilaporkan terpisah.
       const briVol = monthBri.reduce((s, i) => s + n(i.nominal), 0);
-      const briFee = monthBri.reduce((s, i) => s + n(i.fee), 0);
+      const briFee = monthBri.reduce((s, i) => s + n(i.profit), 0);
       const briGrossProfit = monthBri.reduce((s, i) => s + n(i.profit), 0);
       const briNetProfit = briGrossProfit - totalExpBri;
 
@@ -6877,7 +6873,7 @@ select.filter-date-control {
 
         const dayBri = monthBri.filter(b => b.dateKey === isoDate);
         const bVol = dayBri.reduce((acc, b) => acc + n(b.nominal), 0);
-        const bFee = dayBri.reduce((acc, b) => acc + n(b.fee), 0);
+        const bFee = dayBri.reduce((acc, b) => acc + n(b.profit), 0);
         const bProfitGross = dayBri.reduce((acc, b) => acc + n(b.profit), 0);
         const dayExpBri = briExp.filter(p => p.dateKey === isoDate)
           .reduce((acc, p) => acc + n(p.nominal), 0);
@@ -6919,7 +6915,7 @@ select.filter-date-control {
           type: 'line',
           data: {
             labels: daysArr,
-            datasets: [{ label: 'Laba Bersih Agen', data: briProfitData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.10)', tension: 0.3, fill: true }]
+            datasets: [{ label: 'Laba Bersih BRI Link', data: briProfitData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.10)', tension: 0.3, fill: true }]
           },
           options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } }, scales: { y: { beginAtZero: true } } }
         });
@@ -8695,7 +8691,7 @@ select.filter-date-control {
 
         const dayBri = brilinks.filter(b => b.dateKey === isoDate);
         const bVol = dayBri.reduce((acc, b) => acc + (b.nominal || 0), 0);
-        const bFee = dayBri.reduce((acc, b) => acc + (b.fee || 0), 0);
+        const bFee = dayBri.reduce((acc, b) => acc + (b.profit || 0), 0);
         const bProfit = dayBri.reduce((acc, b) => acc + (b.profit || 0), 0);
         const bExp = pengeluarans.filter(p => p.dateKey === isoDate && getExpenseType(p) === 'brilink').reduce((acc, p) => acc + (p.nominal || 0), 0);
 
@@ -8704,7 +8700,7 @@ select.filter-date-control {
           'Volume Perputaran': bVol,
           'Fee Admin': bFee,
           'Pengeluaran BRI Link': bExp,
-          'Laba Bersih Agen': (bProfit - bExp),
+          'Laba Bersih': (bProfit - bExp),
           'Jumlah Tx': dayBri.length
         });
       }
@@ -9407,7 +9403,7 @@ select.filter-date-control {
   const MONEY_IDS=new Set([
     'barang-modal','barang-jual','barang-grosir',
     'pembelian-harga','pembelian-harga-eceran','pembelian-harga-grosir',
-    'kas-nominal','bri-nominal','bri-fee','bri-profit'
+    'kas-nominal','bri-nominal','bri-profit'
   ]);
 
   function isMoneyInput(el){
