@@ -602,8 +602,9 @@
     }
 
   
-/* RETUR FIX */
+/* FIX LAPISAN MODAL: popup pencarian harus berada di atas modal retur dan modal lainnya */
 #modal-retur{z-index:9999!important}
+#modal-product-picker{z-index:10000!important}
 #modal-retur button[type="submit"]{cursor:pointer}
 
 
@@ -3101,13 +3102,23 @@ select.filter-date-control {
     </div>
   </div>
 
+  <!-- POPUP PILIH BARANG: pencarian keyboard ramah mobile -->
+  <div id="modal-product-picker" class="fixed inset-0 z-[80] bg-black/50 hidden items-center justify-center p-3 sm:p-4" onclick="if(event.target===this)closeProductPicker()">
+    <div class="bg-white rounded-2xl w-full max-w-md max-h-[90dvh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b flex items-center justify-between gap-3"><h3 class="font-bold text-sm" id="product-picker-title">Pilih Barang</h3><button type="button" onclick="closeProductPicker()" class="p-2 rounded-lg hover:bg-gray-100" aria-label="Tutup"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+      <div class="p-3 border-b"><input id="product-picker-search" type="search" autocomplete="off" placeholder="Cari nama atau kode barang..." class="w-full border border-gray-300 rounded-xl p-3 text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none" oninput="renderProductPickerOptions()" onkeydown="handleProductPickerKeydown(event)" /></div>
+      <div id="product-picker-options" class="overflow-y-auto overscroll-contain p-2 space-y-1" style="max-height:55dvh"></div>
+      <div class="p-3 border-t text-[11px] text-gray-500">Ketik untuk mencari, lalu pilih barang dari daftar.</div>
+    </div>
+  </div>
+
   <!-- MODAL STOK -->
   <div id="modal-stok" class="fixed inset-0 z-50 bg-black/40 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3 text-xs">
       <div class="flex justify-between items-center border-b pb-2"><h3 class="font-bold text-sm" id="modal-stok-title">Stok</h3><button onclick="closeModal('modal-stok')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
       <form id="form-stok" onsubmit="saveStokMovement(event)" class="space-y-3">
         <input type="hidden" id="stok-mode" value="tambah" />
-        <select id="stok-barang-id" class="w-full border rounded-xl p-2.5 font-bold" required></select>
+        <button type="button" id="stok-product-picker-trigger" onclick="openProductPicker('stok')" class="w-full border rounded-xl p-3 font-bold text-left bg-white flex items-center justify-between gap-2"><span id="stok-product-picker-label" class="truncate">Pilih nama barang...</span><i data-lucide="search" class="w-4 h-4 shrink-0"></i></button><select id="stok-barang-id" class="hidden" required></select>
         <label id="stok-qty-label" class="block text-[10px] text-gray-500">Jumlah Tambahan Stok</label>
         <input type="number" id="stok-qty" placeholder="Jumlah" class="w-full border rounded-xl p-2.5 font-bold" required />
         <input type="text" id="stok-catatan" placeholder="Catatan supplier / mutasi..." class="w-full border rounded-xl p-2.5" />
@@ -3142,7 +3153,7 @@ select.filter-date-control {
           <option value="pelanggan">Retur Pelanggan (+ Stok & Pengeluaran Refund)</option>
           <option value="supplier">Retur Supplier (- Stok & Pemasukan Retur)</option>
         </select>
-        <select id="retur-barang-id" onchange="updateReturPricePreview()" class="w-full border rounded-xl p-2.5 font-bold" required></select>
+        <button type="button" id="retur-product-picker-trigger" onclick="openProductPicker('retur')" class="w-full border rounded-xl p-3 font-bold text-left bg-white flex items-center justify-between gap-2"><span id="retur-product-picker-label" class="truncate">Pilih nama barang...</span><i data-lucide="search" class="w-4 h-4 shrink-0"></i></button><select id="retur-barang-id" onchange="updateReturPricePreview()" class="hidden" required></select>
         <div class="grid grid-cols-2 gap-2">
           <input type="number" id="retur-qty" min="1" value="1" oninput="updateReturPricePreview()" class="border rounded-xl p-2.5 font-bold" required />
           <select id="retur-price-type" onchange="updateReturPricePreview()" class="border rounded-xl p-2.5">
@@ -4707,8 +4718,8 @@ select.filter-date-control {
         const promoLabel = pricing.freeQty > 0 ? ` • Gratis ${pricing.freeQty}` : ((item.discountType === 'percent' && item.discountPercent) ? ` • -${item.discountPercent}%` : '');
         return `
           <div class="flex justify-between items-start text-[10px] gap-2">
-            <span class="truncate max-w-[150px]">${item.nama} <b>${item.qty} ${item.unitName || 'PCS'}</b> ${modeLabel}${promoLabel}</span>
-            <span class="shrink-0 text-right">${pricing.paidQty} bayar • ${Number(item.unitConversion||1)*Number(item.qty||0)} PCS<br>Rp${pricing.total.toLocaleString('id-ID')}</span>
+            <span class="min-w-0 flex-1 break-words">${item.nama} ${modeLabel}${promoLabel}</span>
+            <span class="shrink-0 text-right whitespace-nowrap">${Number(item.unitConversion||1)*Number(item.qty||0)} PCS<br>Rp${pricing.total.toLocaleString('id-ID')}</span>
           </div>
         `;
       }).join('');
@@ -4752,7 +4763,7 @@ select.filter-date-control {
         const p = Number(it.currentPrice || it.harga || it.hJual || 0);
         const pricing = getCartItemPricing(it);
         const promo = pricing.freeQty > 0 ? ` [Gratis ${pricing.freeQty}]` : ((it.discountType === 'percent' && it.discountPercent) ? ` [-${it.discountPercent}%]` : '');
-        return `   ${idx + 1}. ${it.nama} (${it.qty} fisik / ${pricing.paidQty} bayar)${promo} = Rp${pricing.total.toLocaleString('id-ID')}`;
+        return `   ${idx + 1}. ${it.nama}${promo}\n      ${Number(it.unitConversion||1) * Number(it.qty||0)} PCS\tRp${pricing.total.toLocaleString('id-ID')}`;
       }).join('\n');
 
       const pesan = `*TOKO BUNG EDI*\nJalan Turonggo Karangturi\nWhatsApp: 0851327958234\n--------------------------------\n*STRUK PEMBAYARAN RESMI*\nNo Transaksi : ${tx.id}\nWaktu        : ${tx.waktu}\nKasir        : ${tx.kasir}\nPelanggan    : ${tx.customerName || 'Umum'}\nMetode       : ${tx.metode}\n--------------------------------\n*DETAIL PEMBELIAN:*\n${rincianBarang}\n--------------------------------\n*TOTAL TAGIHAN : Rp${tx.total.toLocaleString('id-ID')}*\nBayar         : Rp${(tx.bayar || tx.total).toLocaleString('id-ID')}\nKembalian     : Rp${(tx.kembali || 0).toLocaleString('id-ID')}\n--------------------------------\nTerima kasih telah berbelanja di Toko Bung Edi!`;
@@ -5725,6 +5736,67 @@ select.filter-date-control {
       lucide.createIcons();
     }
 
+    let activeProductPickerTarget = 'retur';
+    let productPickerFiltered = [];
+    let productPickerHighlight = 0;
+
+    function openProductPicker(target) {
+      activeProductPickerTarget = target === 'stok' ? 'stok' : 'retur';
+      const modal = document.getElementById('modal-product-picker');
+      const search = document.getElementById('product-picker-search');
+      document.getElementById('product-picker-title').textContent = activeProductPickerTarget === 'stok' ? 'Pilih Barang untuk Mutasi Stok' : 'Pilih Barang untuk Retur';
+      search.value = '';
+      productPickerHighlight = 0;
+      renderProductPickerOptions();
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+      setTimeout(() => search.focus(), 80);
+    }
+
+    function closeProductPicker() {
+      const modal = document.getElementById('modal-product-picker');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderProductPickerOptions() {
+      const query = (document.getElementById('product-picker-search')?.value || '').trim().toLocaleLowerCase('id-ID');
+      productPickerFiltered = (Array.isArray(products) ? products : []).filter(p => `${p.nama || ''} ${p.kode || ''} ${p.barcode || ''}`.toLocaleLowerCase('id-ID').includes(query));
+      if (productPickerHighlight >= productPickerFiltered.length) productPickerHighlight = Math.max(0, productPickerFiltered.length - 1);
+      const list = document.getElementById('product-picker-options');
+      if (!productPickerFiltered.length) {
+        list.innerHTML = '<div class="p-6 text-center text-sm text-gray-500">Barang tidak ditemukan.</div>';
+        return;
+      }
+      list.innerHTML = productPickerFiltered.map((p, i) => `<button type="button" data-picker-index="${i}" onclick="chooseProductFromPicker(${i})" class="w-full text-left p-3 rounded-xl border ${i === productPickerHighlight ? 'border-emerald-500 bg-emerald-50' : 'border-transparent hover:bg-gray-50'}"><span class="block font-bold text-sm text-gray-800">${String(p.nama || 'Barang').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span><span class="block text-[11px] text-gray-500 mt-1">Kode: ${String(p.kode || p.barcode || '-').replace(/&/g,'&amp;').replace(/</g,'&lt;')} · Stok: ${Number(p.stok)||0} PCS</span></button>`).join('');
+      const active = list.querySelector(`[data-picker-index="${productPickerHighlight}"]`);
+      if (active) active.scrollIntoView({block:'nearest'});
+    }
+
+    function handleProductPickerKeydown(event) {
+      if (event.key === 'Escape') { event.preventDefault(); closeProductPicker(); return; }
+      if (event.key === 'ArrowDown' && productPickerFiltered.length) { event.preventDefault(); productPickerHighlight = Math.min(productPickerHighlight + 1, productPickerFiltered.length - 1); renderProductPickerOptions(); }
+      if (event.key === 'ArrowUp' && productPickerFiltered.length) { event.preventDefault(); productPickerHighlight = Math.max(productPickerHighlight - 1, 0); renderProductPickerOptions(); }
+      if (event.key === 'Enter' && productPickerFiltered.length) { event.preventDefault(); chooseProductFromPicker(productPickerHighlight); }
+    }
+
+    function chooseProductFromPicker(index) {
+      const p = productPickerFiltered[index];
+      if (!p) return;
+      const target = activeProductPickerTarget;
+      const select = document.getElementById(target === 'stok' ? 'stok-barang-id' : 'retur-barang-id');
+      select.value = String(p.id);
+      if (target === 'retur') {
+        document.getElementById('retur-product-picker-label').textContent = `${p.nama} (Stok: ${Number(p.stok)||0})`;
+        select.dispatchEvent(new Event('change', {bubbles:true}));
+        updateReturPricePreview();
+      } else {
+        document.getElementById('stok-product-picker-label').textContent = `${p.nama} (Stok: ${Number(p.stok)||0})`;
+      }
+      closeProductPicker();
+    }
+
     function openModalRetur(defaultType = 'pelanggan') {
       const modal = document.getElementById('modal-retur');
       const select = document.getElementById('retur-barang-id');
@@ -5757,6 +5829,10 @@ select.filter-date-control {
           select.value = previousProductId;
         }
       }
+
+      const chosenRetur = list.find(p => String(p.id) === String(select.value));
+      const returLabel = document.getElementById('retur-product-picker-label');
+      if (returLabel) returLabel.textContent = chosenRetur ? `${chosenRetur.nama} (Stok: ${Number(chosenRetur.stok)||0})` : 'Pilih nama barang...';
 
       typeSelect.value = defaultType === 'supplier' ? 'supplier' : 'pelanggan';
       if (qtyInput) qtyInput.value = '1';
@@ -6961,6 +7037,8 @@ select.filter-date-control {
 
       const select = document.getElementById('stok-barang-id');
       select.innerHTML = products.map(p => `<option value="${p.id}" ${String(p.id) === String(productId) ? 'selected' : ''}>${p.nama} (Stok saat ini: ${p.stok})</option>`).join('');
+      const selectedProduct = products.find(p => String(p.id) === String(select.value));
+      document.getElementById('stok-product-picker-label').textContent = selectedProduct ? `${selectedProduct.nama} (Stok: ${Number(selectedProduct.stok)||0})` : 'Pilih nama barang...';
       openModal('modal-stok');
     }
 
