@@ -2716,9 +2716,9 @@ select.filter-date-control {
 
       <div id="thermal-receipt" class="bg-white p-3 font-mono-receipt text-[11px] border rounded-lg w-[76mm] max-w-full mx-auto shadow-inner text-gray-900 leading-tight receipt-preview">
         <div class="text-center pb-2 border-b border-dashed border-gray-400">
-          <h2 class="font-bold text-sm text-gray-900 tracking-wider">TOKO BUNG EDI</h2>
-          <p class="text-[10px] text-gray-600 mt-0.5">Jalan Turonggo karangturi</p>
-          <p class="text-[10px] text-gray-600">WhatsApp: 0851327958234</p>
+          <h2 id="receipt-store-name" class="font-bold text-sm text-gray-900 tracking-wider">TOKO BUNG EDI</h2>
+          <p id="receipt-store-address" class="text-[10px] text-gray-600 mt-0.5">Jalan Turonggo karangturi</p>
+          <p class="text-[10px] text-gray-600">WhatsApp: <span id="receipt-store-phone">0851327958234</span></p>
         </div>
         <div class="py-2 text-[10px] space-y-0.5 border-b border-dashed border-gray-400">
           <div class="flex justify-between"><span>No:</span><span id="rcpt-no" class="font-bold"></span></div>
@@ -4700,6 +4700,8 @@ select.filter-date-control {
     }
 
     function showReceiptModal(tx) {
+      // Ambil nilai terkini dari pengaturan toko setiap kali struk ditampilkan.
+      if (typeof applyStoreInfo === 'function') applyStoreInfo();
       lastActiveTxForReceipt = tx;
       document.getElementById('rcpt-no').innerText = tx.id;
       document.getElementById('rcpt-date').innerText = tx.waktu;
@@ -4766,7 +4768,11 @@ select.filter-date-control {
         return `   ${idx + 1}. ${it.nama}${promo}\n      ${Number(it.unitConversion||1) * Number(it.qty||0)} PCS\tRp${pricing.total.toLocaleString('id-ID')}`;
       }).join('\n');
 
-      const pesan = `*TOKO BUNG EDI*\nJalan Turonggo Karangturi\nWhatsApp: 0851327958234\n--------------------------------\n*STRUK PEMBAYARAN RESMI*\nNo Transaksi : ${tx.id}\nWaktu        : ${tx.waktu}\nKasir        : ${tx.kasir}\nPelanggan    : ${tx.customerName || 'Umum'}\nMetode       : ${tx.metode}\n--------------------------------\n*DETAIL PEMBELIAN:*\n${rincianBarang}\n--------------------------------\n*TOTAL TAGIHAN : Rp${tx.total.toLocaleString('id-ID')}*\nBayar         : Rp${(tx.bayar || tx.total).toLocaleString('id-ID')}\nKembalian     : Rp${(tx.kembali || 0).toLocaleString('id-ID')}\n--------------------------------\nTerima kasih telah berbelanja di Toko Bung Edi!`;
+      // Informasi identitas toko pada pesan WhatsApp mengikuti Pengaturan Toko terbaru.
+      const namaTokoStruk = (storeInfo && storeInfo.name ? storeInfo.name : 'TOKO BUNG EDI').trim();
+      const alamatTokoStruk = (storeInfo && storeInfo.address ? storeInfo.address : '').trim();
+      const nomorTokoStruk = (storeInfo && storeInfo.phone ? storeInfo.phone : '').trim();
+      const pesan = `*${namaTokoStruk}*\n${alamatTokoStruk}\nWhatsApp: ${nomorTokoStruk}\n--------------------------------\n*STRUK PEMBAYARAN RESMI*\nNo Transaksi : ${tx.id}\nWaktu        : ${tx.waktu}\nKasir        : ${tx.kasir}\nPelanggan    : ${tx.customerName || 'Umum'}\nMetode       : ${tx.metode}\n--------------------------------\n*DETAIL PEMBELIAN:*\n${rincianBarang}\n--------------------------------\n*TOTAL TAGIHAN : Rp${tx.total.toLocaleString('id-ID')}*\nBayar         : Rp${(tx.bayar || tx.total).toLocaleString('id-ID')}\nKembalian     : Rp${(tx.kembali || 0).toLocaleString('id-ID')}\n--------------------------------\nTerima kasih telah berbelanja di Toko Bung Edi!`;
 
       const waUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(pesan)}`;
       window.open(waUrl, '_blank');
@@ -8799,6 +8805,10 @@ select.filter-date-control {
       const n=document.getElementById('store-name-input'); if(n) n.value=storeInfo.name;
       const ad=document.getElementById('store-address-input'); if(ad) ad.value=storeInfo.address;
       const p=document.getElementById('store-phone-input'); if(p) p.value=storeInfo.phone;
+      // Header struk selalu mengikuti informasi toko terbaru.
+      const receiptName=document.getElementById('receipt-store-name'); if(receiptName) receiptName.textContent=storeInfo.name || '';
+      const receiptAddress=document.getElementById('receipt-store-address'); if(receiptAddress) receiptAddress.textContent=storeInfo.address || '';
+      const receiptPhone=document.getElementById('receipt-store-phone'); if(receiptPhone) receiptPhone.textContent=storeInfo.phone || '';
     }
     async function saveStoreSettings(e) {
       e.preventDefault();
