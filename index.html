@@ -3158,7 +3158,14 @@ select.filter-date-control {
           <option value="pelanggan">Retur Pelanggan (+ Stok & Pengeluaran Refund)</option>
           <option value="supplier">Retur Supplier (- Stok & Pemasukan Retur)</option>
         </select>
-        <button type="button" id="retur-product-picker-trigger" onclick="openProductPicker('retur')" class="w-full border rounded-xl p-3 font-bold text-left bg-white flex items-center justify-between gap-2"><span id="retur-product-picker-label" class="truncate">Pilih nama barang...</span><i data-lucide="search" class="w-4 h-4 shrink-0"></i></button><select id="retur-barang-id" onchange="updateReturPricePreview()" class="hidden" required></select>
+        <div id="retur-source-wrap" class="space-y-1">
+          <label class="block text-[10px] font-bold text-gray-500 uppercase">Transaksi Asal (Retur Pelanggan)</label>
+          <select id="retur-source-tx" onchange="onReturSourceTransactionChange()" class="w-full border rounded-xl p-2.5 font-semibold">
+            <option value="">Pilih transaksi penjualan...</option>
+          </select>
+          <p class="text-[10px] text-gray-400">Barang dan jumlah yang dapat diretur mengikuti sisa barang pada transaksi.</p>
+        </div>
+        <button type="button" id="retur-product-picker-trigger" onclick="openProductPicker('retur')" class="w-full border rounded-xl p-3 font-bold text-left bg-white flex items-center justify-between gap-2"><span id="retur-product-picker-label" class="truncate">Pilih nama barang...</span><i data-lucide="search" class="w-4 h-4 shrink-0"></i></button><select id="retur-barang-id" onchange="updateReturSourceItemSelection()" class="hidden" required></select>
         <div class="grid grid-cols-2 gap-2">
           <input type="number" id="retur-qty" min="1" value="1" oninput="updateReturPricePreview()" class="border rounded-xl p-2.5 font-bold" required />
           <select id="retur-price-type" onchange="updateReturPricePreview()" class="border rounded-xl p-2.5">
@@ -4999,6 +5006,7 @@ select.filter-date-control {
         kasir: currentUser.name,
         customerName: custName,
         customerPhone: custPhone,
+        memberId: memberId || '', 
         metode: metode,
         bayar: bayar,
         kembali: kembali,
@@ -5874,6 +5882,16 @@ select.filter-date-control {
       if (qtyInput) qtyInput.value = '1';
       if (alasanInput) alasanInput.value = '';
 
+      const sourceWrap = document.getElementById('retur-source-wrap');
+      const sourceSelect = document.getElementById('retur-source-tx');
+      if (sourceSelect) {
+        const eligible = transactions.filter(t => t.status === 'SUKSES' && Array.isArray(t.items) && t.items.length);
+        sourceSelect.innerHTML = '<option value="">Pilih transaksi penjualan...</option>' + eligible.map(t =>
+          `<option value="${String(t.id).replace(/"/g, '&quot;')}">${t.id} — ${t.customerName || 'Umum'} — Rp${Number(t.total || 0).toLocaleString('id-ID')}</option>`
+        ).join('');
+        sourceSelect.value = '';
+      }
+      if (sourceWrap) sourceWrap.classList.toggle('hidden', typeSelect.value !== 'pelanggan');
       updateReturTypeUI();
       updateReturPricePreview();
       modal.classList.remove('hidden');
@@ -5882,8 +5900,81 @@ select.filter-date-control {
     function updateReturTypeUI() {
       const t = document.getElementById('retur-type').value;
       document.getElementById('modal-retur-title').innerText = t === 'pelanggan'
-        ? 'Retur Pelanggan (+ Stok & Pengeluaran Kas Refund)'
+        ? 'Retur Pelanggan (Terhubung Transaksi)'
         : 'Retur Supplier (- Stok & Pemasukan Kas Pengganti)';
+      const sourceWrap = document.getElementById('retur-source-wrap');
+      if (sourceWrap) sourceWrap.classList.toggle('hidden', t !== 'pelanggan');
+      if (t !== 'pelanggan') {
+        const source = document.getElementById('retur-source-tx');
+        if (source) source.value = '';
+        const select = document.getElementById('retur-barang-id');
+        if (select) select.innerHTML = (products || []).map(p =>
+          `<option value="${String(p.id).replace(/"/g, '&quot;')}">${String(p.nama || 'Barang').replace(/</g, '&lt;')}</option>`
+        ).join('');
+        const label = document.getElementById('retur-product-picker-label');
+        if (label) label.textContent = products[0]?.nama || 'Pilih nama barang...';
+        const trigger = document.getElementById('retur-product-picker-trigger');
+        if (trigger) trigger.disabled = false;
+      }
+    }
+
+    function getTransactionItemRemainingQty(tx, item) {
+      return Math.max(0, Number(item.qty || 0));
+    }
+
+    function populateReturProductsFromTransaction(tx) {
+      const select = document.getElementById('retur-barang-id');
+      const trigger = document.getElementById('retur-product-picker-trigger');
+      const label = document.getElementById('retur-product-picker-label');
+      if (!select) return;
+      if (!tx) {
+        select.innerHTML = '<option value="">Pilih barang...</option>';
+        select.value = '';
+        if (trigger) trigger.disabled = false;
+        if (label) label.textContent = 'Pilih nama barang...';
+        updateReturPricePreview();
+        return;
+      }
+      const items = (tx.items || []).filter(item => getTransactionItemRemainingQty(tx, item) > 0);
+      select.innerHTML = items.map(item => {
+        const productId = String(item.id ?? item.productId ?? '');
+        const name = String(item.nama || item.name || products.find(p => String(p.id) === productId)?.nama || 'Barang');
+        return `<option value="${productId.replace(/"/g, '&quot;')}">${name.replace(/</g, '&lt;')} (Sisa ${Number(item.qty || 0)} ${item.unitName || 'PCS'})</option>`;
+      }).join('') || '<option value="">Semua barang pada transaksi sudah diretur</option>';
+      if (label) {
+        const first = items[0];
+        label.textContent = first ? `${first.nama || products.find(p => String(p.id) === String(first.id))?.nama || 'Barang'} (Sisa ${first.qty})` : 'Tidak ada barang tersisa';
+      }
+      if (trigger) trigger.disabled = true;
+      const qtyInput = document.getElementById('retur-qty');
+      if (qtyInput) {
+        const first = items[0];
+        qtyInput.max = first ? Number(first.qty || 1) : 1;
+        qtyInput.value = first ? '1' : '0';
+      }
+      updateReturPricePreview();
+    }
+
+    function onReturSourceTransactionChange() {
+      const id = document.getElementById('retur-source-tx')?.value || '';
+      const tx = transactions.find(t => String(t.id) === String(id));
+      populateReturProductsFromTransaction(tx || null);
+    }
+
+    function updateReturSourceItemSelection() {
+      const sourceId = document.getElementById('retur-source-tx')?.value || '';
+      const tx = transactions.find(t => String(t.id) === String(sourceId));
+      const productId = document.getElementById('retur-barang-id')?.value || '';
+      const item = tx?.items?.find(x => String(x.id ?? x.productId) === String(productId));
+      const qtyInput = document.getElementById('retur-qty');
+      if (qtyInput && item) {
+        qtyInput.max = Math.max(1, Number(item.qty || 1));
+        if (Number(qtyInput.value) > Number(item.qty || 1)) qtyInput.value = String(item.qty || 1);
+      }
+      const label = document.getElementById('retur-product-picker-label');
+      const prod = products.find(p => String(p.id) === String(productId));
+      if (label && prod) label.textContent = `${prod.nama} (Sisa ${Number(item?.qty || 0)} ${item?.unitName || 'PCS'})`;
+      updateReturPricePreview();
     }
 
     function updateReturPricePreview() {
@@ -5907,193 +5998,143 @@ select.filter-date-control {
 
     async function saveRetur(e) {
       if (e) e.preventDefault();
+      const type = String(document.getElementById('retur-type')?.value || '').trim().toLowerCase();
+      const prodId = String(document.getElementById('retur-barang-id')?.value || '').trim();
+      const qty = Math.floor(Number(document.getElementById('retur-qty')?.value || 0));
+      const priceType = String(document.getElementById('retur-price-type')?.value || 'eceran').trim().toLowerCase();
+      const alasan = String(document.getElementById('retur-alasan')?.value || '').trim();
+      const sourceTxId = type === 'pelanggan' ? String(document.getElementById('retur-source-tx')?.value || '') : '';
+      const sourceTx = sourceTxId ? transactions.find(t => String(t.id) === sourceTxId) : null;
 
-      const typeEl = document.getElementById('retur-type');
-      const productEl = document.getElementById('retur-barang-id');
-      const qtyEl = document.getElementById('retur-qty');
-      const priceTypeEl = document.getElementById('retur-price-type');
-      const alasanEl = document.getElementById('retur-alasan');
+      if (type !== 'pelanggan' && type !== 'supplier') return showToast('Jenis retur tidak valid', 'error');
+      if (type === 'pelanggan' && !sourceTx) return showToast('Pilih transaksi penjualan asal terlebih dahulu', 'error');
+      if (!prodId) return showToast('Pilih barang terlebih dahulu', 'error');
+      if (!Number.isFinite(qty) || qty <= 0) return showToast('Jumlah retur harus lebih dari 0', 'error');
+      if (!alasan) return showToast('Alasan retur wajib diisi', 'error');
 
-      const type = typeEl ? String(typeEl.value || '').trim().toLowerCase() : '';
-      const prodId = productEl ? String(productEl.value || '').trim() : '';
-      const qty = Math.floor(Number(qtyEl ? qtyEl.value : 0));
-
-      if (type !== 'pelanggan' && type !== 'supplier') {
-        showToast('Jenis retur tidak valid');
-        return;
-      }
-      if (!prodId) {
-        showToast('Pilih barang terlebih dahulu');
-        return;
-      }
-      if (!Number.isFinite(qty) || qty <= 0) {
-        showToast('Jumlah retur harus lebih dari 0');
-        return;
-      }
-
-      // Ambil produk TERBARU dari state lokal.
       const prod = products.find(p => String(p.id) === prodId);
-      if (!prod) {
-        showToast('Barang retur tidak ditemukan');
-        return;
+      if (!prod) return showToast('Barang retur tidak ditemukan', 'error');
+
+      let sourceItem = null;
+      let sourceItemIndex = -1;
+      let transactionRefund = 0;
+      let baseQtyReturned = qty;
+      let transactionProfitReduction = 0;
+      if (sourceTx) {
+        sourceItemIndex = (sourceTx.items || []).findIndex(item => String(item.id ?? item.productId) === prodId);
+        sourceItem = sourceItemIndex >= 0 ? sourceTx.items[sourceItemIndex] : null;
+        if (!sourceItem) return showToast('Barang tidak ditemukan pada transaksi asal', 'error');
+        const soldQty = Number(sourceItem.qty || 0);
+        if (qty > soldQty) return showToast(`Jumlah retur melebihi sisa barang (${soldQty})`, 'error');
+        const conversion = Number(sourceItem.unitConversion || 1) || 1;
+        const totalBase = Number(sourceItem.baseQty || (soldQty * conversion)) || (soldQty * conversion);
+        baseQtyReturned = qty === soldQty ? totalBase : (totalBase / soldQty) * qty;
+        const lineTotal = Number(sourceItem.lineTotal ?? (Number(sourceItem.harga || sourceItem.price || 0) * soldQty)) || 0;
+        transactionRefund = qty === soldQty ? lineTotal : (lineTotal / soldQty) * qty;
+        const oldTotal = Number(sourceTx.total || 0);
+        transactionProfitReduction = oldTotal > 0 ? Number(sourceTx.profit || 0) * (transactionRefund / oldTotal) : 0;
       }
 
       const stokSebelum = Math.max(0, Number(prod.stok) || 0);
-
-      // LOGIKA UTAMA RETUR:
-      // - Retur Pelanggan + nilai refund uang: stok bertambah.
-      // - Retur Supplier + nilai refund uang: stok berkurang.
-      // - Retur Barang: hanya mencatat retur, TIDAK mengubah stok.
-      let stokSesudah;
-      if (priceType === 'barang') {
-        stokSesudah = stokSebelum;
-      } else if (type === 'pelanggan') {
-        stokSesudah = stokSebelum + qty;
-      } else {
-        if (qty > stokSebelum) {
-          alert(`Stok tidak cukup untuk retur supplier.\nStok saat ini: ${stokSebelum}\nJumlah retur: ${qty}`);
-          return;
-        }
+      let stokSesudah = stokSebelum;
+      if (sourceTx || (type === 'pelanggan' && priceType !== 'barang')) {
+        stokSesudah = stokSebelum + baseQtyReturned;
+      } else if (type === 'supplier' && priceType !== 'barang') {
+        if (qty > stokSebelum) return alert(`Stok tidak cukup untuk retur supplier.\nStok saat ini: ${stokSebelum}\nJumlah retur: ${qty}`);
         stokSesudah = stokSebelum - qty;
       }
 
-      const priceType = priceTypeEl ? String(priceTypeEl.value || 'eceran').trim().toLowerCase() : 'eceran';
-      const alasan = alasanEl ? String(alasanEl.value || '').trim() : '';
-      if (!alasan) {
-        showToast('Alasan retur wajib diisi');
-        return;
-      }
-
-      const unitPrice = Number(
-        priceType === 'modal'
-          ? (prod.hModal ?? 0)
-          : priceType === 'grosir'
-            ? (prod.hGrosir ?? prod.hJual ?? 0)
-            : (prod.hJual ?? 0)
-      ) || 0;
-      const totalNilai = unitPrice * qty;
-
+      const unitPrice = sourceTx
+        ? (Number(sourceItem.lineTotal || 0) / Math.max(1, Number(sourceItem.qty || 1)))
+        : Number(priceType === 'modal' ? (prod.hModal ?? 0) : priceType === 'grosir' ? (prod.hGrosir ?? prod.hJual ?? 0) : (prod.hJual ?? 0)) || 0;
+      const totalNilai = sourceTx ? transactionRefund : unitPrice * qty;
       const now = new Date();
       const dateKey = getLocalDateKey(now);
-      const timeStr = now.toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }) + ' WIB';
-
-      const returNum = 'RET-' + dateKey.replace(/-/g, '') + '-' +
-        String(Date.now()).slice(-6);
-
-      // Ubah stok di state lokal SEBELUM render.
-      prod.stok = stokSesudah;
-
+      const timeStr = now.toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) + ' WIB';
+      const returNum = 'RET-' + dateKey.replace(/-/g, '') + '-' + String(Date.now()).slice(-6);
       const stokEntry = {
         id: 'STK-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-        timestamp: Date.now(),
-        dateKey,
-        waktu: timeStr,
-        barang: prod.nama,
-        barangId: prod.id,
+        timestamp: Date.now(), dateKey, waktu: timeStr, barang: prod.nama, barangId: prod.id,
         tipe: type === 'pelanggan' ? 'RETURN_IN' : 'RETURN_OUT',
-        qty: type === 'pelanggan' ? qty : -qty,
-        sebelum: stokSebelum,
-        setelah: stokSesudah,
-        user: currentUser?.name || currentUser?.nama || 'User'
+        qty: type === 'pelanggan' ? baseQtyReturned : -qty,
+        sebelum: stokSebelum, setelah: stokSesudah, user: currentUser?.name || currentUser?.nama || 'User'
       };
-
       const returEntry = {
-        id: returNum,
-        timestamp: Date.now(),
-        type,
-        dateKey,
-        waktu: timeStr,
-        barangId: prod.id,
-        barangNama: prod.nama,
-        qty,
-        priceType,
-        detail: `${prod.nama} (${qty}x @Rp${unitPrice.toLocaleString('id-ID')}) - ${alasan}`,
-        nilai: totalNilai,
-        user: currentUser?.name || currentUser?.nama || 'User',
-        stokSebelum,
-        stokSesudah,
-        stokLogId: stokEntry.id
+        id: returNum, timestamp: Date.now(), type, dateKey, waktu: timeStr,
+        barangId: prod.id, barangNama: prod.nama, qty, returnedBaseQty: baseQtyReturned,
+        priceType, detail: `${prod.nama} (${qty}x @Rp${unitPrice.toLocaleString('id-ID')}) - ${alasan}`,
+        nilai: totalNilai, user: currentUser?.name || currentUser?.nama || 'User',
+        stokSebelum, stokSesudah, stokLogId: stokEntry.id,
+        transactionId: sourceTx ? sourceTx.id : '',
+        returnedItemSnapshot: sourceTx && sourceItem ? JSON.parse(JSON.stringify(sourceItem)) : null,
+        returnedLineTotal: transactionRefund,
+        transactionProfitReduction: transactionProfitReduction
       };
 
-      // Simpan data lokal dahulu supaya tampilan langsung berubah.
+      // Update stok dan transaksi asal sebagai satu proses retur.
+      prod.stok = stokSesudah;
+      if (sourceTx && sourceItem) {
+        const oldQty = Number(sourceItem.qty || 0);
+        const remainingQty = oldQty - qty;
+        if (remainingQty <= 0) sourceTx.items.splice(sourceItemIndex, 1);
+        else {
+          const ratio = remainingQty / oldQty;
+          sourceItem.qty = remainingQty;
+          sourceItem.baseQty = Math.max(0, Number(sourceItem.baseQty || oldQty * Number(sourceItem.unitConversion || 1)) - baseQtyReturned);
+          sourceItem.lineTotal = Math.max(0, Number(sourceItem.lineTotal || 0) - transactionRefund);
+          if (sourceItem.paidQty != null) sourceItem.paidQty = Math.max(0, Number(sourceItem.paidQty) * ratio);
+          if (sourceItem.freeQty != null) sourceItem.freeQty = Math.max(0, Number(sourceItem.freeQty) * ratio);
+        }
+        sourceTx.total = Math.max(0, Number(sourceTx.total || 0) - transactionRefund);
+        sourceTx.profit = Math.max(0, Number(sourceTx.profit || 0) - transactionProfitReduction);
+        sourceTx.returnedTotal = Number(sourceTx.returnedTotal || 0) + transactionRefund;
+        sourceTx.lastReturnAt = Date.now();
+        if (!sourceTx.items.length) sourceTx.status = 'DIRETUR';
+        returEntry.transactionRefund = transactionRefund;
+        returEntry.transactionProfitReduction = transactionProfitReduction;
+      }
+
       returs.unshift(returEntry);
       stokLogs.unshift(stokEntry);
 
-      // Retur pelanggan = uang dikembalikan kepada pelanggan.
       if (type === 'pelanggan' && priceType !== 'barang') {
         const expEntry = {
           id: 'EXP-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-          expenseType: 'toko',
-          jenisPengeluaran: 'toko',
-          dateKey,
-          tanggal: timeStr,
-          kategori: 'Refund Retur Pelanggan',
-          metode: 'CASH',
-          nominal: totalNilai,
-          catatan: `Barang: ${prod.nama} (${qty}x) - ${alasan}`,
-          source: 'retur',
-          returId: returNum
+          expenseType:'toko', jenisPengeluaran:'toko', dateKey, tanggal:timeStr,
+          kategori:'Refund Retur Pelanggan', metode:'CASH', nominal:totalNilai,
+          catatan:`Transaksi: ${sourceTx?.id || '-'} | Barang: ${prod.nama} (${qty}x) - ${alasan}`,
+          source:'retur', returId:returNum
         };
-        pengeluarans.unshift(expEntry);
-        returEntry.expenseId = expEntry.id;
-        await syncToCloud("pengeluarans", expEntry.id, expEntry);
+        pengeluarans.unshift(expEntry); returEntry.expenseId = expEntry.id;
+        await syncToCloud('pengeluarans', expEntry.id, expEntry);
       }
-
-      // Retur supplier = supplier mengembalikan uang kepada toko.
       if (type === 'supplier' && priceType !== 'barang') {
         const incomeEntry = {
-          id: 'IN-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-          timestamp: Date.now(),
-          dateKey,
-          tanggal: timeStr,
-          kategori: 'Pengembalian Retur Supplier',
-          metode: 'CASH',
-          nominal: totalNilai,
-          catatan: `Barang: ${prod.nama} (${qty}x) - ${alasan}`,
-          source: 'retur',
-          returId: returNum
+          id:'IN-RET-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+          timestamp:Date.now(), dateKey, tanggal:timeStr,
+          kategori:'Pengembalian Retur Supplier', metode:'CASH', nominal:totalNilai,
+          catatan:`Barang: ${prod.nama} (${qty}x) - ${alasan}`, source:'retur', returId:returNum
         };
-        pemasukans.unshift(incomeEntry);
-        returEntry.incomeId = incomeEntry.id;
-        await syncToCloud("pemasukans", incomeEntry.id, incomeEntry);
+        pemasukans.unshift(incomeEntry); returEntry.incomeId = incomeEntry.id;
+        await syncToCloud('pemasukans', incomeEntry.id, incomeEntry);
       }
 
-      // Persist produk + histori retur + log stok.
-      await syncToCloud("products", String(prod.id), {
-        ...prod,
-        stok: stokSesudah
-      });
-      await syncToCloud("returs", returEntry.id, returEntry);
-      await syncToCloud("stokLogs", stokEntry.id, stokEntry);
+      await syncToCloud('products', String(prod.id), prod);
+      if (sourceTx) await syncToCloud('transactions', sourceTx.id, sourceTx);
+      await syncToCloud('returs', returEntry.id, returEntry);
+      await syncToCloud('stokLogs', stokEntry.id, stokEntry);
 
-      addLog('RETURN', `Retur ${type}: ${prod.nama} (${qty}x)`);
-
-      // Refresh semua tampilan yang berkaitan dengan stok/kas/retur.
-      renderReturTable();
-      renderStokTable();
-      renderProductsTable();
-      renderKasTable();
-      renderDashboard();
-      renderLaporan();
-      renderPopupBarangList();
-
+      addLog('RETURN', `Retur ${type}: ${prod.nama} (${qty}x)${sourceTx ? ` dari ${sourceTx.id}` : ''}`);
+      renderReturTable(); renderStokTable(); renderProductsTable(); renderKasTable();
+      renderDashboard(); renderLaporan(); renderLaporanProduk(); renderTransaksiTable(); renderPopupBarangList();
       closeModal('modal-retur');
       const form = document.getElementById('form-retur');
       if (form) form.reset();
-
-      showToast(
-        priceType === 'barang'
+      showToast(sourceTx
+        ? `Retur ${qty} ${sourceItem?.unitName || 'unit'} dari ${sourceTx.id} berhasil. Stok dan penghasilan diperbarui.`
+        : (priceType === 'barang'
           ? `Retur barang ${prod.nama} berhasil dicatat. Stok tidak berubah.`
-          : (type === 'pelanggan'
-            ? `Berhasil! Stok ${prod.nama} bertambah ${qty} (retur pelanggan).`
-            : `Berhasil! Stok ${prod.nama} berkurang ${qty} (retur supplier).`)
-      );
+          : (type === 'pelanggan' ? `Stok ${prod.nama} bertambah ${baseQtyReturned}.` : `Stok ${prod.nama} berkurang ${qty}.`)));
     }
 
     function switchReturTab(tab) {
@@ -6145,22 +6186,48 @@ select.filter-date-control {
 
       const prod = products.find(p => String(p.id) === String(retur.barangId));
       const qty = Number(retur.qty) || 0;
+      const stockQty = Number(retur.returnedBaseQty ?? qty) || 0;
 
       if (prod && qty > 0) {
         const currentStock = Number(prod.stok) || 0;
 
         // Balikkan mutasi stok saat retur dihapus.
         if (retur.type === 'pelanggan') {
-          if (currentStock < qty) {
+          if (currentStock < stockQty) {
             alert('Retur tidak dapat dihapus karena stok saat ini lebih kecil dari jumlah retur pelanggan.');
             return;
           }
-          prod.stok = currentStock - qty;
+          prod.stok = currentStock - stockQty;
         } else {
           prod.stok = currentStock + qty;
         }
 
         await syncToCloud("products", prod.id, prod);
+      }
+
+      // Batalkan pengurangan transaksi jika retur terhubung dengan transaksi penjualan.
+      if (retur.transactionId) {
+        const tx = transactions.find(t => String(t.id) === String(retur.transactionId));
+        if (tx) {
+          const itemId = String(retur.barangId);
+          let item = (tx.items || []).find(x => String(x.id ?? x.productId) === itemId);
+          const restoredQty = Number(retur.qty || 0);
+          const restoredBase = Number(retur.returnedBaseQty ?? restoredQty) || restoredQty;
+          const restoredLine = Number(retur.returnedLineTotal ?? retur.transactionRefund ?? 0) || 0;
+          if (!Array.isArray(tx.items)) tx.items = [];
+          if (item) {
+            item.qty = Number(item.qty || 0) + restoredQty;
+            item.baseQty = Number(item.baseQty || 0) + restoredBase;
+            item.lineTotal = Number(item.lineTotal || 0) + restoredLine;
+          } else if (retur.returnedItemSnapshot) {
+            item = { ...retur.returnedItemSnapshot, qty: restoredQty, baseQty: restoredBase, lineTotal: restoredLine };
+            tx.items.push(item);
+          }
+          tx.total = Number(tx.total || 0) + restoredLine;
+          tx.profit = Number(tx.profit || 0) + Number(retur.transactionProfitReduction || 0);
+          tx.status = 'SUKSES';
+          await syncToCloud('transactions', tx.id, tx);
+        }
       }
 
       // Hapus catatan kas yang dibuat otomatis oleh retur.
@@ -6186,6 +6253,7 @@ select.filter-date-control {
       renderStokTable();
       renderProductsTable();
       renderKasTable();
+      renderTransaksiTable();
       renderDashboard();
       renderLaporan();
 
@@ -8559,6 +8627,15 @@ select.filter-date-control {
       showToast('Data diexport ke format XLSX');
     }
 
+    function getTransactionMemberId(tx) {
+      if (tx?.memberId && members.some(m => String(m.id) === String(tx.memberId))) return String(tx.memberId);
+      const match = members.find(m =>
+        (tx?.customerPhone && String(m.phone || '') === String(tx.customerPhone)) ||
+        (tx?.customerName && String(tx.customerName) === String(m.nama))
+      );
+      return match ? String(match.id) : '';
+    }
+
     function renderTransaksiTable() {
       const tbody = document.getElementById('table-transaksi-body');
       const search = (document.getElementById('filter-tx-search')?.value || '').toLowerCase();
@@ -8582,7 +8659,13 @@ select.filter-date-control {
           <td class="px-4 sm:px-6 py-3 font-semibold text-gray-900">${t.id}</td>
           <td class="px-4 sm:px-6 py-3 text-gray-500 whitespace-nowrap">${t.waktu}</td>
           <td class="px-4 sm:px-6 py-3">${t.kasir}</td>
-          <td class="px-4 sm:px-6 py-3 font-bold text-gray-800">${t.customerName || 'Umum'}</td>
+          <td class="px-4 sm:px-6 py-3">
+            <select class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold bg-white max-w-[190px]" onchange="updateTransactionCustomer('${String(t.id).replace(/'/g, "\\'")}', this.value)" title="Ubah pelanggan transaksi">
+              <option value="" ${!getTransactionMemberId(t) ? 'selected' : ''}>Umum</option>
+              ${members.map(m => `<option value="${String(m.id).replace(/"/g, '&quot;')}" ${getTransactionMemberId(t) === String(m.id) ? 'selected' : ''}>${String(m.nama).replace(/</g, '&lt;')}</option>`).join('')}
+            </select>
+            <div class="text-[10px] text-gray-400 mt-1">${t.customerPhone || ''}</div>
+          </td>
           <td class="px-4 sm:px-6 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700">${t.metode}</span></td>
           <td class="px-4 sm:px-6 py-3 font-bold text-gray-900">Rp${t.total.toLocaleString('id-ID')}</td>
           <td class="px-4 sm:px-6 py-3">
@@ -8598,6 +8681,39 @@ select.filter-date-control {
         </tr>
       `).join('');
       lucide.createIcons();
+    }
+
+    async function updateTransactionCustomer(transactionId, memberId) {
+      const tx = transactions.find(t => String(t.id) === String(transactionId));
+      if (!tx) return showToast('Transaksi tidak ditemukan', 'error');
+      const previous = { memberId: tx.memberId || '', customerName: tx.customerName || 'Umum', customerPhone: tx.customerPhone || '' };
+      const member = memberId ? members.find(m => String(m.id) === String(memberId)) : null;
+      if (memberId && !member) {
+        showToast('Member tidak ditemukan. Muat ulang data member.', 'error');
+        renderTransaksiTable();
+        return;
+      }
+      tx.memberId = member ? String(member.id) : '';
+      tx.customerName = member ? member.nama : 'Umum';
+      tx.customerPhone = member ? (member.phone || '') : '';
+      try {
+        if (isFirebaseReady) {
+          const saved = await syncToCloud('transactions', tx.id, tx);
+          if (saved === false) throw new Error('Gagal menyimpan perubahan transaksi.');
+        }
+        if (member) {
+          member.poin = Number(member.poin || 0); // Tidak menambah poin untuk edit riwayat.
+        }
+        renderTransaksiTable();
+        renderKasTable();
+        renderLaporan();
+        showToast(`Pelanggan transaksi ${tx.id} diperbarui menjadi ${tx.customerName}.`);
+      } catch (err) {
+        Object.assign(tx, previous);
+        console.error(err);
+        renderTransaksiTable();
+        showToast('Perubahan pelanggan gagal disimpan ke Cloud.', 'error');
+      }
     }
 
     function openModalEditTx(id) {
