@@ -982,6 +982,33 @@
     transition-timing-function: cubic-bezier(.22, .8, .2, 1) !important;
   }
 }
+ 
+/* Notification update panel */
+.update-notification-panel{position:absolute;right:0;top:calc(100% + 12px);width:min(390px,calc(100vw - 28px));z-index:1000;background:rgba(255,255,255,.98);border:1px solid #e7eaf1;border-radius:20px;box-shadow:0 18px 55px rgba(31,45,80,.18);color:#202b46;overflow:hidden;backdrop-filter:blur(12px)}
+.update-notification-panel[hidden]{display:none!important}
+.update-notification-head{display:flex;align-items:center;justify-content:space-between;padding:17px 18px;border-bottom:1px solid #edf0f5}
+.update-notification-head strong{display:block;font-size:15px;font-weight:800}
+.update-notification-head small{display:block;margin-top:3px;font-size:11px;color:#7a849a}
+.update-notification-head button{width:30px;height:30px;border:0;border-radius:9px;background:#f3f5f9;color:#667085;font-size:22px;cursor:pointer}
+.update-notification-item{display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-bottom:1px solid #f0f2f6}
+.update-notification-item:last-child{border-bottom:0}
+.update-notification-item.unread{background:#f5f8ff}
+.update-notification-icon{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#e7edff;color:#4768c8}
+.update-notification-icon svg{width:17px;height:17px}
+.update-notification-copy{min-width:0;flex:1}
+.update-notification-copy strong{display:block;font-size:12px;font-weight:800}
+.update-notification-copy p{font-size:11px;line-height:1.55;color:#65718a;margin:5px 0}
+.update-notification-copy time{font-size:10px;color:#929bb0}
+.update-notification-status{width:7px;height:7px;border-radius:50%;background:#5578e8;flex:none;margin-top:5px}
+.global-notification-btn{cursor:pointer}
+@media(max-width:520px){.update-notification-panel{right:-4px;top:calc(100% + 10px)}}
+
+/* Developer role: notification access remains discreet, not a prominent role badge */
+.global-notification-btn.developer-notification-compact{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;padding:0!important;border-radius:9px!important;background:transparent!important;box-shadow:none!important;color:#7b879b!important;opacity:.78!important}
+.global-notification-btn.developer-notification-compact:hover{opacity:1!important;background:rgba(100,116,139,.09)!important;transform:none!important}
+.global-notification-btn.developer-notification-compact i{width:15px!important;height:15px!important}
+.global-notification-btn.developer-notification-compact #notification-unread-dot{width:6px!important;height:6px!important;top:3px!important;right:3px!important}
+
 </style>
 <style id="product-code-edit-polish">
   #barang-kode:not([readonly]){
@@ -1735,7 +1762,29 @@ body:has(#modal-katalog-barang) { --tbe-modal-ink:#172554; }
   }
   #modal-katalog-barang>div { width:100%!important; max-height:94dvh!important; border-radius:20px!important; }
 }
-</style></head>
+</style><style id="notification-settings-mobile-logout-fix">
+/* Composer not in notification popover: it is exclusively in Settings. */
+#update-notification-panel .notification-viewer-note{display:block}
+#notification-settings-composer{width:100%;min-width:0}
+#notification-settings-composer input,#notification-settings-composer textarea,#notification-settings-composer select{max-width:100%;min-width:0}
+#notification-settings-composer #notification-publish-btn{margin-left:auto}
+@media(max-width:767px){
+  #app-sidebar{height:100dvh!important;max-height:100dvh!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding-bottom:env(safe-area-inset-bottom)}
+  #app-sidebar>div:first-child{display:flex!important;flex:1 1 auto!important;min-height:0!important;flex-direction:column!important}
+  #app-sidebar nav{flex:1 1 auto!important;min-height:0!important;max-height:none!important;overflow-y:auto!important;padding-bottom:14px!important}
+  #app-sidebar>div:last-child{position:sticky!important;bottom:0!important;flex:0 0 auto!important;background:#fff!important;padding:12px 14px calc(12px + env(safe-area-inset-bottom))!important;border-top:1px solid #e5e7eb!important;box-shadow:0 -8px 20px rgba(15,23,42,.05)!important}
+  #app-sidebar>div:last-child button{min-height:46px!important;justify-content:center!important;font-size:13px!important;background:#fff5f5!important;border:1px solid #fee2e2!important}
+  #desktop-page-header{gap:10px;flex-wrap:wrap}
+  .update-notification-panel{position:fixed!important;top:68px!important;left:12px!important;right:12px!important;width:auto!important;max-width:none!important;max-height:calc(100dvh - 90px)!important}
+  #notification-list{max-height:calc(100dvh - 190px)!important}
+  #notification-settings-composer>div:last-child{padding:12px!important}
+  #notification-settings-composer #notification-publish-btn{width:100%!important;max-width:none!important;margin-left:0!important}
+}
+@media(min-width:768px){
+  #notification-settings-composer #notification-publish-btn{width:auto!important}
+}
+</style>
+</head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 <!-- ==================== NOTIFIKASI TOAST ==================== -->
 <div class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform translate-x-full opacity-0 pointer-events-none transition-all duration-300 ease-in-out bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center space-x-2 text-xs font-semibold no-print" id="toast">
@@ -1809,6 +1858,7 @@ body:has(#modal-katalog-barang) { --tbe-modal-ink:#172554; }
 <div class="flex items-center space-x-2">
 <span class="w-2.5 h-2.5 rounded-full bg-amber-400" id="cloud-indicator-mobile" title="Sinkronisasi Cloud"></span>
 <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase" id="mobile-user-badge">ADMIN</span>
+
 </div>
 </header>
 <!-- BACKDROP MOBILE SIDEBAR -->
@@ -1933,7 +1983,15 @@ body:has(#modal-katalog-barang) { --tbe-modal-ink:#172554; }
 <div class="global-filter-controls" id="global-filter-controls"></div>
 </div>
 </div>
-<button aria-label="Notifikasi" class="global-notification-btn" onclick="showToast('Tidak ada notifikasi baru.')" type="button"><i data-lucide="bell"></i><span></span></button>
+<button aria-label="Notifikasi" class="global-notification-btn" id="notification-trigger" onclick="toggleUpdateNotifications()" type="button" aria-expanded="false"><i data-lucide="bell"></i><span id="notification-unread-dot"></span></button>
+<div id="update-notification-panel" class="update-notification-panel" hidden role="dialog" aria-label="Notifikasi update">
+  <div class="update-notification-head">
+    <div><strong>Notifikasi</strong><small id="notification-live-status">Menghubungkan ke server…</small></div>
+    <button type="button" aria-label="Tutup notifikasi" onclick="toggleUpdateNotifications(false)">×</button>
+  </div>
+  <div class="notification-viewer-note" style="padding:10px 16px;font-size:11px;color:#748096;background:#fbfcfe;border-bottom:1px solid #edf0f5">Notifikasi terbaru dari pengelola toko.</div>
+  <div id="notification-list" style="max-height:min(55vh,460px);overflow:auto"><div style="padding:22px;text-align:center;color:#8993a8;font-size:12px">Memuat notifikasi…</div></div>
+</div>
 </div>
 </div>
 <!-- ==================== 2. KASIR KLASIK ==================== -->
@@ -2811,6 +2869,23 @@ body:has(#modal-katalog-barang) { --tbe-modal-ink:#172554; }
 </section>
 <!-- 13. PENGATURAN -->
 <section class="page-content hidden space-y-4 sm:space-y-5" id="page-pengaturan">
+<div id="notification-settings-composer" class="admin-only bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden">
+  <div class="px-4 py-4 sm:px-5 border-b border-indigo-50 bg-gradient-to-r from-indigo-50 to-white">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i data-lucide="bell-ring" class="w-5 h-5"></i></div>
+      <div><h3 class="font-extrabold text-sm text-gray-900">Kelola Notifikasi</h3><p class="text-[11px] text-gray-500 mt-1">Buat dan kirim pengumuman ke seluruh perangkat toko.</p></div>
+    </div>
+  </div>
+  <div style="padding:14px 16px">
+    <input id="notification-new-title" maxlength="100" placeholder="Judul notifikasi" style="display:block;width:100%;box-sizing:border-box;border:1px solid #dfe5ef;border-radius:10px;padding:11px 12px;font:inherit;font-size:13px;margin-bottom:9px;background:white">
+    <textarea id="notification-new-message" maxlength="700" rows="4" placeholder="Tulis informasi pembaruan untuk semua perangkat…" style="display:block;width:100%;box-sizing:border-box;resize:vertical;border:1px solid #dfe5ef;border-radius:10px;padding:11px 12px;font:inherit;font-size:13px;margin-bottom:9px;background:white"></textarea>
+    <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
+      <select id="notification-new-type" style="width:100%;max-width:220px;border:1px solid #dfe5ef;border-radius:9px;padding:10px;background:white;font-size:12px"><option value="update">Pembaruan</option><option value="info">Informasi</option><option value="warning">Penting</option></select>
+      <button id="notification-publish-btn" type="button" style="margin-left:auto;border:0;border-radius:10px;padding:11px 16px;background:#315fe8;color:white;font-weight:800;font-size:12px;cursor:pointer;width:100%;max-width:100%">Kirim ke semua</button>
+    </div>
+    <div id="notification-admin-feedback" role="status" style="font-size:11px;color:#64748b;margin-top:8px;overflow-wrap:anywhere"></div>
+  </div>
+</div>
 <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 divide-y divide-gray-100 shadow-sm text-xs">
 <div class="pb-4 mb-4 border-b">
 <div class="flex items-start gap-3">
@@ -3395,7 +3470,7 @@ body:has(#modal-katalog-barang) { --tbe-modal-ink:#172554; }
 <input class="w-full border rounded-xl p-2.5" id="user-fullname" placeholder="Nama Lengkap" required="" type="text"/>
 <input class="w-full border rounded-xl p-2.5" id="user-newusername" placeholder="Username Login" required="" type="text"/>
 <input class="w-full border rounded-xl p-2.5" id="user-newpassword" placeholder="Password Login" required="" type="password"/>
-<select class="w-full border rounded-xl p-2.5 font-bold" id="user-role-select"><option value="kasir">KASIR</option><option value="admin">ADMIN</option></select>
+<select class="w-full border rounded-xl p-2.5 font-bold" id="user-role-select"><option value="kasir">KASIR</option><option value="admin">ADMIN</option><option value="developer">DEVELOPER</option></select>
 <div class="flex justify-end space-x-2 pt-2 border-t"><button class="px-4 py-2 border rounded-xl" onclick="closeModal('modal-user')" type="button">Batal</button><button class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold" type="submit">Daftarkan</button></div>
 </form>
 </div>
@@ -10970,5 +11045,103 @@ document.addEventListener('DOMContentLoaded',function(){
 .page-content.page-transition-leaving{z-index:1;position:relative}
 @media (prefers-reduced-motion: reduce){.page-content{animation:none!important;transition:none!important}}
 </style>
+
+<script>
+(function(){
+  function initUpdateNotifications(){
+    const panel=document.getElementById('update-notification-panel');
+    const trigger=document.getElementById('notification-trigger');
+    const dot=document.getElementById('notification-unread-dot');
+    if(!panel||!trigger) return;
+
+    /* Place panel in the same header context as the bell, so it cannot sit
+       behind another layout layer or be clipped by an ancestor. */
+    const holder=trigger.parentElement;
+    if(holder){
+      const cs=getComputedStyle(holder);
+      if(cs.position==='static') holder.style.position='relative';
+      if(panel.parentElement!==holder) holder.appendChild(panel);
+    }
+    panel.style.position='absolute';
+    panel.style.zIndex='99999';
+    panel.style.pointerEvents='auto';
+    panel.hidden=true;
+
+    function setOpen(open){
+      panel.hidden=!open;
+      panel.style.display=open?'block':'none';
+      trigger.setAttribute('aria-expanded',open?'true':'false');
+      if(open){
+        if(dot) dot.style.display='none';
+        panel.querySelectorAll('.unread').forEach(el=>el.classList.remove('unread'));
+        panel.querySelectorAll('.update-notification-status').forEach(el=>el.style.display='none');
+      }
+    }
+    window.toggleUpdateNotifications=function(force){
+      updateAdminUI();
+      setOpen(typeof force==='boolean'?force:panel.hidden);
+    };
+    trigger.removeAttribute('onclick');
+    trigger.addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      setOpen(panel.hidden || panel.style.display==='none');
+    });
+    panel.querySelectorAll('button[aria-label="Tutup notifikasi"]').forEach(btn=>{
+      btn.onclick=null;
+      btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();setOpen(false);});
+    });
+    document.addEventListener('click',function(e){
+      if(!panel.hidden&&!panel.contains(e.target)&&!trigger.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(false);});
+    setOpen(false);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initUpdateNotifications,{once:true});
+  else initUpdateNotifications();
+})();
+</script>
+<script>
+(function initCloudUpdateNotifications(){
+  const cfg={apiKey:"AIzaSyDXV84dKaQnb8i_TZj5TScE_l-QkpNvCmk",authDomain:"toko-bung-edi.firebaseapp.com",projectId:"toko-bung-edi",storageBucket:"toko-bung-edi.firebasestorage.app",messagingSenderId:"428646259191",appId:"1:428646259191:web:eddcaef9c884f8d6e876f2",measurementId:"G-45C6D8KNXG"};
+  const statusEl=document.getElementById('notification-live-status'), listEl=document.getElementById('notification-list'), composer=document.getElementById('notification-admin-composer');
+  if(!window.firebase||!firebase.firestore){ if(statusEl)statusEl.textContent='Firebase tidak tersedia'; return; }
+  try{ if(!firebase.apps.length) firebase.initializeApp(cfg); }catch(e){console.warn('Firebase init:',e);}
+  const db=firebase.firestore(); const coll=db.collection('app_notifications'); let unsubscribe=null; let renderedIds=new Set();
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt=v=>{try{const d=v&&v.toDate?v.toDate():new Date(v);return d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});}catch(_){return 'Baru saja';}};
+  function canPublish(){try{return !!(typeof currentUser!=='undefined' && currentUser && ['admin','developer'].includes(String(currentUser.role||'').trim().toLowerCase()));}catch(_){return false;}}
+  function adminNow(){return canPublish();}
+  function developerNow(){try{return !!(typeof currentUser!=='undefined'&&currentUser&&String(currentUser.role||'').trim().toLowerCase()==='developer');}catch(_){return false;}}
+  function updateAdminUI(){const settingsComposer=document.getElementById('notification-settings-composer');if(settingsComposer)settingsComposer.style.display=adminNow()?'block':'none';const trigger=document.getElementById('notification-trigger');if(trigger)trigger.classList.toggle('developer-notification-compact',developerNow());}
+  function setStatus(t){if(statusEl)statusEl.textContent=t;}
+  function renderDocs(snapshot){
+    if(!listEl)return;
+    if(snapshot.empty){listEl.innerHTML='<div style="padding:25px;text-align:center;color:#8993a8;font-size:12px">Belum ada notifikasi pembaruan.</div>';return;}
+    listEl.innerHTML=''; snapshot.forEach(doc=>{const d=doc.data()||{}, id=doc.id; const type=d.type||'update'; const ico=type==='warning'?'alert-triangle':type==='info'?'info':'refresh-cw';
+      const item=document.createElement('div');item.className='update-notification-item';item.innerHTML='<div class="update-notification-icon"><i data-lucide="'+ico+'"></i></div><div class="update-notification-copy"><strong>'+esc(d.title||'Pembaruan aplikasi')+'</strong><p>'+esc(d.message||'')+'</p><time>'+esc(fmt(d.createdAt))+(d.createdBy?' · '+esc(d.createdBy):'')+'</time></div>'+(adminNow()?'<button type="button" data-delete-notification="'+esc(id)+'" title="Hapus notifikasi" style="border:0;background:transparent;color:#9aa3b5;cursor:pointer;font-size:18px;padding:0 3px">×</button>':'');
+      listEl.appendChild(item);
+    });
+    if(window.lucide&&lucide.createIcons)lucide.createIcons();
+    listEl.querySelectorAll('[data-delete-notification]').forEach(btn=>btn.addEventListener('click',async()=>{if(!adminNow())return;const id=btn.getAttribute('data-delete-notification');if(!confirm('Hapus notifikasi ini dari semua perangkat?'))return;try{await coll.doc(id).delete();}catch(e){alert('Gagal menghapus: '+(e.message||e));}}));
+  }
+  function subscribe(){if(unsubscribe)unsubscribe(); setStatus('Terhubung · realtime'); unsubscribe=coll.orderBy('createdAt','desc').limit(40).onSnapshot(renderDocs,err=>{console.error('Notif Firestore:',err);setStatus(err.code==='permission-denied'?'Akses Firestore ditolak':'Tidak dapat memuat notifikasi');if(listEl)listEl.innerHTML='<div style="padding:20px;color:#9a5360;font-size:12px;text-align:center">Notifikasi belum dapat dimuat. Periksa Firestore Rules dan koneksi internet.</div>';});}
+  const publish=document.getElementById('notification-publish-btn'); if(publish)publish.addEventListener('click',async()=>{
+    if(!canPublish()){alert('Fitur penerbitan notifikasi hanya untuk Admin dan Developer.');return;}
+    const title=document.getElementById('notification-new-title').value.trim(), message=document.getElementById('notification-new-message').value.trim(), type=document.getElementById('notification-new-type').value;
+    const feedback=document.getElementById('notification-admin-feedback');
+    if(!title||!message){if(feedback)feedback.textContent='Isi judul dan pesan terlebih dahulu.';return;}
+    publish.disabled=true;publish.textContent='Mengirim…';
+    try{await coll.add({title,message,type,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:((typeof currentUser!=='undefined'&&currentUser&&(currentUser.name||currentUser.nama||currentUser.username))||(developerNow()?'Developer':'Admin'))});document.getElementById('notification-new-title').value='';document.getElementById('notification-new-message').value='';if(feedback)feedback.textContent='Notifikasi berhasil diterbitkan ke semua perangkat.';}
+    catch(e){console.error(e);if(feedback)feedback.textContent='Gagal mengirim. Periksa Firestore Rules: '+(e.message||e);}
+    finally{publish.disabled=false;publish.textContent='Kirim ke semua';}
+  });
+  updateAdminUI(); subscribe();
+  // Role is assigned after login; update composer visibility whenever app UI is refreshed.
+  const oldSetup=window.setupUserInterface; if(typeof oldSetup==='function'&&!oldSetup.__notifWrapped){window.setupUserInterface=function(){const r=oldSetup.apply(this,arguments);updateAdminUI();return r;};window.setupUserInterface.__notifWrapped=true;}
+  document.addEventListener('click',()=>{updateAdminUI();},{passive:true});
+  document.addEventListener('keydown',()=>{updateAdminUI();},{passive:true});
+})();
+</script>
+
 </body>
 </html>
