@@ -1784,7 +1784,39 @@ body:has(#modal-katalog-barang) { --tbe-modal-ink:#172554; }
   #notification-settings-composer #notification-publish-btn{width:auto!important}
 }
 </style>
+
+<style id="notification-alert-enhancement">
+#notification-unread-dot{width:11px!important;height:11px!important;background:#ef233c!important;box-shadow:0 0 0 2px #fff,0 0 10px rgba(239,35,60,.35);display:none;animation:notifPulse 1.35s infinite}
+#notification-trigger.has-unread #notification-unread-dot{display:block!important}
+#notification-trigger.has-unread{color:#e11d48!important}
+@keyframes notifPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.28)}}
+#global-new-notification{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(8,15,30,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#global-new-notification.show{display:flex;animation:globalNotifFade .22s ease-out}
+.global-new-notif-card{width:min(520px,100%);border-radius:26px;background:#fff;padding:clamp(22px,5vw,36px);text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.35);animation:globalNotifPop .28s cubic-bezier(.2,.8,.2,1)}
+.global-new-notif-mark{width:66px;height:66px;border-radius:22px;margin:0 auto 17px;display:grid;place-items:center;background:#fff1f2;color:#e11d48}
+.global-new-notif-mark svg{width:31px;height:31px}
+.global-new-notif-eyebrow{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#e11d48}
+.global-new-notif-title{font-size:clamp(20px,4vw,27px);font-weight:900;color:#111827;line-height:1.2;margin:10px 0}
+.global-new-notif-message{font-size:14px;line-height:1.7;color:#4b5563;white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0 22px}
+.global-new-notif-close{width:100%;min-height:48px;border:0;border-radius:14px;background:#e11d48;color:#fff;font-weight:800;font-size:14px;cursor:pointer}
+.global-new-notif-close:hover{background:#be123c}
+@keyframes globalNotifFade{from{opacity:0}to{opacity:1}}
+@keyframes globalNotifPop{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){#notification-unread-dot,.global-new-notif-card{animation:none!important}}
+</style>
+
 </head>
+
+<div id="global-new-notification" role="alertdialog" aria-modal="true" aria-labelledby="global-new-notif-title" aria-describedby="global-new-notif-message">
+ <div class="global-new-notif-card">
+  <div class="global-new-notif-mark"><i data-lucide="bell-ring"></i></div>
+  <div class="global-new-notif-eyebrow">Notifikasi Baru</div>
+  <h2 class="global-new-notif-title" id="global-new-notif-title">Pembaruan</h2>
+  <div class="global-new-notif-message" id="global-new-notif-message"></div>
+  <button class="global-new-notif-close" type="button" id="global-new-notif-dismiss">Saya Mengerti</button>
+ </div>
+</div>
+
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 <!-- ==================== NOTIFIKASI TOAST ==================== -->
 <div class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform translate-x-full opacity-0 pointer-events-none transition-all duration-300 ease-in-out bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center space-x-2 text-xs font-semibold no-print" id="toast">
@@ -2881,6 +2913,7 @@ body:has(#modal-katalog-barang) { --tbe-modal-ink:#172554; }
     <textarea id="notification-new-message" maxlength="700" rows="4" placeholder="Tulis informasi pembaruan untuk semua perangkat…" style="display:block;width:100%;box-sizing:border-box;resize:vertical;border:1px solid #dfe5ef;border-radius:10px;padding:11px 12px;font:inherit;font-size:13px;margin-bottom:9px;background:white"></textarea>
     <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
       <select id="notification-new-type" style="width:100%;max-width:220px;border:1px solid #dfe5ef;border-radius:9px;padding:10px;background:white;font-size:12px"><option value="update">Pembaruan</option><option value="info">Informasi</option><option value="warning">Penting</option></select>
+      <select id="notification-new-display" aria-label="Mode tampilan notifikasi" title="Mode tampilan notifikasi" style="width:100%;max-width:220px;border:1px solid #dfe5ef;border-radius:9px;padding:10px;background:white;font-size:12px"><option value="panel">Notifikasi saja</option><option value="fullscreen">Layar full</option></select>
       <button id="notification-publish-btn" type="button" style="margin-left:auto;border:0;border-radius:10px;padding:11px 16px;background:#315fe8;color:white;font-weight:800;font-size:12px;cursor:pointer;width:100%;max-width:100%">Kirim ke semua</button>
     </div>
     <div id="notification-admin-feedback" role="status" style="font-size:11px;color:#64748b;margin-top:8px;overflow-wrap:anywhere"></div>
@@ -11073,6 +11106,7 @@ document.addEventListener('DOMContentLoaded',function(){
       trigger.setAttribute('aria-expanded',open?'true':'false');
       if(open){
         if(dot) dot.style.display='none';
+        trigger.classList.remove('has-unread');
         panel.querySelectorAll('.unread').forEach(el=>el.classList.remove('unread'));
         panel.querySelectorAll('.update-notification-status').forEach(el=>el.style.display='none');
       }
@@ -11106,7 +11140,42 @@ document.addEventListener('DOMContentLoaded',function(){
   const statusEl=document.getElementById('notification-live-status'), listEl=document.getElementById('notification-list'), composer=document.getElementById('notification-admin-composer');
   if(!window.firebase||!firebase.firestore){ if(statusEl)statusEl.textContent='Firebase tidak tersedia'; return; }
   try{ if(!firebase.apps.length) firebase.initializeApp(cfg); }catch(e){console.warn('Firebase init:',e);}
-  const db=firebase.firestore(); const coll=db.collection('app_notifications'); let unsubscribe=null; let renderedIds=new Set();
+  const db=firebase.firestore(); const coll=db.collection('app_notifications'); let unsubscribe=null; let renderedIds=new Set(); let firstSnapshot=true;
+  let audioContext=null;
+  function playNotifSound(){
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+      audioContext=audioContext||new AC();
+      if(audioContext.state==='suspended')audioContext.resume();
+      const now=audioContext.currentTime;
+      [0,0.19].forEach((offset,i)=>{
+        const osc=audioContext.createOscillator(),gain=audioContext.createGain();
+        osc.type='sine';osc.frequency.value=i?880:660;
+        gain.gain.setValueAtTime(.0001,now+offset);
+        gain.gain.exponentialRampToValueAtTime(.16,now+offset+.025);
+        gain.gain.exponentialRampToValueAtTime(.0001,now+offset+.14);
+        osc.connect(gain);gain.connect(audioContext.destination);
+        osc.start(now+offset);osc.stop(now+offset+.16);
+      });
+    }catch(e){console.debug('Audio not available',e);}
+  }
+  function showFullScreenNotification(data){
+    const overlay=document.getElementById('global-new-notification');
+    if(!overlay)return;
+    document.getElementById('global-new-notif-title').textContent=data.title||'Pembaruan aplikasi';
+    document.getElementById('global-new-notif-message').textContent=data.message||'Ada notifikasi baru.';
+    overlay.classList.add('show');playNotifSound();
+    if(window.lucide&&lucide.createIcons)lucide.createIcons();
+  }
+  function closeFullScreenNotification(){
+    const overlay=document.getElementById('global-new-notification');if(overlay)overlay.classList.remove('show');
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const dismiss=document.getElementById('global-new-notif-dismiss'),overlay=document.getElementById('global-new-notification');
+    if(dismiss)dismiss.addEventListener('click',closeFullScreenNotification);
+    if(overlay)overlay.addEventListener('click',e=>{if(e.target===overlay)closeFullScreenNotification();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFullScreenNotification();});
+  });
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt=v=>{try{const d=v&&v.toDate?v.toDate():new Date(v);return d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});}catch(_){return 'Baru saja';}};
   function canPublish(){try{return !!(typeof currentUser!=='undefined' && currentUser && ['admin','developer'].includes(String(currentUser.role||'').trim().toLowerCase()));}catch(_){return false;}}
@@ -11116,6 +11185,19 @@ document.addEventListener('DOMContentLoaded',function(){
   function setStatus(t){if(statusEl)statusEl.textContent=t;}
   function renderDocs(snapshot){
     if(!listEl)return;
+    const incoming=[];
+    snapshot.forEach(doc=>{if(!renderedIds.has(doc.id))incoming.push({id:doc.id,data:doc.data()||{}});});
+    if(firstSnapshot){snapshot.forEach(doc=>renderedIds.add(doc.id));firstSnapshot=false;}
+    else if(incoming.length){
+      incoming.forEach(item=>renderedIds.add(item.id));
+      const newest=incoming[0].data;
+      const trigger=document.getElementById('notification-trigger');
+      if(trigger)trigger.classList.add('has-unread');
+      const dot=document.getElementById('notification-unread-dot');
+      if(dot){dot.style.display='block';dot.title=incoming.length+' notifikasi belum dibaca';}
+      playNotifSound();
+      if((newest.displayMode||'fullscreen')==='fullscreen')showFullScreenNotification(newest);
+    }
     if(snapshot.empty){listEl.innerHTML='<div style="padding:25px;text-align:center;color:#8993a8;font-size:12px">Belum ada notifikasi pembaruan.</div>';return;}
     listEl.innerHTML=''; snapshot.forEach(doc=>{const d=doc.data()||{}, id=doc.id; const type=d.type||'update'; const ico=type==='warning'?'alert-triangle':type==='info'?'info':'refresh-cw';
       const item=document.createElement('div');item.className='update-notification-item';item.innerHTML='<div class="update-notification-icon"><i data-lucide="'+ico+'"></i></div><div class="update-notification-copy"><strong>'+esc(d.title||'Pembaruan aplikasi')+'</strong><p>'+esc(d.message||'')+'</p><time>'+esc(fmt(d.createdAt))+(d.createdBy?' · '+esc(d.createdBy):'')+'</time></div>'+(adminNow()?'<button type="button" data-delete-notification="'+esc(id)+'" title="Hapus notifikasi" style="border:0;background:transparent;color:#9aa3b5;cursor:pointer;font-size:18px;padding:0 3px">×</button>':'');
@@ -11127,11 +11209,11 @@ document.addEventListener('DOMContentLoaded',function(){
   function subscribe(){if(unsubscribe)unsubscribe(); setStatus('Terhubung · realtime'); unsubscribe=coll.orderBy('createdAt','desc').limit(40).onSnapshot(renderDocs,err=>{console.error('Notif Firestore:',err);setStatus(err.code==='permission-denied'?'Akses Firestore ditolak':'Tidak dapat memuat notifikasi');if(listEl)listEl.innerHTML='<div style="padding:20px;color:#9a5360;font-size:12px;text-align:center">Notifikasi belum dapat dimuat. Periksa Firestore Rules dan koneksi internet.</div>';});}
   const publish=document.getElementById('notification-publish-btn'); if(publish)publish.addEventListener('click',async()=>{
     if(!canPublish()){alert('Fitur penerbitan notifikasi hanya untuk Admin dan Developer.');return;}
-    const title=document.getElementById('notification-new-title').value.trim(), message=document.getElementById('notification-new-message').value.trim(), type=document.getElementById('notification-new-type').value;
+    const title=document.getElementById('notification-new-title').value.trim(), message=document.getElementById('notification-new-message').value.trim(), type=document.getElementById('notification-new-type').value, displayMode=document.getElementById('notification-new-display').value;
     const feedback=document.getElementById('notification-admin-feedback');
     if(!title||!message){if(feedback)feedback.textContent='Isi judul dan pesan terlebih dahulu.';return;}
     publish.disabled=true;publish.textContent='Mengirim…';
-    try{await coll.add({title,message,type,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:((typeof currentUser!=='undefined'&&currentUser&&(currentUser.name||currentUser.nama||currentUser.username))||(developerNow()?'Developer':'Admin'))});document.getElementById('notification-new-title').value='';document.getElementById('notification-new-message').value='';if(feedback)feedback.textContent='Notifikasi berhasil diterbitkan ke semua perangkat.';}
+    try{await coll.add({title,message,type,displayMode,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:((typeof currentUser!=='undefined'&&currentUser&&(currentUser.name||currentUser.nama||currentUser.username))||(developerNow()?'Developer':'Admin'))});document.getElementById('notification-new-title').value='';document.getElementById('notification-new-message').value='';if(feedback)feedback.textContent='Notifikasi berhasil diterbitkan ke semua perangkat.';}
     catch(e){console.error(e);if(feedback)feedback.textContent='Gagal mengirim. Periksa Firestore Rules: '+(e.message||e);}
     finally{publish.disabled=false;publish.textContent='Kirim ke semua';}
   });
